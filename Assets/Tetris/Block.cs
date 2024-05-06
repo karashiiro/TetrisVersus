@@ -9,11 +9,14 @@ namespace Tetris
         public BlockState State { get; set; }
         [CanBeNull] public BlockGroup Group { get; set; }
 
+        /// <summary>
+        /// Translates the block according to the provided movement vector. The block should
+        /// have a scale of 1 relative to its parent.
+        /// </summary>
+        /// <param name="movement">The movement vector.</param>
         public void Move(Vector2 movement)
         {
-            var xDiff = movement.x / transform.localScale.x;
-            var yDiff = movement.y / transform.localScale.y;
-            transform.Translate(xDiff, yDiff, 0);
+            transform.Translate(movement.x, movement.y, 0);
         }
     }
 }

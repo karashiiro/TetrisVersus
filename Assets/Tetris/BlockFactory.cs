@@ -45,9 +45,9 @@ namespace Tetris
             var block = (Block)blockObject.GetComponent(typeof(UdonBehaviour));
             block.Group = group;
 
-            // Put the cloned block on top of its prototype, so we know we didn't spawn it somewhere
-            // weird like a player spawn area. We'll move it somewhere meaningful later.
-            block.transform.position = PrototypeBlock.transform.position;
+            // Put the cloned block on top of the group transform, then translate the block
+            // where it needs to be relative to the group root.
+            block.transform.position = group.transform.position + new Vector3(localX, localY);
 
             group[localX, localY] = block;
 

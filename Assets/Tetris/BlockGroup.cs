@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using UdonSharp;
+using UnityEngine;
 using VRC.SDK3.Data;
 
 namespace Tetris
@@ -40,6 +41,16 @@ namespace Tetris
         {
             var key = Key(localX, localY);
             return (Block)group[key].Reference;
+        }
+
+        /// <summary>
+        /// Translates the entire group of blocks according to the provided movement vector.
+        /// All involved GameObjects should have a scale of 1 relative to their parents.
+        /// </summary>
+        /// <param name="movement">The movement vector.</param>
+        public void Move(Vector2 movement)
+        {
+            transform.Translate(movement.x, movement.y, 0);
         }
 
         /// <summary>
