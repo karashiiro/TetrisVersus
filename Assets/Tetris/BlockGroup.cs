@@ -8,6 +8,7 @@ namespace Tetris
     public class BlockGroup : UdonSharpBehaviour
     {
         private readonly DataDictionary group = new DataDictionary();
+        private readonly DataDictionary groupPositions = new DataDictionary();
 
         [CanBeNull]
         public Block this[int x, int y]
@@ -40,6 +41,7 @@ namespace Tetris
             var key = Key(localX, localY);
             var value = new DataToken(block);
             group.Add(key, value);
+            groupPositions.Add(value, key);
         }
 
         /// <summary>
@@ -50,7 +52,10 @@ namespace Tetris
         public void Remove(int localX, int localY)
         {
             var key = Key(localX, localY);
-            group.Remove(key);
+            if (group.Remove(key, out var block))
+            {
+                groupPositions.Remove(block);
+            }
         }
 
         /// <summary>
@@ -72,15 +77,11 @@ namespace Tetris
             localX = -1;
             localY = -1;
 
-            // TODO: Implement reverse-map
-            foreach (var key in group.GetKeys().ToArray())
+            var blockToken = new DataToken(block);
+            if (groupPositions.TryGetValue(blockToken, TokenType.String, out var positionToken))
             {
-                var blockToken = group[key];
-                if (ReferenceEquals(blockToken.Reference, block))
-                {
-                    DecodePosition(key, out localX, out localY);
-                    return true;
-                }
+                DecodePosition(positionToken, out localX, out localY);
+                return true;
             }
 
             return false;
