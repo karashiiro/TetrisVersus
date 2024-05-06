@@ -18,12 +18,6 @@ namespace Tetris
 
         [field: SerializeField] public Queue Queue { get; set; }
 
-        private Block this[int x, int y]
-        {
-            get => Grid.Get(x, y);
-            set => Grid.Add(value, x, y);
-        }
-
         /// <summary>
         /// Adds controlled blocks to the play area at the limit line.
         /// </summary>
@@ -55,6 +49,36 @@ namespace Tetris
         private void HandleControlledBlockTick()
         {
             if (controlledBlockGroup == null) return;
+
+            // Validate that the group is still active going into the next tick
+            foreach (var block in controlledBlockGroup.GetBlocks())
+            {
+                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+
+                var nextBlock = Grid[x, y - 1];
+                if (y == 0 || nextBlock != null && nextBlock.State == BlockState.AtRest)
+                {
+                    // We're either at the bottom of the grid, or there's a block beneath us
+                    controlledBlockGroup.SetState(BlockState.AtRest);
+                    controlledBlockGroup = null;
+                    return;
+                }
+            }
+
+            // Now that we've determined that the entire group is still active, copy it down by one space
+            foreach (var block in controlledBlockGroup.GetBlocks())
+            {
+                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+
+                var nextBlock = Grid[x, y - 1];
+                if (y != 0 && nextBlock == null)
+                {
+                    Grid[x, y] = null;
+                    Grid[x, y - 1] = block;
+                }
+            }
+
+            // Move the group in the world space
             controlledBlockGroup.Translate(Vector2.down);
         }
 
@@ -63,7 +87,7 @@ namespace Tetris
             foreach (var pos in group.GetEncodedPositions())
             {
                 BlockGroup.DecodePosition(pos, out var localX, out var localY);
-                this[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
+                Grid[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
             }
         }
     }

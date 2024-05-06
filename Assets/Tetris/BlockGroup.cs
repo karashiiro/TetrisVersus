@@ -13,7 +13,17 @@ namespace Tetris
         public Block this[int x, int y]
         {
             get => Get(x, y);
-            set => Add(value, x, y);
+            set
+            {
+                if (value == null)
+                {
+                    Remove(x, y);
+                }
+                else
+                {
+                    Add(value, x, y);
+                }
+            }
         }
 
         /// <summary>
@@ -24,10 +34,23 @@ namespace Tetris
         /// <param name="localY">The block's y-position, local to the group.</param>
         public void Add(Block block, int localX, int localY)
         {
+            if (block == null) return;
+
             // Encode the group-local position in the dictionary key
             var key = Key(localX, localY);
             var value = new DataToken(block);
             group.Add(key, value);
+        }
+
+        /// <summary>
+        /// Removes a block from the block group.
+        /// </summary>
+        /// <param name="localX">The block's x-position, local to the group.</param>
+        /// <param name="localY">The block's y-position, local to the group.</param>
+        public void Remove(int localX, int localY)
+        {
+            var key = Key(localX, localY);
+            group.Remove(key);
         }
 
         /// <summary>
@@ -40,7 +63,27 @@ namespace Tetris
         public Block Get(int localX, int localY)
         {
             var key = Key(localX, localY);
-            return (Block)group[key].Reference;
+            if (!group.TryGetValue(key, TokenType.Reference, out var block)) return null;
+            return (Block)block.Reference;
+        }
+
+        public bool TryGetPosition(Block block, out int localX, out int localY)
+        {
+            localX = -1;
+            localY = -1;
+
+            // TODO: Implement reverse-map
+            foreach (var key in group.GetKeys().ToArray())
+            {
+                var blockToken = group[key];
+                if (ReferenceEquals(blockToken.Reference, block))
+                {
+                    DecodePosition(key, out localX, out localY);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -84,6 +127,18 @@ namespace Tetris
         public DataToken[] GetEncodedPositions()
         {
             return group.GetKeys().ToArray();
+        }
+
+        public Block[] GetBlocks()
+        {
+            var tokens = group.GetValues().ToArray();
+            var blocks = new Block[tokens.Length];
+            for (var i = 0; i < blocks.Length; i++)
+            {
+                blocks[i] = (Block)tokens[i].Reference;
+            }
+
+            return blocks;
         }
 
         /// <summary>
