@@ -10,9 +10,9 @@ namespace Tetris
         private const int LimitHeight = 20;
         private const int Height = LimitHeight + 2;
 
-        private readonly Block[] grid = new Block[Width * Height];
-
         [CanBeNull] private BlockGroup controlledBlockGroup;
+
+        [field: SerializeField] public BlockGroup Grid { get; set; }
 
         [field: SerializeField] public Hold Hold { get; set; }
 
@@ -20,8 +20,8 @@ namespace Tetris
 
         private Block this[int x, int y]
         {
-            get => grid[y * Width + x];
-            set => grid[y * Width + x] = value;
+            get => Grid.Get(x, y);
+            set => Grid.Add(value, x, y);
         }
 
         /// <summary>
