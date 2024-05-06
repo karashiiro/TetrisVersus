@@ -120,6 +120,19 @@ namespace Tetris
         }
 
         /// <summary>
+        /// Sets the color of the blocks in the group.
+        /// </summary>
+        /// <param name="color">The color to set the blocks to.</param>
+        public void SetColor(Color color)
+        {
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = (Block)token.Reference;
+                block.SetColor(color);
+            }
+        }
+
+        /// <summary>
         /// Retrieves the encoded positions of all blocks within the group. Use <see cref="DecodePosition"/>
         /// to retrieve the decoded block positions.
         /// </summary>

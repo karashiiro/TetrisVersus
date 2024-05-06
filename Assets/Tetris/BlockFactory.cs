@@ -6,8 +6,6 @@ namespace Tetris
 {
     public class BlockFactory : UdonSharpBehaviour
     {
-        private readonly int ShaderColorKey = Shader.PropertyToID("_Color");
-
         [field: SerializeField] public BlockGroup PrototypeBlockGroup { get; set; }
 
         [field: SerializeField] public Block PrototypeBlock { get; set; }
@@ -68,12 +66,7 @@ namespace Tetris
             CreateBlock(group, 1, 0);
             CreateBlock(group, 1, 1);
 
-            foreach (var block in group.GetBlocks())
-            {
-                var blockRenderer = block.GetComponent<Renderer>();
-                if (blockRenderer == null) continue;
-                blockRenderer.material.SetColor(ShaderColorKey, color);
-            }
+            group.SetColor(color);
 
             return group;
         }
