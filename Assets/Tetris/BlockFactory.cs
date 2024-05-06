@@ -7,9 +7,7 @@ namespace Tetris
     public class BlockFactory : UdonSharpBehaviour
     {
         [field: SerializeField] public BlockGroup PrototypeBlockGroup { get; set; }
-
         [field: SerializeField] public Block PrototypeBlock { get; set; }
-
         [field: SerializeField] public Transform BlockGroupParent { get; set; }
 
         /// <summary>

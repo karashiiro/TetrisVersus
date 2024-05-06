@@ -15,14 +15,30 @@ namespace Tetris
         [field: SerializeField] public BlockGroup Grid { get; set; }
 
         [field: SerializeField] public Hold Hold { get; set; }
-
         [field: SerializeField] public Queue Queue { get; set; }
+
+        public void Tick()
+        {
+            HandleControlledBlockTick();
+
+            if (controlledBlockGroup == null)
+            {
+                LoadNextShape();
+            }
+        }
+
+        private void LoadNextShape()
+        {
+            var shape = Queue.Pop();
+            if (shape == null) return;
+            AddControlledBlocks(shape);
+        }
 
         /// <summary>
         /// Adds controlled blocks to the play area at the limit line.
         /// </summary>
         /// <param name="group">The group of blocks to add.</param>
-        public void AddControlledBlocks(BlockGroup group)
+        private void AddControlledBlocks(BlockGroup group)
         {
             // Move the block group into the play area at the limit line
             group.SetPosition(new Vector2(5, LimitHeight));
@@ -34,11 +50,6 @@ namespace Tetris
         {
             group.SetState(BlockState.Controlled);
             controlledBlockGroup = group;
-        }
-
-        public void Tick()
-        {
-            HandleControlledBlockTick();
         }
 
         /// <summary>

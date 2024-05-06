@@ -24,23 +24,17 @@ namespace Tetris
             // Create a square tetra
             var square1 = BlockFactory.CreateSquare(Color.red);
 
-            // Add the square tetra to the play area
-            PlayArea.AddControlledBlocks(square1);
-
-            // Do a few ticks so we know things are working
-            for (var i = 0; i < 22; i++)
-            {
-                PlayArea.Tick();
-            }
-
             // Create another square tetra
             var square2 = BlockFactory.CreateSquare(Color.blue);
 
             // Add the square tetra to the play area
-            PlayArea.AddControlledBlocks(square2);
+            PlayArea.Queue.Push(square1);
+
+            // Add the square tetra to the play area
+            PlayArea.Queue.Push(square2);
 
             // Do a few ticks so we know things are working
-            for (var i = 0; i < 22; i++)
+            for (var i = 0; i < 45; i++)
             {
                 PlayArea.Tick();
             }

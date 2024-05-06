@@ -1,4 +1,6 @@
-﻿using UdonSharp;
+﻿using JetBrains.Annotations;
+using UdonSharp;
+using UnityEngine;
 
 namespace Tetris
 {
@@ -8,15 +10,30 @@ namespace Tetris
 
         private readonly BlockGroup[] incoming = new BlockGroup[QueueSize];
 
-        private int nextIndex = 0;
+        private int head;
+        private int tail;
 
+        [CanBeNull]
         public BlockGroup Pop()
         {
-            if (incoming[nextIndex] == null) return null;
-            var next = incoming[nextIndex];
-            incoming[nextIndex] = null;
-            nextIndex = nextIndex++ % incoming.Length;
+            if (incoming[head] == null) return null;
+            var next = incoming[head];
+            incoming[head] = null;
+            head = GetNextIndex(head);
             return next;
+        }
+
+        public bool Push(BlockGroup group)
+        {
+            if (incoming[tail] != null) return false;
+            incoming[tail] = group;
+            tail = GetNextIndex(tail);
+            return true;
+        }
+
+        private int GetNextIndex(int currentIndex)
+        {
+            return ++currentIndex % incoming.Length;
         }
     }
 }
