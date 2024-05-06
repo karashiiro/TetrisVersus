@@ -28,8 +28,9 @@ namespace Tetris
         /// <param name="bottomLeftX"></param>
         public void AddControlledSquare(int bottomLeftX)
         {
-            var squareGroup = BlockFactory.CreateControlledSquare();
-            CopyBlocksFrom(squareGroup, bottomLeftX);
+            // Move the block group into the play area at the limit line
+            var squareGroup = BlockFactory.CreateControlledSquare(bottomLeftX, LimitHeight);
+            CopyBlocksFromGroup(squareGroup, bottomLeftX);
         }
 
         public void Tick()
@@ -57,7 +58,7 @@ namespace Tetris
         {
         }
 
-        private void CopyBlocksFrom(BlockGroup group, int bottomLeftX)
+        private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX)
         {
             foreach (var pos in group.GetEncodedPositions())
             {

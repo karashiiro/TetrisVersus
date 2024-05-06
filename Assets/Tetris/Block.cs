@@ -16,7 +16,7 @@ namespace Tetris
         /// <param name="movement">The movement vector.</param>
         public void Move(Vector2 movement)
         {
-            transform.Translate(movement.x, movement.y, 0);
+            transform.SetLocalPositionAndRotation(new Vector3(movement.x, movement.y), Quaternion.identity);
         }
     }
 }

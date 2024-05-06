@@ -1,5 +1,4 @@
-﻿using System;
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.Udon;
 
@@ -47,7 +46,7 @@ namespace Tetris
 
             // Put the cloned block on top of the group transform, then translate the block
             // where it needs to be relative to the group root.
-            block.transform.position = group.transform.position + new Vector3(localX, localY);
+            block.transform.SetLocalPositionAndRotation(new Vector3(localX, localY), Quaternion.identity);
 
             group[localX, localY] = block;
 
@@ -57,14 +56,22 @@ namespace Tetris
         /// <summary>
         /// Creates a controlled square tetra as a block group.
         /// </summary>
+        /// <param name="bottomLeftX">The block group's x-position, relative to its parent.</param>
+        /// <param name="bottomLeftY">The block group's y-position, relative to its parent.</param>
         /// <returns></returns>
-        public BlockGroup CreateControlledSquare()
+        public BlockGroup CreateControlledSquare(int bottomLeftX, int bottomLeftY)
         {
             var group = CreateBlockGroup();
+
+            // Move the entire group to the desired location relative to its parent
+            group.transform.SetLocalPositionAndRotation(new Vector3(bottomLeftX, bottomLeftY), Quaternion.identity);
+
+            // Create the blocks within the group
             CreateControlledBlock(group, 0, 0);
             CreateControlledBlock(group, 0, 1);
             CreateControlledBlock(group, 1, 0);
             CreateControlledBlock(group, 1, 1);
+
             return group;
         }
 
