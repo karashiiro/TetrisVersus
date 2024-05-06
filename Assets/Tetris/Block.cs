@@ -11,8 +11,8 @@ namespace Tetris
 
         public void Move(Vector2 movement)
         {
-            var xDiff = movement.x * transform.localScale.x;
-            var yDiff = movement.y * transform.localScale.y;
+            var xDiff = movement.x / transform.localScale.x;
+            var yDiff = movement.y / transform.localScale.y;
             transform.Translate(xDiff, yDiff, 0);
         }
     }
