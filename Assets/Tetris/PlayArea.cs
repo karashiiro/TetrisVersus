@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using JetBrains.Annotations;
+using UdonSharp;
 using UnityEngine;
 
 namespace Tetris
@@ -11,7 +12,7 @@ namespace Tetris
 
         private readonly Block[] grid = new Block[Width * Height];
 
-        [field: SerializeField] public BlockFactory BlockFactory { get; set; }
+        [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public Hold Hold { get; set; }
 
@@ -22,40 +23,39 @@ namespace Tetris
         }
 
         /// <summary>
-        /// Adds a 2x2 tetra to the play area, with the specified x-position for
-        /// its bottom-left block.
+        /// Adds controlled blocks to the play area at the limit line.
         /// </summary>
-        /// <param name="bottomLeftX"></param>
-        public void AddControlledSquare(int bottomLeftX)
+        /// <param name="group">The group of blocks to add.</param>
+        public void AddControlledBlocks(BlockGroup group)
         {
             // Move the block group into the play area at the limit line
-            var squareGroup = BlockFactory.CreateControlledSquare(bottomLeftX, LimitHeight);
-            CopyBlocksFromGroup(squareGroup, bottomLeftX);
+            group.SetPosition(new Vector2(5, LimitHeight));
+            SetControlledBlockGroup(group);
+            CopyBlocksFromGroup(group, 5);
+        }
+
+        private void SetControlledBlockGroup(BlockGroup group)
+        {
+            group.SetState(BlockState.Controlled);
+            controlledBlockGroup = group;
         }
 
         public void Tick()
         {
-            for (var x = 0; x < Width; x++)
-            {
-                for (var y = 0; y < Height; y++)
-                {
-                    var block = this[x, y];
-                    if (block != null && block.State == BlockState.Controlled)
-                    {
-                        HandleControlledBlockTick(block);
-                    }
-                }
-            }
+            HandleControlledBlockTick();
         }
 
         /// <summary>
         /// Fall by one space. The entire group of blocks should move as a single entity.
         /// If any blocks in the group have an at-rest block beneath them, then mark the
-        /// whole group as at-rest and end the tick.
+        /// group as at-rest and end the tick.
         /// </summary>
-        /// <param name="block"></param>
-        private void HandleControlledBlockTick(Block block)
+        private void HandleControlledBlockTick()
         {
+            if (controlledBlockGroup == null)
+            {
+                return;
+            }
         }
 
         private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX)

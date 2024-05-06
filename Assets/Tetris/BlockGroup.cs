@@ -44,13 +44,36 @@ namespace Tetris
         }
 
         /// <summary>
-        /// Translates the entire group of blocks according to the provided movement vector.
+        /// Sets the state of all blocks in the group.
+        /// </summary>
+        /// <param name="state">The desired block state.</param>
+        public void SetState(BlockState state)
+        {
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = (Block)token.Reference;
+                block.State = state;
+            }
+        }
+
+        /// <summary>
+        /// Sets the position of the entire group of blocks according to the provided position vector.
         /// All involved GameObjects should have a scale of 1 relative to their parents.
         /// </summary>
-        /// <param name="movement">The movement vector.</param>
-        public void Move(Vector2 movement)
+        /// <param name="position">The position vector.</param>
+        public void SetPosition(Vector2 position)
         {
-            transform.SetLocalPositionAndRotation(new Vector3(movement.x, movement.y), Quaternion.identity);
+            transform.SetLocalPositionAndRotation(new Vector3(position.x, position.y), Quaternion.identity);
+        }
+
+        /// <summary>
+        /// Translates the entire group of blocks according to the provided translation vector.
+        /// All involved GameObjects should have a scale of 1 relative to their parents.
+        /// </summary>
+        /// <param name="translation">The translation vector.</param>
+        public void Translate(Vector2 translation)
+        {
+            transform.Translate(new Vector3(translation.x, translation.y));
         }
 
         /// <summary>

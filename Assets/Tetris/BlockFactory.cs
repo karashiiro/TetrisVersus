@@ -42,7 +42,6 @@ namespace Tetris
             blockObject.name = "Block";
 
             var block = (Block)blockObject.GetComponent(typeof(UdonBehaviour));
-            block.Group = group;
 
             // Put the cloned block on top of the group transform, then translate the block
             // where it needs to be relative to the group root.
@@ -54,31 +53,20 @@ namespace Tetris
         }
 
         /// <summary>
-        /// Creates a controlled square tetra as a block group.
+        /// Creates a square tetra as a block group.
         /// </summary>
-        /// <param name="bottomLeftX">The block group's x-position, relative to its parent.</param>
-        /// <param name="bottomLeftY">The block group's y-position, relative to its parent.</param>
         /// <returns></returns>
-        public BlockGroup CreateControlledSquare(int bottomLeftX, int bottomLeftY)
+        public BlockGroup CreateSquare()
         {
             var group = CreateBlockGroup();
 
-            // Move the entire group to the desired location relative to its parent
-            group.transform.SetLocalPositionAndRotation(new Vector3(bottomLeftX, bottomLeftY), Quaternion.identity);
-
             // Create the blocks within the group
-            CreateControlledBlock(group, 0, 0);
-            CreateControlledBlock(group, 0, 1);
-            CreateControlledBlock(group, 1, 0);
-            CreateControlledBlock(group, 1, 1);
+            CreateBlock(group, 0, 0);
+            CreateBlock(group, 0, 1);
+            CreateBlock(group, 1, 0);
+            CreateBlock(group, 1, 1);
 
             return group;
-        }
-
-        private void CreateControlledBlock(BlockGroup group, int localX, int localY)
-        {
-            var block = CreateBlock(group, localX, localY);
-            block.State = BlockState.Controlled;
         }
     }
 }

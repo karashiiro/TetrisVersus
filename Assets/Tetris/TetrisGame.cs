@@ -9,6 +9,7 @@ namespace Tetris
         private VRCPlayerApi Player { get; set; }
 
         [field: SerializeField] public PlayArea PlayArea;
+        [field: SerializeField] public BlockFactory BlockFactory { get; set; }
 
         public void SetOwningPlayer(VRCPlayerApi player)
         {
@@ -20,8 +21,11 @@ namespace Tetris
             // Set the owner to the first player in the instance for now
             Player = VRCPlayerApi.GetPlayerById(1);
 
-            // Add a controlled square tetra
-            PlayArea.AddControlledSquare(5);
+            // Create a square tetra
+            var square = BlockFactory.CreateSquare();
+
+            // Add the square tetra to the play area
+            PlayArea.AddControlledBlocks(square);
         }
     }
 }

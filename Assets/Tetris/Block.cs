@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 
 namespace Tetris
@@ -7,7 +6,6 @@ namespace Tetris
     public class Block : UdonSharpBehaviour
     {
         public BlockState State { get; set; }
-        [CanBeNull] public BlockGroup Group { get; set; }
 
         /// <summary>
         /// Translates the block according to the provided movement vector. The block should
