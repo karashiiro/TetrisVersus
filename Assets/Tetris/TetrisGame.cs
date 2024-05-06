@@ -8,8 +8,7 @@ namespace Tetris
     {
         private VRCPlayerApi Player { get; set; }
 
-        [field: SerializeField]
-        public PlayArea PlayArea;
+        [field: SerializeField] public PlayArea PlayArea;
 
         public void SetOwningPlayer(VRCPlayerApi player)
         {

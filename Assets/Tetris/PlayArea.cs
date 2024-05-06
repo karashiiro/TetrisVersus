@@ -11,11 +11,9 @@ namespace Tetris
 
         private readonly Block[] grid = new Block[Width * Height];
 
-        [field: SerializeField]
-        public BlockFactory BlockFactory { get; set; }
+        [field: SerializeField] public BlockFactory BlockFactory { get; set; }
 
-        [field: SerializeField]
-        public Hold Hold { get; set; }
+        [field: SerializeField] public Hold Hold { get; set; }
 
         private Block this[int x, int y]
         {
@@ -61,7 +59,7 @@ namespace Tetris
 
         private void CopyBlocksFrom(BlockGroup group, int bottomLeftX)
         {
-            foreach (var pos in group.GetEncodedPositions().ToArray())
+            foreach (var pos in group.GetEncodedPositions())
             {
                 BlockGroup.DecodePosition(pos, out var localX, out var localY);
                 this[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
