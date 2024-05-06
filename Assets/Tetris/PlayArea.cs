@@ -29,7 +29,7 @@ namespace Tetris
 
         private void LoadNextShape()
         {
-            var shape = Queue.Pop();
+            var shape = Queue.Pop(transform);
             if (shape == null) return;
             AddControlledBlocks(shape);
         }

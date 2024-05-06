@@ -14,12 +14,13 @@ namespace Tetris
         private int tail;
 
         [CanBeNull]
-        public BlockGroup Pop()
+        public BlockGroup Pop(Transform parent)
         {
             if (incoming[head] == null) return null;
             var next = incoming[head];
             incoming[head] = null;
             head = GetNextIndex(head);
+            next.transform.SetParent(parent);
             return next;
         }
 
@@ -28,6 +29,7 @@ namespace Tetris
             if (incoming[tail] != null) return false;
             incoming[tail] = group;
             tail = GetNextIndex(tail);
+            group.transform.SetParent(transform);
             return true;
         }
 
