@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using System;
+using UdonSharp;
 using UnityEngine;
 using VRC.Udon;
 
@@ -21,6 +22,10 @@ namespace Tetris
             var group = Instantiate(PrototypeBlockGroup.gameObject, BlockGroupParent, true);
             group.name = "BlockGroup";
 
+            // Put the cloned block group on top of its prototype, so we know we didn't spawn it somewhere
+            // weird like a player spawn area. We'll move it somewhere meaningful later.
+            group.transform.position = PrototypeBlockGroup.transform.position;
+
             return (BlockGroup)group.GetComponent(typeof(UdonBehaviour));
         }
 
@@ -39,6 +44,10 @@ namespace Tetris
 
             var block = (Block)blockObject.GetComponent(typeof(UdonBehaviour));
             block.Group = group;
+
+            // Put the cloned block on top of its prototype, so we know we didn't spawn it somewhere
+            // weird like a player spawn area. We'll move it somewhere meaningful later.
+            block.transform.position = PrototypeBlock.transform.position;
 
             group[localX, localY] = block;
 
