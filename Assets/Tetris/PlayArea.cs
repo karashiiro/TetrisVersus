@@ -16,6 +16,8 @@ namespace Tetris
 
         [field: SerializeField] public Hold Hold { get; set; }
 
+        [field: SerializeField] public Queue Queue { get; set; }
+
         private Block this[int x, int y]
         {
             get => grid[y * Width + x];
