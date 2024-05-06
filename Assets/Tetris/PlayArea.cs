@@ -52,10 +52,8 @@ namespace Tetris
         /// </summary>
         private void HandleControlledBlockTick()
         {
-            if (controlledBlockGroup == null)
-            {
-                return;
-            }
+            if (controlledBlockGroup == null) return;
+            controlledBlockGroup.Translate(Vector2.down);
         }
 
         private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX)

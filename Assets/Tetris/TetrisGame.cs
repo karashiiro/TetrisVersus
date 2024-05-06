@@ -26,6 +26,12 @@ namespace Tetris
 
             // Add the square tetra to the play area
             PlayArea.AddControlledBlocks(square);
+
+            // Do a few ticks so we know things are working
+            for (var i = 0; i < 19; i++)
+            {
+                PlayArea.Tick();
+            }
         }
     }
 }
