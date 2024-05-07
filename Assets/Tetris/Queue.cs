@@ -13,10 +13,13 @@ namespace Tetris
         private int head;
         private int tail;
 
+        public bool IsFull => incoming[tail] != null;
+        public bool IsEmpty => incoming[head] == null;
+
         [CanBeNull]
         public BlockGroup Pop(Transform parent)
         {
-            if (incoming[head] == null) return null;
+            if (IsEmpty) return null;
             var next = incoming[head];
             incoming[head] = null;
             head = GetNextIndex(head);
@@ -26,7 +29,7 @@ namespace Tetris
 
         public bool Push(BlockGroup group)
         {
-            if (incoming[tail] != null) return false;
+            if (IsFull) return false;
             incoming[tail] = group;
             tail = GetNextIndex(tail);
             group.transform.SetParent(transform);

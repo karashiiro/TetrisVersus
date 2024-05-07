@@ -6653,7 +6653,6 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 261659602}
   <PlayArea>k__BackingField: {fileID: 563540659}
-  <BlockFactory>k__BackingField: {fileID: 1658598168}
 --- !u!4 &261659607
 Transform:
   m_ObjectHideFlags: 0
@@ -8571,6 +8570,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 563540658}
+  <BlockFactory>k__BackingField: {fileID: 1658598168}
   <Grid>k__BackingField: {fileID: 1927497150}
   <Hold>k__BackingField: {fileID: 1479380246}
   <Queue>k__BackingField: {fileID: 272498082}

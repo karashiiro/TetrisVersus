@@ -12,6 +12,7 @@ namespace Tetris
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
+        [field: SerializeField] public BlockFactory BlockFactory { get; set; }
         [field: SerializeField] public BlockGroup Grid { get; set; }
 
         [field: SerializeField] public Hold Hold { get; set; }
@@ -19,6 +20,10 @@ namespace Tetris
 
         public void Tick()
         {
+            // Refill the queue immediately in case we just started
+            RefillQueue();
+
+            // Handle the current controlled block group
             HandleControlledBlockTick();
 
             if (controlledBlockGroup == null)
@@ -32,6 +37,23 @@ namespace Tetris
             var shape = Queue.Pop(transform);
             if (shape == null) return;
             AddControlledBlocks(shape);
+
+            // Load the next shape immediately
+            RefillQueue();
+        }
+
+        private void RefillQueue()
+        {
+            var i = 0;
+            while (!Queue.IsFull)
+            {
+                var nextShape = BlockFactory.CreateSquare(i++ % 2 == 0 ? Color.red : Color.blue);
+                if (!Queue.Push(nextShape))
+                {
+                    Destroy(nextShape.gameObject);
+                    break;
+                }
+            }
         }
 
         /// <summary>
