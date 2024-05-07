@@ -139,7 +139,7 @@ namespace Tetris
         {
             foreach (var pos in group.GetEncodedPositions())
             {
-                BlockGroup.DecodePosition(pos, out var localX, out var localY);
+                if (!BlockGroup.TryDecodePosition(pos, out var localX, out var localY)) continue;
                 Grid[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
             }
         }

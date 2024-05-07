@@ -78,13 +78,8 @@ namespace Tetris
             localY = -1;
 
             var blockToken = new DataToken(block);
-            if (groupPositions.TryGetValue(blockToken, TokenType.String, out var positionToken))
-            {
-                DecodePosition(positionToken, out localX, out localY);
-                return true;
-            }
-
-            return false;
+            return groupPositions.TryGetValue(blockToken, TokenType.String, out var positionToken) &&
+                   TryDecodePosition(positionToken, out localX, out localY);
         }
 
         /// <summary>
@@ -134,7 +129,7 @@ namespace Tetris
         }
 
         /// <summary>
-        /// Retrieves the encoded positions of all blocks within the group. Use <see cref="DecodePosition"/>
+        /// Retrieves the encoded positions of all blocks within the group. Use <see cref="TryDecodePosition"/>
         /// to retrieve the decoded block positions.
         /// </summary>
         /// <returns>The encoded block positions.</returns>
@@ -161,11 +156,13 @@ namespace Tetris
         /// <param name="position">The encoded block position.</param>
         /// <param name="localX">The block's x-position, local to the group.</param>
         /// <param name="localY">The block's y-position, local to the group.</param>
-        public static void DecodePosition(DataToken position, out int localX, out int localY)
+        /// <returns></returns>
+        public static bool TryDecodePosition(DataToken position, out int localX, out int localY)
         {
             var parts = position.String.Split(',');
-            localX = int.Parse(parts[0]);
-            localY = int.Parse(parts[1]);
+            var xParsed = int.TryParse(parts[0], out localX);
+            var yParsed = int.TryParse(parts[1], out localY);
+            return xParsed && yParsed;
         }
 
         private static DataToken Key(int localX, int localY)
