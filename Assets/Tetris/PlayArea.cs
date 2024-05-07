@@ -26,6 +26,7 @@ namespace Tetris
             // Handle the current controlled block group
             HandleControlledBlockTick();
 
+            // If we placed a shape, load a new one
             if (controlledBlockGroup == null)
             {
                 LoadNextShape();
@@ -104,11 +105,12 @@ namespace Tetris
 
         public void MoveControlledGroup(int dX, int dY)
         {
-            Debug.Log($"MoveControlledGroup: <{dX}, {dY}>");
             if (controlledBlockGroup == null) return;
 
+            var blocks = controlledBlockGroup.GetBlocks();
+
             // Validate that the controlled group can move in the requested direction
-            foreach (var block in controlledBlockGroup.GetBlocks())
+            foreach (var block in blocks)
             {
                 if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
 
@@ -123,12 +125,19 @@ namespace Tetris
             }
 
             // Copy the group to the desired location
-            foreach (var block in controlledBlockGroup.GetBlocks())
+            var initialCount = Grid.GetBlocks().Length;
+            foreach (var block in blocks)
             {
                 if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
 
                 Grid[x, y] = null;
                 Grid[x + dX, y + dY] = block;
+            }
+
+            var finalCount = Grid.GetBlocks().Length;
+            if (finalCount != initialCount)
+            {
+                Debug.LogError($"MoveControlledGroup: Lost {initialCount - finalCount} blocks while moving");
             }
 
             // Move the group in the world space

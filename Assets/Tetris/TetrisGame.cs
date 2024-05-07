@@ -22,13 +22,6 @@ namespace Tetris
             // Set the owner to the first player in the instance for now
             Player = VRCPlayerApi.GetPlayerById(1);
             Player.Immobilize(true);
-
-            // Do a few ticks so we know things are working
-            for (var i = 0; i < 70; i++)
-            {
-                Debug.Log($"Current tick: {i}");
-                PlayArea.Tick();
-            }
         }
 
         /// <summary>
