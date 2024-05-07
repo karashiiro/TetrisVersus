@@ -26,6 +26,9 @@ namespace Tetris
             // Handle the current controlled block group
             HandleControlledBlockTick();
 
+            // Check if any lines were cleared
+            HandleLineClears();
+
             // If we placed a shape, load a new one
             if (controlledBlockGroup == null)
             {
@@ -142,6 +145,59 @@ namespace Tetris
 
             // Move the group in the world space
             controlledBlockGroup.Translate(new Vector2(dX, dY));
+        }
+
+        private void HandleLineClears()
+        {
+            var linesToRemove = new bool[Height];
+
+            // Check which lines should be removed
+            for (var y = 0; y < linesToRemove.Length; y++)
+            {
+                linesToRemove[y] = true;
+                for (var x = 0; x < Width; x++)
+                {
+                    if (Grid[x, y] == null)
+                    {
+                        linesToRemove[y] = false;
+                        break;
+                    }
+                }
+            }
+
+            // Remove all the cleared lines at once
+            for (var y = 0; y < linesToRemove.Length; y++)
+            {
+                if (linesToRemove[y])
+                {
+                    ClearLine(y);
+                }
+            }
+        }
+
+        private void ClearLine(int y)
+        {
+            Debug.Log($"ClearLine: {y}");
+            for (var x = 0; x < Width; x++)
+            {
+                var block = Grid[x, y];
+                if (block == null) continue;
+                Destroy(block.gameObject);
+                Grid[x, y] = null;
+            }
+            
+            // Move the blocks above the row down one space
+            for (var x = 0; x < Width; x++)
+            {
+                for (var checkY = y + 1; checkY < Height; checkY++)
+                {
+                    if (Grid[x, checkY] == null) continue;
+
+                    var block = Grid[x, checkY - 1] = Grid[x, checkY];
+                    block.transform.Translate(new Vector3(0, -1));
+                    Grid[x, checkY] = null;
+                }
+            }
         }
 
         private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX)
