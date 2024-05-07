@@ -99,20 +99,40 @@ namespace Tetris
             }
 
             // Now that we've determined that the entire group is still active, copy it down by one space
+            MoveControlledGroup(0, -1);
+        }
+
+        public void MoveControlledGroup(int dX, int dY)
+        {
+            Debug.Log($"MoveControlledGroup: <{dX}, {dY}>");
+            if (controlledBlockGroup == null) return;
+
+            // Validate that the controlled group can move in the requested direction
             foreach (var block in controlledBlockGroup.GetBlocks())
             {
                 if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
 
-                var nextBlock = Grid[x, y - 1];
-                if (y != 0 && nextBlock == null)
+                var targetX = x + dX;
+                var targetY = y + dY;
+                var nextBlock = Grid[targetX, targetY];
+                if (!IsIndexInBounds(targetX, targetY) || nextBlock != null && nextBlock.State == BlockState.AtRest)
                 {
-                    Grid[x, y] = null;
-                    Grid[x, y - 1] = block;
+                    // We're either at the edge of the grid, or there's a block where we want to go
+                    return;
                 }
             }
 
+            // Copy the group to the desired location
+            foreach (var block in controlledBlockGroup.GetBlocks())
+            {
+                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+
+                Grid[x, y] = null;
+                Grid[x + dX, y + dY] = block;
+            }
+
             // Move the group in the world space
-            controlledBlockGroup.Translate(Vector2.down);
+            controlledBlockGroup.Translate(new Vector2(dX, dY));
         }
 
         private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX)
@@ -122,6 +142,11 @@ namespace Tetris
                 BlockGroup.DecodePosition(pos, out var localX, out var localY);
                 Grid[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
             }
+        }
+
+        private static bool IsIndexInBounds(int x, int y)
+        {
+            return y >= 0 && y < Height && x >= 0 && x < Width;
         }
     }
 }

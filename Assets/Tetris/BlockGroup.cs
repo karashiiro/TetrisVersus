@@ -40,8 +40,8 @@ namespace Tetris
             // Encode the group-local position in the dictionary key
             var key = Key(localX, localY);
             var value = new DataToken(block);
-            group.Add(key, value);
-            groupPositions.Add(value, key);
+            group.SetValue(key, value);
+            groupPositions.SetValue(value, key);
         }
 
         /// <summary>
