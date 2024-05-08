@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using DataTokenExtensions;
+using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Data;
@@ -68,8 +69,7 @@ namespace Tetris
         public Block Get(int localX, int localY)
         {
             var key = Key(localX, localY);
-            if (!group.TryGetValue(key, TokenType.Reference, out var block)) return null;
-            return (Block)block.Reference;
+            return group.TryGetValue(key, TokenType.Reference, out var block) ? block.As<Block>() : null;
         }
 
         public bool TryGetPosition(Block block, out int localX, out int localY)
@@ -82,6 +82,22 @@ namespace Tetris
                    TryDecodePosition(positionToken, out localX, out localY);
         }
 
+        public void GetBounds(out int minX, out int minY, out int maxX, out int maxY)
+        {
+            // Set everything to 0 by default
+            minX = minY = maxX = maxY = 0;
+
+            // Find the bounds by iterating over the known positions
+            foreach (var pos in GetEncodedPositions())
+            {
+                if (!TryDecodePosition(pos, out var x, out var y)) continue;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+
         /// <summary>
         /// Sets the state of all blocks in the group.
         /// </summary>
@@ -90,7 +106,7 @@ namespace Tetris
         {
             foreach (var token in group.GetValues().ToArray())
             {
-                var block = (Block)token.Reference;
+                var block = token.As<Block>();
                 block.State = state;
             }
         }
@@ -144,7 +160,7 @@ namespace Tetris
             var blocks = new Block[tokens.Length];
             for (var i = 0; i < blocks.Length; i++)
             {
-                blocks[i] = (Block)tokens[i].Reference;
+                blocks[i] = tokens[i].As<Block>();
             }
 
             return blocks;

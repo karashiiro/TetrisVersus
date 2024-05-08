@@ -1,6 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using DataTokenExtensions;
+using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Data;
 
 namespace Tetris
 {
@@ -108,12 +111,55 @@ namespace Tetris
 
         public void MoveControlledGroup(int dX, int dY)
         {
-            if (controlledBlockGroup == null) return;
+            MoveGroup(controlledBlockGroup, dX, dY);
+        }
+        
+        private void MoveGroup(BlockGroup group, int dX, int dY)
+        {
+            if (group == null) return;
 
-            var blocks = controlledBlockGroup.GetBlocks();
+            // Validate that the group can move in the requested direction
+            if (!IsGroupMovementValid(group, dX, dY)) return;
 
-            // Validate that the controlled group can move in the requested direction
-            foreach (var block in blocks)
+            // Copy the group to the desired location, iterating along the direction
+            // of travel to avoid accidentally overwriting blocks
+            var initialCount = Grid.GetBlocks().Length;
+            group.GetBounds(out var minX, out var minY, out var maxX, out var maxY);
+
+            // Bottom to top
+            for (var localY = minY; localY <= maxY; localY++)
+            {
+                if (Math.Sign(dX) > 0)
+                {
+                    // Right to left
+                    for (var localX = maxX; localX >= minX; localX--)
+                    {
+                        MoveBlockData(group[localX, localY], dX, dY);
+                    }
+                }
+                else
+                {
+                    // Left to right
+                    for (var localX = minX; localX <= maxX; localX++)
+                    {
+                        MoveBlockData(group[localX, localY], dX, dY);
+                    }
+                }
+            }
+
+            var finalCount = Grid.GetBlocks().Length;
+            if (finalCount != initialCount)
+            {
+                Debug.LogError($"MoveGroup: Lost {initialCount - finalCount} blocks while moving");
+            }
+
+            // Move the group in the world space
+            group.Translate(new Vector2(dX, dY));
+        }
+
+        private bool IsGroupMovementValid(BlockGroup group, int dX, int dY)
+        {
+            foreach (var block in group.GetBlocks())
             {
                 if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
 
@@ -123,79 +169,76 @@ namespace Tetris
                 if (!IsIndexInBounds(targetX, targetY) || nextBlock != null && nextBlock.State == BlockState.AtRest)
                 {
                     // We're either at the edge of the grid, or there's a block where we want to go
-                    return;
+                    return false;
                 }
             }
 
-            // Copy the group to the desired location
-            var initialCount = Grid.GetBlocks().Length;
-            foreach (var block in blocks)
-            {
-                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+            return true;
+        }
 
-                Grid[x, y] = null;
-                Grid[x + dX, y + dY] = block;
-            }
-
-            var finalCount = Grid.GetBlocks().Length;
-            if (finalCount != initialCount)
-            {
-                Debug.LogError($"MoveControlledGroup: Lost {initialCount - finalCount} blocks while moving");
-            }
-
-            // Move the group in the world space
-            controlledBlockGroup.Translate(new Vector2(dX, dY));
+        private void MoveBlockData(Block block, int dX, int dY)
+        {
+            if (block == null || !Grid.TryGetPosition(block, out var x, out var y)) return;
+            Grid[x, y] = null;
+            Grid[x + dX, y + dY] = block;
         }
 
         private void HandleLineClears()
         {
-            var linesToRemove = new bool[Height];
+            var linesToRemove = new DataList();
 
             // Check which lines should be removed
-            for (var y = 0; y < linesToRemove.Length; y++)
+            for (var y = 0; y < Height; y++)
             {
-                linesToRemove[y] = true;
+                var shouldRemoveLine = true;
                 for (var x = 0; x < Width; x++)
                 {
-                    if (Grid[x, y] == null)
+                    if (Grid[x, y] == null || Grid[x, y].State != BlockState.AtRest)
                     {
-                        linesToRemove[y] = false;
+                        shouldRemoveLine = false;
                         break;
                     }
+                }
+
+                if (shouldRemoveLine)
+                {
+                    linesToRemove.Add(y);
                 }
             }
 
             // Remove all the cleared lines at once
-            for (var y = 0; y < linesToRemove.Length; y++)
-            {
-                if (linesToRemove[y])
-                {
-                    ClearLine(y);
-                }
-            }
+            var lines = linesToRemove.ToIntArray();
+            ClearLines(lines);
         }
 
-        private void ClearLine(int y)
+        private void ClearLines(int[] ys)
         {
-            Debug.Log($"ClearLine: {y}");
-            for (var x = 0; x < Width; x++)
+            foreach (var y in ys)
             {
-                var block = Grid[x, y];
-                if (block == null) continue;
-                Destroy(block.gameObject);
-                Grid[x, y] = null;
-            }
-            
-            // Move the blocks above the row down one space
-            for (var x = 0; x < Width; x++)
-            {
-                for (var checkY = y + 1; checkY < Height; checkY++)
+                Debug.Log($"ClearLine: {y}");
+                for (var x = 0; x < Width; x++)
                 {
-                    if (Grid[x, checkY] == null) continue;
+                    var block = Grid[x, y];
+                    if (block == null) continue;
+                    Destroy(block.gameObject);
+                    Grid[x, y] = null;
+                }
+            }
 
-                    var block = Grid[x, checkY - 1] = Grid[x, checkY];
-                    block.transform.Translate(new Vector3(0, -1));
-                    Grid[x, checkY] = null;
+            // Move the blocks above the cleared rows down one space
+            for (var i = ys.Length - 1; i >= 0; i--)
+            {
+                var y = ys[i];
+                for (var x = 0; x < Width; x++)
+                {
+                    for (var checkY = y + 1; checkY < Height; checkY++)
+                    {
+                        if (Grid[x, checkY] == null) continue;
+
+                        var block = Grid[x, checkY - 1] = Grid[x, checkY];
+                        block.transform.Translate(new Vector3(0, -1));
+                        Grid[x, checkY] = null;
+                    }
                 }
             }
         }
