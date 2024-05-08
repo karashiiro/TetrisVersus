@@ -17,7 +17,6 @@ namespace Tetris
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
         [field: SerializeField] public BlockGroup Grid { get; set; }
-
         [field: SerializeField] public Hold Hold { get; set; }
         [field: SerializeField] public Queue Queue { get; set; }
 
@@ -54,7 +53,7 @@ namespace Tetris
             var i = 0;
             while (!Queue.IsFull)
             {
-                var nextShape = BlockFactory.CreateSquare(i++ % 2 == 0 ? Color.red : Color.blue);
+                var nextShape = BlockFactory.CreateLeftL(i++ % 2 == 0 ? Color.red : Color.blue);
                 if (!Queue.Push(nextShape))
                 {
                     Destroy(nextShape.gameObject);
@@ -107,6 +106,24 @@ namespace Tetris
 
             // Now that we've determined that the entire group is still active, copy it down by one space
             MoveControlledGroup(0, -1);
+        }
+        
+        public void RotateControlledGroupLeft()
+        {
+            RotateGroup(controlledBlockGroup, 90);
+        }
+
+        public void RotateControlledGroupRight()
+        {
+            RotateGroup(controlledBlockGroup, -90);
+        }
+
+        private void RotateGroup(BlockGroup group, float angle)
+        {
+            if (group == null) return;
+
+            // TODO: Handle grid manipulation
+            group.Rotate(angle);
         }
 
         public void MoveControlledGroup(int dX, int dY)

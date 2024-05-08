@@ -53,6 +53,7 @@ namespace Tetris
         /// <summary>
         /// Creates a square tetra as a block group.
         /// </summary>
+        /// <param name="color"></param>
         /// <returns></returns>
         public BlockGroup CreateSquare(Color color)
         {
@@ -63,6 +64,26 @@ namespace Tetris
             CreateBlock(group, 0, 1);
             CreateBlock(group, 1, 0);
             CreateBlock(group, 1, 1);
+
+            group.SetColor(color);
+
+            return group;
+        }
+
+        /// <summary>
+        /// Creates a left L tetra as a block group.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public BlockGroup CreateLeftL(Color color)
+        {
+            var group = CreateBlockGroup();
+
+            // Create the blocks within the group
+            CreateBlock(group, 0, 0);
+            CreateBlock(group, 1, 0);
+            CreateBlock(group, 0, 1);
+            CreateBlock(group, 0, 2);
 
             group.SetColor(color);
 

@@ -25,6 +25,26 @@ namespace Tetris
         }
 
         /// <summary>
+        /// Block rotations, controlled with the controller triggers.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="args"></param>
+        public override void InputUse(bool value, UdonInputEventArgs args)
+        {
+            if (!value) return;
+
+            // TODO: Use different controls for KBM
+            if (args.handType == HandType.LEFT)
+            {
+                PlayArea.RotateControlledGroupLeft();
+            }
+            else
+            {
+                PlayArea.RotateControlledGroupRight();
+            }
+        }
+
+        /// <summary>
         /// Horizontal block movement - supports left/right controls.
         /// </summary>
         /// <param name="value"></param>

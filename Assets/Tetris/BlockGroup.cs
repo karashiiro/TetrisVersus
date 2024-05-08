@@ -11,6 +11,8 @@ namespace Tetris
         private readonly DataDictionary group = new DataDictionary();
         private readonly DataDictionary groupPositions = new DataDictionary();
 
+        private float orientation;
+
         [CanBeNull]
         public Block this[int x, int y]
         {
@@ -128,7 +130,19 @@ namespace Tetris
         /// <param name="translation">The translation vector.</param>
         public void Translate(Vector2 translation)
         {
-            transform.Translate(new Vector3(translation.x, translation.y));
+            var rotatedTranslation = Quaternion.AngleAxis(-orientation, Vector3.forward) *
+                                     new Vector3(translation.x, translation.y);
+            transform.Translate(rotatedTranslation);
+        }
+
+        /// <summary>
+        /// Rotates the entire group of blocks according to the provided angle.
+        /// </summary>
+        /// <param name="angle"></param>
+        public void Rotate(float angle)
+        {
+            transform.Rotate(Vector3.forward, angle, Space.Self);
+            orientation = (orientation + angle) % 360;
         }
 
         /// <summary>
