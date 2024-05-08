@@ -215,7 +215,7 @@ namespace Tetris
         {
             foreach (var y in ys)
             {
-                Debug.Log($"ClearLine: {y}");
+                Debug.Log($"ClearLines: {y}");
                 for (var x = 0; x < Width; x++)
                 {
                     var block = Grid[x, y];
