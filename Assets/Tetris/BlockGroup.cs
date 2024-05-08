@@ -139,7 +139,7 @@ namespace Tetris
         {
             foreach (var token in group.GetValues().ToArray())
             {
-                var block = (Block)token.Reference;
+                var block = token.As<Block>();
                 block.SetColor(color);
             }
         }
