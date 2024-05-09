@@ -3,6 +3,7 @@ using DataTokenExtensions;
 using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
+using VectorExtensions;
 using VRC.SDK3.Data;
 
 namespace Tetris
@@ -11,7 +12,7 @@ namespace Tetris
     {
         private const int Width = 10;
         private const int LimitHeight = 20;
-        private const int Height = LimitHeight + 2;
+        private const int Height = LimitHeight + 4;
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
@@ -36,6 +37,9 @@ namespace Tetris
             {
                 LoadNextShape();
             }
+
+            // Re-parent stray blocks - useful for seeing discrepancies between world positions and raw data
+            Grid.ClaimUncontrolledBlocks();
         }
 
         private void LoadNextShape()
@@ -92,7 +96,8 @@ namespace Tetris
             // Validate that the group is still active going into the next tick
             foreach (var block in controlledBlockGroup.GetBlocks())
             {
-                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+                if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(HandleControlledBlockTick)))
+                    continue;
 
                 var nextBlock = Grid[x, y - 1];
                 if (y == 0 || nextBlock != null && nextBlock.State == BlockState.AtRest)
@@ -107,7 +112,7 @@ namespace Tetris
             // Now that we've determined that the entire group is still active, copy it down by one space
             MoveControlledGroup(0, -1);
         }
-        
+
         public void RotateControlledGroupLeft()
         {
             RotateGroup(controlledBlockGroup, 90);
@@ -122,7 +127,37 @@ namespace Tetris
         {
             if (group == null) return;
 
-            // TODO: Handle grid manipulation
+            // Validate that the group can rotate in the requested direction
+            if (!IsGroupMovementValid(group, angle))
+            {
+                Debug.Log("RotateGroup: Cannot move");
+                return;
+            }
+
+            // Copy the group to the desired location
+            var blocks = group.GetBlocks();
+            var originalPositions = Grid.GetEncodedPositionsForBlocks(blocks);
+            for (var i = 0; i < blocks.Length; i++)
+            {
+                if (!Grid.TryDecodePosition(originalPositions[i], out var x, out var y)) continue;
+                Grid[x, y] = null;
+            }
+
+            for (var i = 0; i < blocks.Length; i++)
+            {
+                if (!group.TryGetPositionAbsolute(blocks[i], out var localX, out var localY)) continue;
+                if (!Grid.TryDecodePosition(originalPositions[i], out var x, out var y)) continue;
+
+                var position = new Vector2(localX, localY);
+                var displacement = position.Rotate(angle) - position;
+
+                var targetX = x + Convert.ToInt32(displacement.x);
+                var targetY = y + Convert.ToInt32(displacement.y);
+                Debug.Log($"Setting <{targetX}, {targetY}> in grid");
+                Grid[targetX, targetY] = blocks[i];
+            }
+
+            // Rotate the group in world space
             group.Rotate(angle);
         }
 
@@ -130,60 +165,67 @@ namespace Tetris
         {
             MoveGroup(controlledBlockGroup, dX, dY);
         }
-        
+
         private void MoveGroup(BlockGroup group, int dX, int dY)
         {
             if (group == null) return;
 
             // Validate that the group can move in the requested direction
-            if (!IsGroupMovementValid(group, dX, dY)) return;
-
-            // Copy the group to the desired location, iterating along the direction
-            // of travel to avoid accidentally overwriting blocks
-            var initialCount = Grid.GetBlocks().Length;
-            group.GetBounds(out var minX, out var minY, out var maxX, out var maxY);
-
-            // Bottom to top
-            for (var localY = minY; localY <= maxY; localY++)
+            if (!IsGroupMovementValid(group, dX, dY))
             {
-                if (Math.Sign(dX) > 0)
-                {
-                    // Right to left
-                    for (var localX = maxX; localX >= minX; localX--)
-                    {
-                        MoveBlockData(group[localX, localY], dX, dY);
-                    }
-                }
-                else
-                {
-                    // Left to right
-                    for (var localX = minX; localX <= maxX; localX++)
-                    {
-                        MoveBlockData(group[localX, localY], dX, dY);
-                    }
-                }
+                Debug.Log("MoveGroup: Cannot move");
+                return;
             }
 
-            var finalCount = Grid.GetBlocks().Length;
-            if (finalCount != initialCount)
+            // Copy the group to the desired location
+            var blocks = group.GetBlocks();
+            var originalPositions = Grid.GetEncodedPositionsForBlocks(blocks);
+            for (var i = 0; i < blocks.Length; i++)
             {
-                Debug.LogError($"MoveGroup: Lost {initialCount - finalCount} blocks while moving");
+                if (!Grid.TryDecodePosition(originalPositions[i], out var x, out var y)) continue;
+                Grid[x, y] = null;
             }
 
-            // Move the group in the world space
+            for (var i = 0; i < blocks.Length; i++)
+            {
+                if (!Grid.TryDecodePosition(originalPositions[i], out var x, out var y)) continue;
+                Grid[x + dX, y + dY] = blocks[i];
+            }
+
+            // Move the group in world space
             group.Translate(new Vector2(dX, dY));
+        }
+
+        private bool IsGroupMovementValid(BlockGroup group, float angle)
+        {
+            foreach (var block in group.GetBlocks())
+            {
+                // Rotate the local position of the block to get displacements, then validate those displacements
+                if (!group.TryGetPositionAbsolute(block, out var localX, out var localY,
+                        caller: nameof(IsGroupMovementValid)))
+                {
+                    Debug.LogError("IsGroupMovementValid: Could not get absolute block position in group");
+                    return false;
+                }
+
+                var position = new Vector2(localX, localY);
+                var displacement = position.Rotate(angle) - position;
+                if (!IsBlockMovementValid(block, Convert.ToInt32(displacement.x), Convert.ToInt32(displacement.y)))
+                {
+                    Debug.Log(
+                        $"IsGroupMovementValid: Movement from local position {position} to {position + displacement} is invalid");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private bool IsGroupMovementValid(BlockGroup group, int dX, int dY)
         {
             foreach (var block in group.GetBlocks())
             {
-                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
-
-                var targetX = x + dX;
-                var targetY = y + dY;
-                var nextBlock = Grid[targetX, targetY];
-                if (!IsIndexInBounds(targetX, targetY) || nextBlock != null && nextBlock.State == BlockState.AtRest)
+                if (!IsBlockMovementValid(block, dX, dY))
                 {
                     // We're either at the edge of the grid, or there's a block where we want to go
                     return false;
@@ -193,11 +235,36 @@ namespace Tetris
             return true;
         }
 
-        private void MoveBlockData(Block block, int dX, int dY)
+        private bool IsBlockMovementValid(Block block, int dX, int dY)
         {
-            if (block == null || !Grid.TryGetPosition(block, out var x, out var y)) return;
-            Grid[x, y] = null;
-            Grid[x + dX, y + dY] = block;
+            if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(IsBlockMovementValid)))
+            {
+                Debug.LogError("IsBlockMovementValid: Could not get block position");
+                return false;
+            }
+
+            var targetX = x + dX;
+            var targetY = y + dY;
+            if (!IsIndexInBounds(targetX, targetY))
+            {
+                Debug.Log($"IsBlockMovementValid: Destination <{targetX}, {targetY}> is out of bounds");
+                return false;
+            }
+
+            if (!IsLocationAvailable(targetX, targetY))
+            {
+                Debug.Log(
+                    $"IsBlockMovementValid: Destination <{targetX}, {targetY}> is occupied by another resting block");
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsLocationAvailable(int x, int y)
+        {
+            var existingBlock = Grid[x, y];
+            return existingBlock == null || existingBlock.State != BlockState.AtRest;
         }
 
         private void HandleLineClears()
@@ -264,7 +331,7 @@ namespace Tetris
         {
             foreach (var pos in group.GetEncodedPositions())
             {
-                if (!BlockGroup.TryDecodePosition(pos, out var localX, out var localY)) continue;
+                if (!group.TryDecodePosition(pos, out var localX, out var localY)) continue;
                 Grid[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
             }
         }

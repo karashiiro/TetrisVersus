@@ -1,5 +1,6 @@
 ﻿using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Data;
 
 namespace Tetris
 {
@@ -9,14 +10,16 @@ namespace Tetris
 
         public BlockState State { get; set; }
 
+        public DataToken Token => new DataToken(this);
+
         /// <summary>
-        /// Translates the block according to the provided movement vector. The block should
+        /// Sets the position of the block according to the provided position vector. The block should
         /// have a scale of 1 relative to its parent.
         /// </summary>
-        /// <param name="movement">The movement vector.</param>
-        public void Move(Vector2 movement)
+        /// <param name="position">The position vector.</param>
+        public void SetPosition(Vector2 position)
         {
-            transform.SetLocalPositionAndRotation(new Vector3(movement.x, movement.y), Quaternion.identity);
+            transform.SetLocalPositionAndRotation(new Vector3(position.x, position.y), Quaternion.identity);
         }
 
         /// <summary>

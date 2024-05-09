@@ -1,7 +1,9 @@
-﻿using DataTokenExtensions;
+﻿using System;
+using DataTokenExtensions;
 using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
+using VectorExtensions;
 using VRC.SDK3.Data;
 
 namespace Tetris
@@ -30,6 +32,15 @@ namespace Tetris
             }
         }
 
+        private void OnTransformChildrenChanged()
+        {
+            // Clean up block groups when all of their children are destroyed
+            if (transform.childCount == 0)
+            {
+                Destroy(gameObject);
+            }
+        }
+
         /// <summary>
         /// Adds a block to the block group.
         /// </summary>
@@ -42,7 +53,7 @@ namespace Tetris
 
             // Encode the group-local position in the dictionary key
             var key = Key(localX, localY);
-            var value = new DataToken(block);
+            var value = block.Token;
             group.SetValue(key, value);
             groupPositions.SetValue(value, key);
         }
@@ -74,29 +85,52 @@ namespace Tetris
             return group.TryGetValue(key, TokenType.Reference, out var block) ? block.As<Block>() : null;
         }
 
-        public bool TryGetPosition(Block block, out int localX, out int localY)
+        public bool TryGetPosition(Block block, out int localX, out int localY, string caller = "unknown")
         {
             localX = -1;
             localY = -1;
 
-            var blockToken = new DataToken(block);
-            return groupPositions.TryGetValue(blockToken, TokenType.String, out var positionToken) &&
-                   TryDecodePosition(positionToken, out localX, out localY);
+            if (!groupPositions.TryGetValue(block.Token, TokenType.String, out var positionToken))
+            {
+                Debug.LogWarning($"TryGetPosition({caller}): Failed to get position token for block: {positionToken}");
+                return false;
+            }
+
+            return TryDecodePosition(positionToken, out localX, out localY);
         }
 
-        public void GetBounds(out int minX, out int minY, out int maxX, out int maxY)
+        public bool TryGetPositionAbsolute(Block block, out int localX, out int localY, string caller = "unknown")
         {
-            // Set everything to 0 by default
-            minX = minY = maxX = maxY = 0;
+            localX = -1;
+            localY = -1;
 
-            // Find the bounds by iterating over the known positions
-            foreach (var pos in GetEncodedPositions())
+            if (!groupPositions.TryGetValue(block.Token, TokenType.String, out var positionToken))
             {
-                if (!TryDecodePosition(pos, out var x, out var y)) continue;
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
+                Debug.LogWarning(
+                    $"TryGetPositionAbsolute({caller}): Failed to get position token for block: {positionToken}");
+                return false;
+            }
+
+            return TryDecodePositionAbsolute(positionToken, out localX, out localY);
+        }
+
+        /// <summary>
+        /// Sets this group as the parent of all uncontrolled blocks stored within it, and updates
+        /// their positions accordingly.
+        /// </summary>
+        public void ClaimUncontrolledBlocks()
+        {
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+                if (block.State == BlockState.Controlled) continue;
+
+                block.transform.SetParent(transform, true);
+
+                if (TryGetPosition(block, out var x, out var y, caller: nameof(ClaimUncontrolledBlocks)))
+                {
+                    block.SetPosition(new Vector2(x, y));
+                }
             }
         }
 
@@ -168,6 +202,29 @@ namespace Tetris
             return group.GetKeys().ToArray();
         }
 
+        /// <summary>
+        /// Retrieves the encoded positions of all blocks provided. Use <see cref="TryDecodePosition"/>
+        /// to retrieve the decoded block positions. All provided blocks are expected to be in the group.
+        /// </summary>
+        /// <param name="blocks">The blocks to get positions for.</param>
+        /// <returns></returns>
+        public DataToken[] GetEncodedPositionsForBlocks(Block[] blocks)
+        {
+            var positions = new DataToken[blocks.Length];
+            for (var i = 0; i < blocks.Length; i++)
+            {
+                positions[i] = groupPositions[blocks[i].Token];
+                if (!groupPositions.TryGetValue(blocks[i].Token, TokenType.String, out var position))
+                {
+                    Debug.LogError($"GetEncodedPositionsForBlocks: Failed to decode block position: {position}");
+                }
+
+                positions[i] = position;
+            }
+
+            return positions;
+        }
+
         public Block[] GetBlocks()
         {
             var tokens = group.GetValues().ToArray();
@@ -184,15 +241,32 @@ namespace Tetris
         /// Decodes the provided encoded block position into raw positional values, relative to the group.
         /// </summary>
         /// <param name="position">The encoded block position.</param>
-        /// <param name="localX">The block's x-position, local to the group.</param>
-        /// <param name="localY">The block's y-position, local to the group.</param>
+        /// <param name="localX">The block's x-position, relative to the group.</param>
+        /// <param name="localY">The block's y-position, relative to the group.</param>
         /// <returns></returns>
-        public static bool TryDecodePosition(DataToken position, out int localX, out int localY)
+        public bool TryDecodePosition(DataToken position, out int localX, out int localY)
         {
             var parts = position.String.Split(',');
             var xParsed = int.TryParse(parts[0], out localX);
             var yParsed = int.TryParse(parts[1], out localY);
             return xParsed && yParsed;
+        }
+
+        /// <summary>
+        /// Decodes the provided encoded block position into raw positional values, relative to the world.
+        /// </summary>
+        /// <param name="position">The encoded block position.</param>
+        /// <param name="x">The block's x-position, relative to the world.</param>
+        /// <param name="y">The block's y-position, relative to the world.</param>
+        /// <returns></returns>
+        public bool TryDecodePositionAbsolute(DataToken position, out int x, out int y)
+        {
+            x = y = -1;
+            if (!TryDecodePosition(position, out var localX, out var localY)) return false;
+            var adjusted = new Vector2(localX, localY).Rotate(orientation);
+            x = Convert.ToInt32(adjusted.x);
+            y = Convert.ToInt32(adjusted.y);
+            return true;
         }
 
         private static DataToken Key(int localX, int localY)
