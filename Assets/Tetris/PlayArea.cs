@@ -12,7 +12,8 @@ namespace Tetris
     {
         private const int Width = 10;
         private const int LimitHeight = 20;
-        private const int Height = LimitHeight + 4;
+        private const int BufferHeight = 20;
+        private const int Height = LimitHeight + BufferHeight;
 
         private readonly DataDictionary palette = new DataDictionary
         {
