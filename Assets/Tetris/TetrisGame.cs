@@ -33,7 +33,6 @@ namespace Tetris
         {
             if (!value) return;
 
-            // TODO: Use different controls for KBM
             if (args.handType == HandType.LEFT)
             {
                 PlayArea.RotateControlledGroupLeft();
@@ -54,9 +53,6 @@ namespace Tetris
             var sign = Math.Sign(value);
             if (sign == 0) return;
             PlayArea.MoveControlledGroup(sign, 0);
-
-            // TODO: Run ticks on a scheduler instead of here
-            PlayArea.Tick();
         }
 
         /// <summary>
@@ -69,9 +65,6 @@ namespace Tetris
             var sign = Math.Sign(value);
             if (sign != -1) return;
             PlayArea.MoveControlledGroup(0, sign);
-
-            // TODO: Run ticks on a scheduler instead of here
-            PlayArea.Tick();
         }
     }
 }

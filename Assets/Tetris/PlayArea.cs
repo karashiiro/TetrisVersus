@@ -29,6 +29,9 @@ namespace Tetris
         private ShapeType[] randomBag;
         private int randomBagIndex = RandomGenerator.SequenceLength - 1;
 
+        private decimal gravityPerTick = 1m / 32;
+        private decimal gravityProgress = 0;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
@@ -46,9 +49,16 @@ namespace Tetris
         {
             // Refill the queue immediately in case we just started
             RefillQueue();
+            
+            // Increment gravity progress
+            gravityProgress += gravityPerTick;
 
-            // Handle the current controlled block group
-            HandleControlledBlockTick();
+            // Do updates for the current controlled block group
+            while (gravityProgress >= 1)
+            {
+                HandleControlledBlockGravity();
+                gravityProgress--;
+            }
 
             // Re-parent stray blocks - useful for seeing discrepancies between world positions and raw data
             Grid.ClaimUncontrolledBlocks();
@@ -115,16 +125,16 @@ namespace Tetris
         /// <summary>
         /// Fall by one space. The entire group of blocks should move as a single entity.
         /// If any blocks in the group have an at-rest block beneath them, then mark the
-        /// group as at-rest and end the tick.
+        /// group as at-rest and end the call.
         /// </summary>
-        private void HandleControlledBlockTick()
+        private void HandleControlledBlockGravity()
         {
             if (controlledBlockGroup == null) return;
 
             // Validate that the group is still active going into the next tick
             foreach (var block in controlledBlockGroup.GetBlocks())
             {
-                if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(HandleControlledBlockTick)))
+                if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(HandleControlledBlockGravity)))
                     continue;
 
                 var nextBlock = Grid[x, y - 1];
