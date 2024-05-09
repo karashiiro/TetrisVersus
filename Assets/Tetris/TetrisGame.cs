@@ -17,7 +17,7 @@ namespace Tetris
             Player = player;
         }
 
-        private void Start()
+        private void Awake()
         {
             // Set the owner to the first player in the instance for now
             Player = VRCPlayerApi.GetPlayerById(1);

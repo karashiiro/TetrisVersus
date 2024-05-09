@@ -26,12 +26,21 @@ namespace Tetris
             { ShapeType.RightL.GetToken(), new DataToken(Color.blue) },
         };
 
+        private ShapeType[] randomBag;
+        private int randomBagIndex = RandomGenerator.SequenceLength - 1;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
         [field: SerializeField] public BlockGroup Grid { get; set; }
         [field: SerializeField] public Hold Hold { get; set; }
         [field: SerializeField] public Queue Queue { get; set; }
+
+        private void Start()
+        {
+            Debug.Log("Initializing play area");
+            randomBag = RandomGenerator.NewSequence(out randomBagIndex);
+        }
 
         public void Tick()
         {
@@ -68,7 +77,7 @@ namespace Tetris
         {
             while (!Queue.IsFull)
             {
-                var nextShapeType = ShapeTypeHelpers.GetRandom();
+                var nextShapeType = RandomGenerator.GetNextShape(randomBag, ref randomBagIndex);
                 if (!palette.TryGetValue(nextShapeType.GetToken(), TokenType.Reference, out var colorToken))
                 {
                     Debug.LogError($"RefillQueue: Failed to get color for shape: {nextShapeType}");
@@ -149,7 +158,6 @@ namespace Tetris
             // Validate that the group can rotate in the requested direction
             if (!IsGroupMovementValid(group, angle))
             {
-                Debug.Log("RotateGroup: Cannot move");
                 return;
             }
 
@@ -172,7 +180,6 @@ namespace Tetris
 
                 var targetX = x + Convert.ToInt32(displacement.x);
                 var targetY = y + Convert.ToInt32(displacement.y);
-                Debug.Log($"Setting <{targetX}, {targetY}> in grid");
                 Grid[targetX, targetY] = blocks[i];
             }
 
@@ -192,7 +199,6 @@ namespace Tetris
             // Validate that the group can move in the requested direction
             if (!IsGroupMovementValid(group, dX, dY))
             {
-                Debug.Log("MoveGroup: Cannot move");
                 return;
             }
 
