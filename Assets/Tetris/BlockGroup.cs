@@ -3,7 +3,7 @@ using DataTokenExtensions;
 using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
-using VectorExtensions;
+using UnityExtensions;
 using VRC.SDK3.Data;
 
 namespace Tetris
@@ -85,10 +85,12 @@ namespace Tetris
             return group.TryGetValue(key, TokenType.Reference, out var block) ? block.As<Block>() : null;
         }
 
-        public bool TryGetPosition(Block block, out int localX, out int localY, string caller = "unknown")
+        public bool TryGetPosition([CanBeNull] Block block, out int localX, out int localY, string caller = "unknown")
         {
             localX = -1;
             localY = -1;
+
+            if (block == null) return false;
 
             if (!groupPositions.TryGetValue(block.Token, TokenType.String, out var positionToken))
             {
@@ -99,10 +101,13 @@ namespace Tetris
             return TryDecodePosition(positionToken, out localX, out localY);
         }
 
-        public bool TryGetPositionAbsolute(Block block, out int localX, out int localY, string caller = "unknown")
+        public bool TryGetPositionAbsolute([CanBeNull] Block block, out int localX, out int localY,
+            string caller = "unknown")
         {
             localX = -1;
             localY = -1;
+
+            if (block == null) return false;
 
             if (!groupPositions.TryGetValue(block.Token, TokenType.String, out var positionToken))
             {

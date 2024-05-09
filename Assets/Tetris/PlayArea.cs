@@ -3,7 +3,7 @@ using DataTokenExtensions;
 using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
-using VectorExtensions;
+using UnityExtensions;
 using VRC.SDK3.Data;
 
 namespace Tetris
@@ -13,6 +13,17 @@ namespace Tetris
         private const int Width = 10;
         private const int LimitHeight = 20;
         private const int Height = LimitHeight + 4;
+
+        private readonly DataDictionary palette = new DataDictionary
+        {
+            { ShapeType.Square.GetToken(), new DataToken(Color.yellow) },
+            { ShapeType.Straight.GetToken(), new DataToken(Color.cyan) },
+            { ShapeType.LeftSkew.GetToken(), new DataToken(Color.green) },
+            { ShapeType.RightSkew.GetToken(), new DataToken(Color.red) },
+            { ShapeType.T.GetToken(), new DataToken(Color.magenta) },
+            { ShapeType.LeftL.GetToken(), new DataToken(PaletteHelpers.FromHex("ff7425")) },
+            { ShapeType.RightL.GetToken(), new DataToken(Color.blue) },
+        };
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
@@ -54,10 +65,17 @@ namespace Tetris
 
         private void RefillQueue()
         {
-            var i = 0;
             while (!Queue.IsFull)
             {
-                var nextShape = BlockFactory.CreateLeftL(i++ % 2 == 0 ? Color.red : Color.blue);
+                var nextShapeType = ShapeTypeHelpers.GetRandom();
+                if (!palette.TryGetValue(nextShapeType.GetToken(), TokenType.Reference, out var colorToken))
+                {
+                    Debug.LogError($"RefillQueue: Failed to get color for shape: {nextShapeType}");
+                    colorToken = new DataToken(Color.grey);
+                }
+
+                var nextColor = colorToken.As<Color>();
+                var nextShape = BlockFactory.CreateShape(nextShapeType, nextColor);
                 if (!Queue.Push(nextShape))
                 {
                     Destroy(nextShape.gameObject);
