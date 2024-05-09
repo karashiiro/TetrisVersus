@@ -40,6 +40,9 @@ namespace Tetris
             // Handle the current controlled block group
             HandleControlledBlockTick();
 
+            // Re-parent stray blocks - useful for seeing discrepancies between world positions and raw data
+            Grid.ClaimUncontrolledBlocks();
+
             // Check if any lines were cleared
             HandleLineClears();
 
@@ -48,9 +51,6 @@ namespace Tetris
             {
                 LoadNextShape();
             }
-
-            // Re-parent stray blocks - useful for seeing discrepancies between world positions and raw data
-            Grid.ClaimUncontrolledBlocks();
         }
 
         private void LoadNextShape()
