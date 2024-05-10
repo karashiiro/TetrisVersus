@@ -3,13 +3,13 @@
     public enum ShapeType
     {
         MinValue,
-        Square = MinValue,
-        Straight,
-        LeftSkew,
-        RightSkew,
+        O = MinValue,
+        I,
+        S,
+        Z,
         T,
-        LeftL,
-        RightL,
-        MaxValue = RightL,
+        L,
+        J,
+        MaxValue = J,
     }
 }

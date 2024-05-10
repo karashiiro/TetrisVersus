@@ -25,7 +25,7 @@ namespace Tetris
             if (shapes == null)
             {
                 Debug.LogError("GetNextShape: Shape buffer is null.");
-                return ShapeType.Square;
+                return ShapeType.O;
             }
 
             if (currentIndex == -1)

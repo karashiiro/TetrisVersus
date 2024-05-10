@@ -19,13 +19,13 @@ namespace Tetris
 
         private readonly DataDictionary palette = new DataDictionary
         {
-            { ShapeType.Square.GetToken(), new DataToken(Color.yellow) },
-            { ShapeType.Straight.GetToken(), new DataToken(Color.cyan) },
-            { ShapeType.LeftSkew.GetToken(), new DataToken(Color.green) },
-            { ShapeType.RightSkew.GetToken(), new DataToken(Color.red) },
+            { ShapeType.O.GetToken(), new DataToken(Color.yellow) },
+            { ShapeType.I.GetToken(), new DataToken(Color.cyan) },
+            { ShapeType.S.GetToken(), new DataToken(Color.green) },
+            { ShapeType.Z.GetToken(), new DataToken(Color.red) },
             { ShapeType.T.GetToken(), new DataToken(Color.magenta) },
-            { ShapeType.LeftL.GetToken(), new DataToken(PaletteHelpers.FromHex("ff7425")) },
-            { ShapeType.RightL.GetToken(), new DataToken(Color.blue) },
+            { ShapeType.L.GetToken(), new DataToken(PaletteHelpers.FromHex("ff7425")) },
+            { ShapeType.J.GetToken(), new DataToken(Color.blue) },
         };
 
         private ShapeType[] randomBag;

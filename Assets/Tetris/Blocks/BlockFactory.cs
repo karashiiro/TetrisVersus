@@ -51,11 +51,11 @@ namespace Tetris.Blocks
         }
 
         /// <summary>
-        /// Creates a straight tetra as a block group.
+        /// Creates an I tetronimo as a block group.
         /// </summary>
         /// <param name="color"></param>
         /// <returns></returns>
-        public BlockGroup CreateStraight(Color color)
+        public BlockGroup CreateI(Color color)
         {
             var group = CreateBlockGroup();
 
@@ -71,7 +71,7 @@ namespace Tetris.Blocks
         }
 
         /// <summary>
-        /// Creates a T tetra as a block group.
+        /// Creates a T tetronimo as a block group.
         /// </summary>
         /// <param name="color"></param>
         /// <returns></returns>
@@ -82,8 +82,8 @@ namespace Tetris.Blocks
             // Create the blocks within the group
             CreateBlock(group, -1, 0);
             CreateBlock(group, 0, 0);
-            CreateBlock(group, 1, 0);
             CreateBlock(group, 0, 1);
+            CreateBlock(group, 1, 0);
 
             group.SetColor(color);
 
@@ -91,11 +91,11 @@ namespace Tetris.Blocks
         }
 
         /// <summary>
-        /// Creates a square tetra as a block group.
+        /// Creates an O tetronimo as a block group.
         /// </summary>
         /// <param name="color"></param>
         /// <returns></returns>
-        public BlockGroup CreateSquare(Color color)
+        public BlockGroup CreateO(Color color)
         {
             var group = CreateBlockGroup();
 
@@ -111,11 +111,11 @@ namespace Tetris.Blocks
         }
 
         /// <summary>
-        /// Creates a left skew (S) tetra as a block group.
+        /// Creates an S tetronimo as a block group.
         /// </summary>
         /// <param name="color"></param>
         /// <returns></returns>
-        public BlockGroup CreateLeftSkew(Color color)
+        public BlockGroup CreateS(Color color)
         {
             var group = CreateBlockGroup();
 
@@ -131,11 +131,11 @@ namespace Tetris.Blocks
         }
 
         /// <summary>
-        /// Creates a right skew (Z) tetra as a block group.
+        /// Creates a Z tetronimo as a block group.
         /// </summary>
         /// <param name="color"></param>
         /// <returns></returns>
-        public BlockGroup CreateRightSkew(Color color)
+        public BlockGroup CreateZ(Color color)
         {
             var group = CreateBlockGroup();
 
@@ -151,31 +151,11 @@ namespace Tetris.Blocks
         }
 
         /// <summary>
-        /// Creates a left L (L) tetra as a block group.
+        /// Creates an L tetronimo as a block group.
         /// </summary>
         /// <param name="color"></param>
         /// <returns></returns>
-        public BlockGroup CreateLeftL(Color color)
-        {
-            var group = CreateBlockGroup();
-
-            // Create the blocks within the group
-            CreateBlock(group, -1, 1);
-            CreateBlock(group, -1, 0);
-            CreateBlock(group, 0, 0);
-            CreateBlock(group, 1, 0);
-
-            group.SetColor(color);
-
-            return group;
-        }
-
-        /// <summary>
-        /// Creates a right L (J) tetra as a block group.
-        /// </summary>
-        /// <param name="color"></param>
-        /// <returns></returns>
-        public BlockGroup CreateRightL(Color color)
+        public BlockGroup CreateL(Color color)
         {
             var group = CreateBlockGroup();
 
@@ -184,6 +164,26 @@ namespace Tetris.Blocks
             CreateBlock(group, 0, 0);
             CreateBlock(group, 1, 0);
             CreateBlock(group, 1, 1);
+
+            group.SetColor(color);
+
+            return group;
+        }
+
+        /// <summary>
+        /// Creates a J tetronimo as a block group.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public BlockGroup CreateJ(Color color)
+        {
+            var group = CreateBlockGroup();
+
+            // Create the blocks within the group
+            CreateBlock(group, -1, 1);
+            CreateBlock(group, -1, 0);
+            CreateBlock(group, 0, 0);
+            CreateBlock(group, 1, 0);
 
             group.SetColor(color);
 
@@ -194,20 +194,20 @@ namespace Tetris.Blocks
         {
             switch (type)
             {
-                case ShapeType.Square:
-                    return CreateSquare(color);
-                case ShapeType.Straight:
-                    return CreateStraight(color);
-                case ShapeType.LeftSkew:
-                    return CreateLeftSkew(color);
-                case ShapeType.RightSkew:
-                    return CreateRightSkew(color);
+                case ShapeType.O:
+                    return CreateO(color);
+                case ShapeType.I:
+                    return CreateI(color);
+                case ShapeType.S:
+                    return CreateS(color);
+                case ShapeType.Z:
+                    return CreateZ(color);
                 case ShapeType.T:
                     return CreateT(color);
-                case ShapeType.LeftL:
-                    return CreateLeftL(color);
-                case ShapeType.RightL:
-                    return CreateRightL(color);
+                case ShapeType.L:
+                    return CreateL(color);
+                case ShapeType.J:
+                    return CreateJ(color);
                 default:
                     Debug.LogError($"CreateShape: Unrecognized shape type provided: {type}");
                     return null;
