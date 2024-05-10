@@ -13,12 +13,14 @@ namespace Tetris.Timers
         [field: SerializeField] public PlayArea PlayArea { get; set; }
         [field: SerializeField] public LockTimer LockTimer { get; set; }
         [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
+        [field: SerializeField] public EntryDelayTimer EntryDelayTimer { get; set; }
 
         private void Awake()
         {
             if (PlayArea == null) Debug.LogError("TickDriver.Awake: PlayArea is null.");
             if (LockTimer == null) Debug.LogError("TickDriver.Awake: LockTimer is null.");
             if (AutoRepeatTimer == null) Debug.LogError("TickDriver.Awake: AutoRepeatTimer is null.");
+            if (EntryDelayTimer == null) Debug.LogError("TickDriver.Awake: EntryDelayTimer is null.");
         }
 
         private void FixedUpdate()
@@ -27,6 +29,7 @@ namespace Tetris.Timers
 
             while (elapsedTime >= MinInterval)
             {
+                EntryDelayTimer.Tick();
                 AutoRepeatTimer.Tick();
                 LockTimer.Tick();
                 PlayArea.Tick();

@@ -40,7 +40,7 @@ namespace Tetris.Timers
             }
         }
 
-        public void EnableTimerWithDirection(AutoRepeatDirection direction)
+        public void BeginTimerWithDirection(AutoRepeatDirection direction)
         {
             autoRepeatDirection = direction;
             dasEnabled = true;

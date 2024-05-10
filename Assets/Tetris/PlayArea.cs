@@ -37,9 +37,6 @@ namespace Tetris
 
         private bool softDropEnabled;
 
-        private const int EntryDelayThreshold = 6;
-        private int entryDelayProgress;
-
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
@@ -48,6 +45,7 @@ namespace Tetris
         [field: SerializeField] public Queue Queue { get; set; }
         [field: SerializeField] public LockTimer LockTimer { get; set; }
         [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
+        [field: SerializeField] public EntryDelayTimer EntryDelayTimer { get; set; }
 
         private void Awake()
         {
@@ -57,6 +55,7 @@ namespace Tetris
             if (Queue == null) Debug.LogError("PlayArea.Awake: Queue is null.");
             if (LockTimer == null) Debug.LogError("PlayArea.Awake: LockTimer is null.");
             if (AutoRepeatTimer == null) Debug.LogError("PlayArea.Awake: AutoRepeatTimer is null.");
+            if (EntryDelayTimer == null) Debug.LogError("PlayArea.Awake: EntryDelayTimer is null.");
         }
 
         private void Start()
@@ -71,10 +70,10 @@ namespace Tetris
         public void Tick()
         {
             // Load the next shape if we don't have an active one yet
-            if (controlledBlockGroup == null && ++entryDelayProgress >= EntryDelayThreshold)
+            if (controlledBlockGroup == null)
             {
-                entryDelayProgress = 0;
-                LoadNextShape();
+                EntryDelayTimer.BeginTimer();
+                return;
             }
 
             // Increment gravity progress
@@ -111,7 +110,7 @@ namespace Tetris
             HandleLineClears();
         }
 
-        private void LoadNextShape()
+        public void LoadNextShape()
         {
             var shape = Queue.Pop(transform);
             if (shape == null) return;
@@ -276,7 +275,7 @@ namespace Tetris
             }
             else
             {
-                AutoRepeatTimer.EnableTimerWithDirection(direction);
+                AutoRepeatTimer.BeginTimerWithDirection(direction);
             }
         }
 
