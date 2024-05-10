@@ -1,14 +1,14 @@
 ﻿using UdonSharp;
 using UnityEngine;
 
-namespace Tetris
+namespace Tetris.Timers
 {
     public class LockTimer : UdonSharpBehaviour
     {
-        private const float LockDelay = 0.5f;
+        private const int LockTicks = 30;
         private const int MaxResetsWhileLocking = 15;
 
-        private float lockTimer;
+        private int lockProgress;
         private bool lockTimerEnabled;
         private int lockTimerResets;
 
@@ -22,12 +22,11 @@ namespace Tetris
             }
         }
 
-        private void FixedUpdate()
+        public void Tick()
         {
             if (!lockTimerEnabled) return;
-            lockTimer += Time.fixedDeltaTime;
 
-            if (lockTimer >= LockDelay)
+            if (++lockProgress >= LockTicks)
             {
                 PlayArea.LockControlledGroup();
                 ResetTimer();
@@ -41,7 +40,7 @@ namespace Tetris
 
         public void ResetTimer()
         {
-            lockTimer = 0;
+            lockProgress = 0;
             lockTimerResets = 0;
             lockTimerEnabled = false;
         }
@@ -49,7 +48,7 @@ namespace Tetris
         public void ResetTimerWhileLocking()
         {
             if (lockTimerResets == MaxResetsWhileLocking) return;
-            lockTimer = 0;
+            lockProgress = 0;
             lockTimerResets++;
             lockTimerEnabled = false;
         }

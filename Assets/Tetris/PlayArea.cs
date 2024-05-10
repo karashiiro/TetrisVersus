@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Tetris.Blocks;
+using Tetris.Timers;
 using UdonSharp;
 using UnityEngine;
 using UnityExtensions;
@@ -36,15 +37,6 @@ namespace Tetris
 
         private bool softDropEnabled;
 
-        private const int DASTicks = 10;
-        private int dasProgress;
-        private bool dasEnabled;
-
-        private const int AutoRepeatThreshold = 2;
-        private AutoRepeatDirection autoRepeatDirection;
-        private bool autoRepeatEnabled;
-        private int autoRepeatProgress;
-
         private const int EntryDelayThreshold = 6;
         private int entryDelayProgress;
 
@@ -55,6 +47,7 @@ namespace Tetris
         [field: SerializeField] public Hold Hold { get; set; }
         [field: SerializeField] public Queue Queue { get; set; }
         [field: SerializeField] public LockTimer LockTimer { get; set; }
+        [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
 
         private void Awake()
         {
@@ -63,6 +56,7 @@ namespace Tetris
             if (Hold == null) Debug.LogError("PlayArea.Awake: Hold is null.");
             if (Queue == null) Debug.LogError("PlayArea.Awake: Queue is null.");
             if (LockTimer == null) Debug.LogError("PlayArea.Awake: LockTimer is null.");
+            if (AutoRepeatTimer == null) Debug.LogError("PlayArea.Awake: AutoRepeatTimer is null.");
         }
 
         private void Start()
@@ -81,19 +75,6 @@ namespace Tetris
             {
                 entryDelayProgress = 0;
                 LoadNextShape();
-            }
-
-            // Handle held left/right movements
-            if (dasEnabled && ++dasProgress == DASTicks)
-            {
-                ResetDAS();
-                autoRepeatEnabled = true;
-            }
-
-            if (autoRepeatEnabled && ++autoRepeatProgress >= AutoRepeatThreshold)
-            {
-                autoRepeatProgress = 0;
-                MoveControlledGroup(autoRepeatDirection.AsTranslation(), 0);
             }
 
             // Increment gravity progress
@@ -291,27 +272,12 @@ namespace Tetris
         {
             if (direction == AutoRepeatDirection.None)
             {
-                ResetDAS();
-                ResetAutoRepeat();
+                AutoRepeatTimer.ResetTimer();
             }
             else
             {
-                autoRepeatDirection = direction;
-                dasEnabled = true;
+                AutoRepeatTimer.EnableTimerWithDirection(direction);
             }
-        }
-
-        private void ResetAutoRepeat()
-        {
-            autoRepeatProgress = 0;
-            autoRepeatEnabled = false;
-            autoRepeatDirection = AutoRepeatDirection.None;
-        }
-
-        private void ResetDAS()
-        {
-            dasProgress = 0;
-            dasEnabled = false;
         }
 
         public void MoveControlledGroup(int dX, int dY)
