@@ -38,18 +38,28 @@ namespace Tetris
         [field: SerializeField] public BlockGroup Grid { get; set; }
         [field: SerializeField] public Hold Hold { get; set; }
         [field: SerializeField] public Queue Queue { get; set; }
+        [field: SerializeField] public LockTimer LockTimer { get; set; }
+
+        private void Awake()
+        {
+            if (BlockFactory == null) Debug.LogError("PlayArea.Awake: BlockFactory is null.");
+            if (Grid == null) Debug.LogError("PlayArea.Awake: Grid is null.");
+            if (Hold == null) Debug.LogError("PlayArea.Awake: Hold is null.");
+            if (Queue == null) Debug.LogError("PlayArea.Awake: Queue is null.");
+            if (LockTimer == null) Debug.LogError("PlayArea.Awake: LockTimer is null.");
+        }
 
         private void Start()
         {
             Debug.Log("Initializing play area");
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
+
+            RefillQueue();
+            LoadNextShape();
         }
 
         public void Tick()
         {
-            // Refill the queue immediately in case we just started
-            RefillQueue();
-
             // Increment gravity progress
             gravityProgress += gravityPerTick;
 
@@ -59,6 +69,16 @@ namespace Tetris
                 HandleControlledBlockGravity();
                 gravityProgress--;
             }
+        }
+
+        public void LockControlledGroup()
+        {
+            // Lock the controlled block group
+            if (controlledBlockGroup != null)
+            {
+                controlledBlockGroup.SetState(BlockState.AtRest);
+                controlledBlockGroup = null;
+            }
 
             // Re-parent stray blocks - useful for seeing discrepancies between world positions and raw data
             Grid.ClaimUncontrolledBlocks();
@@ -66,11 +86,8 @@ namespace Tetris
             // Check if any lines were cleared
             HandleLineClears();
 
-            // If we placed a shape, load a new one
-            if (controlledBlockGroup == null)
-            {
-                LoadNextShape();
-            }
+            // Load a new shape
+            LoadNextShape();
         }
 
         private void LoadNextShape()
@@ -124,8 +141,8 @@ namespace Tetris
 
         /// <summary>
         /// Fall by one space. The entire group of blocks should move as a single entity.
-        /// If any blocks in the group have an at-rest block beneath them, then mark the
-        /// group as at-rest and end the call.
+        /// If any blocks in the group have an at-rest block beneath them, then enable the
+        /// lock timer to let the group settle.
         /// </summary>
         private void HandleControlledBlockGravity()
         {
@@ -141,8 +158,7 @@ namespace Tetris
                 if (y == 0 || nextBlock != null && nextBlock.State == BlockState.AtRest)
                 {
                     // We're either at the bottom of the grid, or there's a block beneath us
-                    controlledBlockGroup.SetState(BlockState.AtRest);
-                    controlledBlockGroup = null;
+                    LockTimer.BeginTimer();
                     return;
                 }
             }
