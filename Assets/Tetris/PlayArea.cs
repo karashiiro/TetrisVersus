@@ -33,6 +33,8 @@ namespace Tetris
         private decimal gravityPerTick = 1m / 32;
         private decimal gravityProgress = 0;
 
+        private bool softDropEnabled;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
@@ -62,7 +64,14 @@ namespace Tetris
         public void Tick()
         {
             // Increment gravity progress
-            gravityProgress += gravityPerTick;
+            if (softDropEnabled)
+            {
+                gravityProgress += Math.Ceiling(gravityPerTick);
+            }
+            else
+            {
+                gravityProgress += gravityPerTick;
+            }
 
             // Do updates for the current controlled block group
             while (gravityProgress >= 1)
@@ -166,6 +175,11 @@ namespace Tetris
 
             // Now that we've determined that the entire group is still active, copy it down by one space
             MoveControlledGroup(0, -1);
+        }
+
+        public void SoftDrop(bool isEnabled)
+        {
+            softDropEnabled = isEnabled;
         }
 
         public void HardDrop()

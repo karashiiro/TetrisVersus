@@ -43,6 +43,11 @@ namespace Tetris
             }
         }
 
+        /// <summary>
+        /// Hard drop.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="args"></param>
         public override void InputJump(bool value, UdonInputEventArgs args)
         {
             if (!value) return;
@@ -68,9 +73,10 @@ namespace Tetris
         /// <param name="args"></param>
         public override void InputMoveVertical(float value, UdonInputEventArgs args)
         {
-            var sign = Math.Sign(value);
-            if (sign != -1) return;
-            PlayArea.MoveControlledGroup(0, sign);
+            const int down = -1;
+
+            var direction = Math.Sign(value);
+            PlayArea.SoftDrop(direction == down);
         }
     }
 }
