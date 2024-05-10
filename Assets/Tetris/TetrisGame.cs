@@ -63,8 +63,14 @@ namespace Tetris
         public override void InputMoveHorizontal(float value, UdonInputEventArgs args)
         {
             var sign = Math.Sign(value);
-            if (sign == 0) return;
+            if (sign == 0)
+            {
+                PlayArea.DisableAutoRepeat();
+                return;
+            }
+
             PlayArea.MoveControlledGroup(sign, 0);
+            PlayArea.PrepareAutoRepeat(sign == -1 ? AutoRepeatDirection.Left : AutoRepeatDirection.Right);
         }
 
         /// <summary>

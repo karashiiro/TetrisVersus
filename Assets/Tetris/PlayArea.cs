@@ -32,9 +32,18 @@ namespace Tetris
         private int randomBagIndex = RandomGenerator.SequenceLength - 1;
 
         private decimal gravityPerTick = 1m / 32;
-        private decimal gravityProgress = 0;
+        private decimal gravityProgress;
 
         private bool softDropEnabled;
+
+        private const int DASTicks = 10;
+        private int dasProgress;
+        private bool dasEnabled;
+
+        private const int AutoRepeatThreshold = 2;
+        private AutoRepeatDirection autoRepeatDirection;
+        private bool autoRepeatEnabled;
+        private int autoRepeatProgress;
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
@@ -64,6 +73,19 @@ namespace Tetris
 
         public void Tick()
         {
+            // Handle held left/right movements
+            if (dasEnabled && ++dasProgress == DASTicks)
+            {
+                ResetDAS();
+                autoRepeatEnabled = true;
+            }
+
+            if (autoRepeatEnabled && ++autoRepeatProgress == AutoRepeatThreshold)
+            {
+                autoRepeatProgress = 0;
+                MoveControlledGroup(autoRepeatDirection.AsTranslation(), 0);
+            }
+
             // Increment gravity progress
             gravityProgress += gravityPerTick;
             if (softDropEnabled) gravityProgress += SoftDropGravityBonus;
@@ -251,6 +273,38 @@ namespace Tetris
             group.Rotate(angle);
 
             return true;
+        }
+
+        public void DisableAutoRepeat()
+        {
+            PrepareAutoRepeat(AutoRepeatDirection.None);
+        }
+
+        public void PrepareAutoRepeat(AutoRepeatDirection direction)
+        {
+            if (direction == AutoRepeatDirection.None)
+            {
+                ResetDAS();
+                ResetAutoRepeat();
+            }
+            else
+            {
+                autoRepeatDirection = direction;
+                dasEnabled = true;
+            }
+        }
+
+        private void ResetAutoRepeat()
+        {
+            autoRepeatProgress = 0;
+            autoRepeatEnabled = false;
+            autoRepeatDirection = AutoRepeatDirection.None;
+        }
+
+        private void ResetDAS()
+        {
+            dasProgress = 0;
+            dasEnabled = false;
         }
 
         public void MoveControlledGroup(int dX, int dY)
