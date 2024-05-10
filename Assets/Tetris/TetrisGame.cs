@@ -22,6 +22,7 @@ namespace Tetris
             // Set the owner to the first player in the instance for now
             Player = VRCPlayerApi.GetPlayerById(1);
             Player.Immobilize(true);
+            Player.SetJumpImpulse(0);
         }
 
         /// <summary>
