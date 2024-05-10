@@ -15,6 +15,7 @@ namespace Tetris
         private const int LimitHeight = 20;
         private const int BufferHeight = 20;
         private const int Height = LimitHeight + BufferHeight;
+        private const decimal SoftDropGravityBonus = 0.8m;
 
         private readonly DataDictionary palette = new DataDictionary
         {
@@ -64,14 +65,8 @@ namespace Tetris
         public void Tick()
         {
             // Increment gravity progress
-            if (softDropEnabled)
-            {
-                gravityProgress += Math.Ceiling(gravityPerTick);
-            }
-            else
-            {
-                gravityProgress += gravityPerTick;
-            }
+            gravityProgress += gravityPerTick;
+            if (softDropEnabled) gravityProgress += SoftDropGravityBonus;
 
             // Do updates for the current controlled block group
             while (gravityProgress >= 1)
