@@ -1,6 +1,6 @@
 ﻿using VRC.SDK3.Data;
 
-namespace DataTokenExtensions
+namespace VRCExtensions
 {
     public static class DataTokenExtensions
     {

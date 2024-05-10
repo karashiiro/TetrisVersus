@@ -1,10 +1,10 @@
 ﻿using System;
-using DataTokenExtensions;
 using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
 using UnityExtensions;
 using VRC.SDK3.Data;
+using VRCExtensions;
 
 namespace Tetris
 {
@@ -49,7 +49,7 @@ namespace Tetris
         {
             // Refill the queue immediately in case we just started
             RefillQueue();
-            
+
             // Increment gravity progress
             gravityProgress += gravityPerTick;
 
