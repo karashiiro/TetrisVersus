@@ -2,7 +2,7 @@
 using UnityEngine;
 using VRC.SDK3.Data;
 
-namespace Tetris
+namespace Tetris.Blocks
 {
     public class Block : UdonSharpBehaviour
     {

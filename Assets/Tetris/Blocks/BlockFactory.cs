@@ -2,7 +2,7 @@
 using UnityEngine;
 using VRC.Udon;
 
-namespace Tetris
+namespace Tetris.Blocks
 {
     public class BlockFactory : UdonSharpBehaviour
     {

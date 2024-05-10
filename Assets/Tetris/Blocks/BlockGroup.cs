@@ -6,7 +6,7 @@ using UnityExtensions;
 using VRC.SDK3.Data;
 using VRCExtensions;
 
-namespace Tetris
+namespace Tetris.Blocks
 {
     public class BlockGroup : UdonSharpBehaviour
     {

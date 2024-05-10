@@ -1,6 +1,6 @@
 ﻿using VRC.SDK3.Data;
 
-namespace Tetris
+namespace Tetris.Blocks
 {
     public static class ShapeTypeExtensions
     {
