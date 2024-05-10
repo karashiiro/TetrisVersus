@@ -83,7 +83,7 @@ namespace Tetris.Blocks
             CreateBlock(group, -1, 0);
             CreateBlock(group, 0, 0);
             CreateBlock(group, 1, 0);
-            CreateBlock(group, 0, -1);
+            CreateBlock(group, 0, 1);
 
             group.SetColor(color);
 
@@ -120,10 +120,10 @@ namespace Tetris.Blocks
             var group = CreateBlockGroup();
 
             // Create the blocks within the group
-            CreateBlock(group, -1, -1);
-            CreateBlock(group, 0, -1);
+            CreateBlock(group, -1, 0);
             CreateBlock(group, 0, 0);
-            CreateBlock(group, 1, 0);
+            CreateBlock(group, 0, 1);
+            CreateBlock(group, 1, 1);
 
             group.SetColor(color);
 
@@ -140,10 +140,10 @@ namespace Tetris.Blocks
             var group = CreateBlockGroup();
 
             // Create the blocks within the group
-            CreateBlock(group, -1, 0);
+            CreateBlock(group, -1, 1);
+            CreateBlock(group, 0, 1);
             CreateBlock(group, 0, 0);
-            CreateBlock(group, 0, -1);
-            CreateBlock(group, 1, -1);
+            CreateBlock(group, 1, 0);
 
             group.SetColor(color);
 
@@ -160,10 +160,10 @@ namespace Tetris.Blocks
             var group = CreateBlockGroup();
 
             // Create the blocks within the group
+            CreateBlock(group, -1, 1);
+            CreateBlock(group, -1, 0);
             CreateBlock(group, 0, 0);
             CreateBlock(group, 1, 0);
-            CreateBlock(group, 0, 1);
-            CreateBlock(group, 0, 2);
 
             group.SetColor(color);
 
@@ -182,8 +182,8 @@ namespace Tetris.Blocks
             // Create the blocks within the group
             CreateBlock(group, -1, 0);
             CreateBlock(group, 0, 0);
-            CreateBlock(group, 0, 1);
-            CreateBlock(group, 0, 2);
+            CreateBlock(group, 1, 0);
+            CreateBlock(group, 1, 1);
 
             group.SetColor(color);
 
