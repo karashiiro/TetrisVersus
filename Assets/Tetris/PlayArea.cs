@@ -167,6 +167,20 @@ namespace Tetris
             MoveControlledGroup(0, -1);
         }
 
+        public void HardDrop()
+        {
+            // Drop the block as far as possible
+            bool landed;
+            do
+            {
+                landed = !MoveGroup(controlledBlockGroup, 0, -1);
+            } while (!landed);
+
+            // Clear the lock timer and lock the controlled group immediately
+            LockTimer.ResetTimer();
+            LockControlledGroup();
+        }
+
         public void RotateControlledGroupLeft()
         {
             if (RotateGroup(controlledBlockGroup, 90))

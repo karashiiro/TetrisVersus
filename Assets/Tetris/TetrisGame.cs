@@ -43,6 +43,12 @@ namespace Tetris
             }
         }
 
+        public override void InputJump(bool value, UdonInputEventArgs args)
+        {
+            if (!value) return;
+            PlayArea.HardDrop();
+        }
+
         /// <summary>
         /// Horizontal block movement - supports left/right controls.
         /// </summary>
