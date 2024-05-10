@@ -51,6 +51,7 @@ namespace Tetris
             if (lockTimerResets == MaxResetsWhileLocking) return;
             lockTimer = 0;
             lockTimerResets++;
+            lockTimerEnabled = false;
         }
     }
 }

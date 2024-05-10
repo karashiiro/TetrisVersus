@@ -78,6 +78,12 @@ namespace Tetris
 
         public void LockControlledGroup()
         {
+            // Validate that we should actually be locking
+            if (IsGroupMovementValid(controlledBlockGroup, 0, -1))
+            {
+                return;
+            }
+
             // Lock the controlled block group
             if (controlledBlockGroup != null)
             {
