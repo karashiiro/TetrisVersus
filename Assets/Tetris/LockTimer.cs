@@ -6,9 +6,11 @@ namespace Tetris
     public class LockTimer : UdonSharpBehaviour
     {
         private const float LockDelay = 0.5f;
+        private const int MaxResetsWhileLocking = 15;
 
         private float lockTimer;
         private bool lockTimerEnabled;
+        private int lockTimerResets;
 
         [field: SerializeField] public PlayArea PlayArea { get; set; }
 
@@ -40,7 +42,15 @@ namespace Tetris
         public void ResetTimer()
         {
             lockTimer = 0;
+            lockTimerResets = 0;
             lockTimerEnabled = false;
+        }
+
+        public void ResetTimerWhileLocking()
+        {
+            if (lockTimerResets == MaxResetsWhileLocking) return;
+            lockTimer = 0;
+            lockTimerResets++;
         }
     }
 }

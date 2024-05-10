@@ -169,22 +169,30 @@ namespace Tetris
 
         public void RotateControlledGroupLeft()
         {
-            RotateGroup(controlledBlockGroup, 90);
+            if (RotateGroup(controlledBlockGroup, 90))
+            {
+                // Reset the lock timer on successful rotations, but keep it running if it's active
+                LockTimer.ResetTimerWhileLocking();
+            }
         }
 
         public void RotateControlledGroupRight()
         {
-            RotateGroup(controlledBlockGroup, -90);
+            if (RotateGroup(controlledBlockGroup, -90))
+            {
+                // Reset the lock timer on successful rotations, but keep it running if it's active
+                LockTimer.ResetTimerWhileLocking();
+            }
         }
 
-        private void RotateGroup(BlockGroup group, float angle)
+        private bool RotateGroup(BlockGroup group, float angle)
         {
-            if (group == null) return;
+            if (group == null) return false;
 
             // Validate that the group can rotate in the requested direction
             if (!IsGroupMovementValid(group, angle))
             {
-                return;
+                return false;
             }
 
             // Copy the group to the desired location
@@ -211,21 +219,27 @@ namespace Tetris
 
             // Rotate the group in world space
             group.Rotate(angle);
+
+            return true;
         }
 
         public void MoveControlledGroup(int dX, int dY)
         {
-            MoveGroup(controlledBlockGroup, dX, dY);
+            if (MoveGroup(controlledBlockGroup, dX, dY))
+            {
+                // Reset the lock timer on successful moves, but keep it running if it's active
+                LockTimer.ResetTimerWhileLocking();
+            }
         }
 
-        private void MoveGroup(BlockGroup group, int dX, int dY)
+        private bool MoveGroup(BlockGroup group, int dX, int dY)
         {
-            if (group == null) return;
+            if (group == null) return false;
 
             // Validate that the group can move in the requested direction
             if (!IsGroupMovementValid(group, dX, dY))
             {
-                return;
+                return false;
             }
 
             // Copy the group to the desired location
@@ -245,6 +259,8 @@ namespace Tetris
 
             // Move the group in world space
             group.Translate(new Vector2(dX, dY));
+
+            return true;
         }
 
         private bool IsGroupMovementValid(BlockGroup group, float angle)
