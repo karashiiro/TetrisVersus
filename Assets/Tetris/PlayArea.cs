@@ -45,6 +45,9 @@ namespace Tetris
         private bool autoRepeatEnabled;
         private int autoRepeatProgress;
 
+        private const int EntryDelayThreshold = 6;
+        private int entryDelayProgress;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
@@ -67,12 +70,19 @@ namespace Tetris
             Debug.Log("Initializing play area");
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
 
+            // Fill the queue initially
             RefillQueue();
-            LoadNextShape();
         }
 
         public void Tick()
         {
+            // Load the next shape if we don't have an active one yet
+            if (controlledBlockGroup == null && ++entryDelayProgress >= EntryDelayThreshold)
+            {
+                entryDelayProgress = 0;
+                LoadNextShape();
+            }
+
             // Handle held left/right movements
             if (dasEnabled && ++dasProgress == DASTicks)
             {
@@ -80,7 +90,7 @@ namespace Tetris
                 autoRepeatEnabled = true;
             }
 
-            if (autoRepeatEnabled && ++autoRepeatProgress == AutoRepeatThreshold)
+            if (autoRepeatEnabled && ++autoRepeatProgress >= AutoRepeatThreshold)
             {
                 autoRepeatProgress = 0;
                 MoveControlledGroup(autoRepeatDirection.AsTranslation(), 0);
@@ -118,9 +128,6 @@ namespace Tetris
 
             // Check if any lines were cleared
             HandleLineClears();
-
-            // Load a new shape
-            LoadNextShape();
         }
 
         private void LoadNextShape()
@@ -129,7 +136,7 @@ namespace Tetris
             if (shape == null) return;
             AddControlledBlocks(shape);
 
-            // Load the next shape immediately
+            // Refill the queue immediately
             RefillQueue();
         }
 
@@ -374,6 +381,8 @@ namespace Tetris
 
         private bool IsGroupMovementValid(BlockGroup group, int dX, int dY)
         {
+            if (group == null) return false;
+
             foreach (var block in group.GetBlocks())
             {
                 if (!IsBlockMovementValid(block, dX, dY))
