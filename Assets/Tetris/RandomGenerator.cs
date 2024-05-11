@@ -51,10 +51,10 @@ namespace Tetris
             }
 
             // Second pass: Do a Fisher-Yates shuffle to create a random permutation of elements in-place
-            for (var i = 0; i < SequenceLength - 2; i++)
+            for (var i = 0; i <= SequenceLength - 2; i++)
             {
                 var low = i + (int)ShapeType.MinValue;
-                var pivot = Random.Range(i, (int)ShapeType.MaxValue - i + 1);
+                var pivot = Random.Range(i, (int)ShapeType.MaxValue - i);
                 Swap(shapes, low, pivot);
             }
         }
