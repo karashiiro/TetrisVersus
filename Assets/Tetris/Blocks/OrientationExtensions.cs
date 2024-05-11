@@ -19,6 +19,11 @@
             return (Orientation)(((int)orientation - 1 + Limit) % Limit);
         }
 
+        public static float AngleTo(this Orientation orientation, Orientation other)
+        {
+            return ((Orientation)(((int)orientation - (int)other + Limit) % Limit)).AsDegrees();
+        }
+
         public static float AsDegrees(this Orientation orientation)
         {
             return (int)orientation * 90;

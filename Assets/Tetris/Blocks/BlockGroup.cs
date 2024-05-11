@@ -175,7 +175,7 @@ namespace Tetris.Blocks
         /// <param name="translation">The translation vector.</param>
         public void Translate(Vector2 translation)
         {
-            var rotatedTranslation = Quaternion.AngleAxis(-Orientation.AsDegrees(), Vector3.forward) *
+            var rotatedTranslation = Quaternion.AngleAxis(Orientation.Origin.AngleTo(Orientation), Vector3.forward) *
                                      new Vector3(translation.x, translation.y);
             transform.Translate(rotatedTranslation);
         }
@@ -187,7 +187,13 @@ namespace Tetris.Blocks
         public void Rotate(Rotation rotation)
         {
             transform.Rotate(Vector3.forward, rotation.AsDegrees(), Space.Self);
-            Orientation = Orientation.RotateRight();
+            Orientation = Orientation.Rotate(rotation);
+        }
+
+        public void SetOrientation(Orientation orientation)
+        {
+            transform.Rotate(Vector3.forward, orientation.AsDegrees(), Space.Self);
+            Orientation = orientation;
         }
 
         /// <summary>

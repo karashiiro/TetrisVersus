@@ -44,6 +44,13 @@ namespace Tetris
             }
         }
 
+        public override void InputDrop(bool value, UdonInputEventArgs args)
+        {
+            // TODO: Use a different event for VR
+            if (!value) return;
+            PlayArea.ExchangeHold();
+        }
+
         /// <summary>
         /// Hard drop.
         /// </summary>

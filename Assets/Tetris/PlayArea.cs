@@ -39,6 +39,8 @@ namespace Tetris
 
         private bool softDropEnabled;
 
+        private bool canExchangeWithHold = true;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
@@ -91,6 +93,24 @@ namespace Tetris
             }
         }
 
+        public void ExchangeHold()
+        {
+            if (!canExchangeWithHold) return;
+            canExchangeWithHold = false;
+
+            RemoveBlocksFromGroup(controlledBlockGroup);
+            Hold.Exchange(ref controlledBlockGroup, BlockState.Controlled);
+
+            if (controlledBlockGroup != null)
+            {
+                AddControlledBlocks(controlledBlockGroup);
+            }
+            else
+            {
+                LoadNextShape();
+            }
+        }
+
         public void LockControlledGroup()
         {
             // Validate that we should actually be locking
@@ -111,6 +131,9 @@ namespace Tetris
 
             // Check if any lines were cleared
             HandleLineClears();
+
+            // Re-enable the hold function
+            canExchangeWithHold = true;
         }
 
         public void LoadNextShape()
@@ -487,6 +510,15 @@ namespace Tetris
             {
                 if (!group.TryDecodePosition(pos, out var localX, out var localY)) continue;
                 Grid[bottomLeftX + localX, bottomLeftY + localY] = group[localX, localY];
+            }
+        }
+
+        private void RemoveBlocksFromGroup(BlockGroup group)
+        {
+            foreach (var block in group.GetBlocks())
+            {
+                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+                Grid[x, y] = null;
             }
         }
 
