@@ -2,6 +2,7 @@
 {
     public enum ShapeType
     {
+        None,
         MinValue,
         O = MinValue,
         I,

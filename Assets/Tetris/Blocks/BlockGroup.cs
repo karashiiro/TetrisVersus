@@ -13,7 +13,13 @@ namespace Tetris.Blocks
         private readonly DataDictionary group = new DataDictionary();
         private readonly DataDictionary groupPositions = new DataDictionary();
 
-        private float orientation;
+        public Orientation Orientation { get; private set; }
+
+        /// <summary>
+        /// The group's shape type. Note that this does not reflect the number of blocks remaining in the
+        /// group (in the event that some were cleared). This is only used for SRS.
+        /// </summary>
+        public ShapeType Type { get; set; }
 
         [CanBeNull]
         public Block this[int x, int y]
@@ -169,19 +175,19 @@ namespace Tetris.Blocks
         /// <param name="translation">The translation vector.</param>
         public void Translate(Vector2 translation)
         {
-            var rotatedTranslation = Quaternion.AngleAxis(-orientation, Vector3.forward) *
+            var rotatedTranslation = Quaternion.AngleAxis(-Orientation.AsDegrees(), Vector3.forward) *
                                      new Vector3(translation.x, translation.y);
             transform.Translate(rotatedTranslation);
         }
 
         /// <summary>
-        /// Rotates the entire group of blocks according to the provided angle.
+        /// Rotates the entire group.
         /// </summary>
-        /// <param name="angle"></param>
-        public void Rotate(float angle)
+        /// <param name="rotation">The rotation direction.</param>
+        public void Rotate(Rotation rotation)
         {
-            transform.Rotate(Vector3.forward, angle, Space.Self);
-            orientation = (orientation + angle) % 360;
+            transform.Rotate(Vector3.forward, rotation.AsDegrees(), Space.Self);
+            Orientation = Orientation.RotateRight();
         }
 
         /// <summary>
@@ -268,7 +274,7 @@ namespace Tetris.Blocks
         {
             x = y = -1;
             if (!TryDecodePosition(position, out var localX, out var localY)) return false;
-            var adjusted = new Vector2(localX, localY).Rotate(orientation);
+            var adjusted = new Vector2(localX, localY).Rotate(Orientation.AsDegrees());
             x = Convert.ToInt32(adjusted.x);
             y = Convert.ToInt32(adjusted.y);
             return true;

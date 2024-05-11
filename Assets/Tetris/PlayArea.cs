@@ -32,6 +32,8 @@ namespace Tetris
         private ShapeType[] randomBag;
         private int randomBagIndex = RandomGenerator.SequenceLength - 1;
 
+        private DataDictionary srsTables;
+
         private decimal gravityPerTick = 1m / 32;
         private decimal gravityProgress;
 
@@ -62,6 +64,7 @@ namespace Tetris
         {
             Debug.Log("Initializing play area");
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
+            srsTables = SRSHelpers.NewDataTable();
 
             // Fill the queue initially
             RefillQueue();
@@ -208,7 +211,7 @@ namespace Tetris
 
         public void RotateControlledGroupLeft()
         {
-            if (RotateGroup(controlledBlockGroup, 90))
+            if (RotateGroup(controlledBlockGroup, Rotation.Left))
             {
                 // Reset the lock timer on successful rotations, but keep it running if it's active
                 LockTimer.ResetTimerWhileLocking();
@@ -217,19 +220,19 @@ namespace Tetris
 
         public void RotateControlledGroupRight()
         {
-            if (RotateGroup(controlledBlockGroup, -90))
+            if (RotateGroup(controlledBlockGroup, Rotation.Right))
             {
                 // Reset the lock timer on successful rotations, but keep it running if it's active
                 LockTimer.ResetTimerWhileLocking();
             }
         }
 
-        private bool RotateGroup(BlockGroup group, float angle)
+        private bool RotateGroup(BlockGroup group, Rotation rotation)
         {
             if (group == null) return false;
 
             // Validate that the group can rotate in the requested direction
-            if (!IsGroupMovementValid(group, angle))
+            if (!IsGroupMovementValidSRS(group, rotation, out var dXSrs, out var dYSrs))
             {
                 return false;
             }
@@ -248,16 +251,17 @@ namespace Tetris
                 if (!group.TryGetPositionAbsolute(blocks[i], out var localX, out var localY)) continue;
                 if (!Grid.TryDecodePosition(originalPositions[i], out var x, out var y)) continue;
 
+                var angle = rotation.AsDegrees();
                 var position = new Vector2(localX, localY);
                 var displacement = position.Rotate(angle) - position;
 
-                var targetX = x + Convert.ToInt32(displacement.x);
-                var targetY = y + Convert.ToInt32(displacement.y);
+                var targetX = x + Convert.ToInt32(displacement.x) + dXSrs;
+                var targetY = y + Convert.ToInt32(displacement.y) + dYSrs;
                 Grid[targetX, targetY] = blocks[i];
             }
 
             // Rotate the group in world space
-            group.Rotate(angle);
+            group.Rotate(rotation);
 
             return true;
         }
@@ -319,8 +323,27 @@ namespace Tetris
             return true;
         }
 
-        private bool IsGroupMovementValid(BlockGroup group, float angle)
+        private bool IsGroupMovementValidSRS(BlockGroup group, Rotation rotation, out int dX, out int dY)
         {
+            dX = dY = 0;
+
+            var translations = SRSHelpers.GetPossibleTranslations(srsTables, group.Type, group.Orientation, rotation);
+            foreach (var translation in translations)
+            {
+                if (IsGroupMovementValid(group, rotation, translation[0], translation[1]))
+                {
+                    dX = translation[0];
+                    dY = translation[1];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsGroupMovementValid(BlockGroup group, Rotation rotation, int dX, int dY)
+        {
+            var srsTranslation = new Vector2(dX, dY);
             foreach (var block in group.GetBlocks())
             {
                 // Rotate the local position of the block to get displacements, then validate those displacements
@@ -332,11 +355,9 @@ namespace Tetris
                 }
 
                 var position = new Vector2(localX, localY);
-                var displacement = position.Rotate(angle) - position;
+                var displacement = position.Rotate(rotation.AsDegrees()) - position + srsTranslation;
                 if (!IsBlockMovementValid(block, Convert.ToInt32(displacement.x), Convert.ToInt32(displacement.y)))
                 {
-                    Debug.Log(
-                        $"IsGroupMovementValid: Movement from local position {position} to {position + displacement} is invalid");
                     return false;
                 }
             }

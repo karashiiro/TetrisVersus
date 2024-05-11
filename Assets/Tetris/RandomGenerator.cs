@@ -45,16 +45,17 @@ namespace Tetris
         private static void UpdateSequence(ShapeType[] shapes)
         {
             // First pass: Initialize the array to unique shapes in order
-            for (var i = (int)ShapeType.MinValue; i <= (int)ShapeType.MaxValue; i++)
+            for (var i = 0; i < SequenceLength; i++)
             {
-                shapes[i] = (ShapeType)i;
+                shapes[i] = (ShapeType)(i + (int)ShapeType.MinValue);
             }
 
             // Second pass: Do a Fisher-Yates shuffle to create a random permutation of elements in-place
-            for (var i = (int)ShapeType.MinValue; i <= (int)ShapeType.MaxValue - 2; i++)
+            for (var i = 0; i < SequenceLength - 2; i++)
             {
+                var low = i + (int)ShapeType.MinValue;
                 var pivot = Random.Range(i, (int)ShapeType.MaxValue - i + 1);
-                Swap(shapes, i, pivot);
+                Swap(shapes, low, pivot);
             }
         }
 

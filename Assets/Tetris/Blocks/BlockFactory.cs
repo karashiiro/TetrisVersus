@@ -66,6 +66,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 2, 0);
 
             group.SetColor(color);
+            group.Type = ShapeType.I;
 
             return group;
         }
@@ -86,6 +87,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 1, 0);
 
             group.SetColor(color);
+            group.Type = ShapeType.T;
 
             return group;
         }
@@ -106,6 +108,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 1, 1);
 
             group.SetColor(color);
+            group.Type = ShapeType.O;
 
             return group;
         }
@@ -126,6 +129,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 1, 1);
 
             group.SetColor(color);
+            group.Type = ShapeType.S;
 
             return group;
         }
@@ -146,6 +150,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 1, 0);
 
             group.SetColor(color);
+            group.Type = ShapeType.Z;
 
             return group;
         }
@@ -166,6 +171,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 1, 1);
 
             group.SetColor(color);
+            group.Type = ShapeType.L;
 
             return group;
         }
@@ -186,6 +192,7 @@ namespace Tetris.Blocks
             CreateBlock(group, 1, 0);
 
             group.SetColor(color);
+            group.Type = ShapeType.J;
 
             return group;
         }
