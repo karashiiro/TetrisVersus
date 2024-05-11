@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Hold : UdonSharpBehaviour
     {
         [CanBeNull] private BlockGroup current;

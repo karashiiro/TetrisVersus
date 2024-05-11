@@ -8,6 +8,7 @@ using VRCExtensions;
 
 namespace Tetris.Blocks
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class BlockGroup : UdonSharpBehaviour
     {
         private readonly DataDictionary group = new DataDictionary();

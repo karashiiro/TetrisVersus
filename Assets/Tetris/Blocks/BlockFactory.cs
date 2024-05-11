@@ -4,6 +4,7 @@ using VRC.Udon;
 
 namespace Tetris.Blocks
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class BlockFactory : UdonSharpBehaviour
     {
         [field: SerializeField] public BlockGroup PrototypeBlockGroup { get; set; }

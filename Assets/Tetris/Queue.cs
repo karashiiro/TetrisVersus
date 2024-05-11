@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Queue : UdonSharpBehaviour
     {
         private const int QueueSize = 5;

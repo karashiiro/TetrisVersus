@@ -11,6 +11,7 @@ using Random = UnityEngine.Random;
 
 namespace Tetris
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class PlayArea : UdonSharpBehaviour
     {
         private const int Width = 10;

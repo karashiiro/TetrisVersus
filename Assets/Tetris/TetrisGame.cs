@@ -6,6 +6,7 @@ using VRC.Udon.Common;
 
 namespace Tetris
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class TetrisGame : UdonSharpBehaviour
     {
         private VRCPlayerApi Player { get; set; }

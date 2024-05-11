@@ -4,6 +4,7 @@ using VRC.SDK3.Data;
 
 namespace Tetris.Blocks
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
         private readonly int ShaderColorKey = Shader.PropertyToID("_Color");
