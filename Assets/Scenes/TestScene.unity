@@ -1222,7 +1222,7 @@ MonoBehaviour:
   <PlayArea>k__BackingField: {fileID: 563540659}
 --- !u!114 &190355667
 MonoBehaviour:
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -13484,7 +13484,7 @@ MonoBehaviour:
   <PlayArea>k__BackingField: {fileID: 563540659}
 --- !u!114 &1370077568
 MonoBehaviour:
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -18221,7 +18221,7 @@ MonoBehaviour:
   <PlayArea>k__BackingField: {fileID: 563540659}
 --- !u!114 &2067975084
 MonoBehaviour:
-  m_ObjectHideFlags: 2
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

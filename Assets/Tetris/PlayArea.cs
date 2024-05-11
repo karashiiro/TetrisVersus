@@ -151,9 +151,15 @@ namespace Tetris
         private void AddControlledBlocks(BlockGroup group)
         {
             // Move the block group into the play area at the limit line
-            group.SetPosition(new Vector2(5, LimitHeight));
+            AddBlocks(group, 5, LimitHeight);
             SetControlledBlockGroup(group);
-            CopyBlocksFromGroup(group, 5);
+        }
+
+        private void AddBlocks(BlockGroup group, int x, int y)
+        {
+            group.transform.SetParent(transform, true);
+            group.SetPosition(new Vector2(x, y));
+            CopyBlocksFromGroup(group, x, y);
         }
 
         private void SetControlledBlockGroup(BlockGroup group)
@@ -246,6 +252,7 @@ namespace Tetris
                 Grid[x, y] = null;
             }
 
+            var srsDisplacement = new Vector2(dXSrs, dYSrs);
             for (var i = 0; i < blocks.Length; i++)
             {
                 if (!group.TryGetPositionAbsolute(blocks[i], out var localX, out var localY)) continue;
@@ -253,14 +260,15 @@ namespace Tetris
 
                 var angle = rotation.AsDegrees();
                 var position = new Vector2(localX, localY);
-                var displacement = position.Rotate(angle) - position;
+                var displacement = position.Rotate(angle) - position + srsDisplacement;
 
-                var targetX = x + Convert.ToInt32(displacement.x) + dXSrs;
-                var targetY = y + Convert.ToInt32(displacement.y) + dYSrs;
+                var targetX = x + Convert.ToInt32(displacement.x);
+                var targetY = y + Convert.ToInt32(displacement.y);
                 Grid[targetX, targetY] = blocks[i];
             }
 
-            // Rotate the group in world space
+            // Move the group in world space
+            group.Translate(srsDisplacement);
             group.Rotate(rotation);
 
             return true;
@@ -473,12 +481,12 @@ namespace Tetris
             }
         }
 
-        private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX)
+        private void CopyBlocksFromGroup(BlockGroup group, int bottomLeftX, int bottomLeftY)
         {
             foreach (var pos in group.GetEncodedPositions())
             {
                 if (!group.TryDecodePosition(pos, out var localX, out var localY)) continue;
-                Grid[bottomLeftX + localX, LimitHeight + localY] = group[localX, localY];
+                Grid[bottomLeftX + localX, bottomLeftY + localY] = group[localX, localY];
             }
         }
 
