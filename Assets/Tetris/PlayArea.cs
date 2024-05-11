@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityExtensions;
 using VRC.SDK3.Data;
 using VRCExtensions;
+using Random = UnityEngine.Random;
 
 namespace Tetris
 {
@@ -91,6 +92,44 @@ namespace Tetris
                 HandleControlledBlockGravity();
                 gravityProgress--;
             }
+        }
+
+        public void SendGarbage(int lines = 1)
+        {
+            // Push all existing blocks upwards
+            // TODO: Avoid possible race condition where garbage causes the controlled group to get stuck in another block
+            for (var y = Height - lines - 1; y >= 0; y--)
+            {
+                for (var x = 0; x < Width; x++)
+                {
+                    var block = Grid[x, y];
+                    if (block == null) continue;
+
+                    Grid[x, y + lines] = block;
+                    block.transform.Translate(new Vector3(0, lines));
+                    Grid[x, y] = null;
+                }
+            }
+
+            for (var y = 0; y < lines; y++)
+            {
+                var garbageLine = CreateGarbageLine();
+                AddBlocks(garbageLine, 0, y);
+            }
+        }
+
+        private BlockGroup CreateGarbageLine()
+        {
+            var hole = Random.Range(0, Width);
+            var group = BlockFactory.CreateBlockGroup();
+            for (var x = 0; x < Width; x++)
+            {
+                if (x == hole) continue;
+                BlockFactory.CreateBlock(group, x, 0);
+            }
+
+            group.SetColor(Color.grey);
+            return group;
         }
 
         public void ExchangeHold()
