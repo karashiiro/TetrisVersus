@@ -12,6 +12,8 @@ namespace Tetris.Blocks
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
+        public const int RequiredNetworkBufferSize = 1;
+
         [field: SerializeField] public Renderer TargetRenderer { get; set; }
 
         public BlockState State { get; set; }
@@ -27,7 +29,7 @@ namespace Tetris.Blocks
         public int SerializeInto(byte[] buffer, int offset)
         {
             buffer[offset] = (byte)State;
-            return 1;
+            return RequiredNetworkBufferSize;
         }
 
         private void Awake()

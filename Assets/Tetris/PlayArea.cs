@@ -20,7 +20,7 @@ namespace Tetris
         private const int Height = LimitHeight + BufferHeight;
         private const decimal SoftDropGravityBonus = 0.8m;
 
-        public const int RequiredNetworkBufferSize = 0;
+        public const int RequiredNetworkBufferSize = Block.RequiredNetworkBufferSize * Width * Height;
 
         private readonly DataDictionary palette = new DataDictionary
         {
