@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Tetris.Blocks;
 using Tetris.Timers;
 using UdonSharp;
@@ -21,6 +20,9 @@ namespace Tetris
         private const decimal SoftDropGravityBonus = 0.8m;
 
         public const int RequiredNetworkBufferSize = Block.RequiredNetworkBufferSize * Width * Height;
+
+        private readonly Vector2Int boundsMin = new Vector2Int(0, 0);
+        private readonly Vector2Int boundsMax = new Vector2Int(Width, Height);
 
         private readonly DataDictionary palette = new DataDictionary
         {
@@ -84,7 +86,7 @@ namespace Tetris
 
         public int SerializeInto(byte[] buffer, int offset)
         {
-            return Grid.SerializeInto(buffer, offset);
+            return Grid.SerializeInto(buffer, offset, boundsMin, boundsMax);
         }
 
         public void Tick()
@@ -328,18 +330,18 @@ namespace Tetris
                 Grid[x, y] = null;
             }
 
-            var srsDisplacement = new Vector2(dXSrs, dYSrs);
+            var srsDisplacement = new Vector2Int(dXSrs, dYSrs);
             for (var i = 0; i < blocks.Length; i++)
             {
                 if (!group.TryGetPositionAbsolute(blocks[i], out var localX, out var localY)) continue;
                 if (!Grid.TryDecodePosition(originalPositions[i], out var x, out var y)) continue;
 
                 var angle = rotation.AsDegrees();
-                var position = new Vector2(localX, localY);
+                var position = new Vector2Int(localX, localY);
                 var displacement = position.Rotate(angle) - position + srsDisplacement;
 
-                var targetX = x + Convert.ToInt32(displacement.x);
-                var targetY = y + Convert.ToInt32(displacement.y);
+                var targetX = x + displacement.x;
+                var targetY = y + displacement.y;
                 Grid[targetX, targetY] = blocks[i];
             }
 
@@ -428,7 +430,7 @@ namespace Tetris
 
         private bool IsGroupMovementValid(BlockGroup group, Rotation rotation, int dX, int dY)
         {
-            var srsTranslation = new Vector2(dX, dY);
+            var srsTranslation = new Vector2Int(dX, dY);
             foreach (var block in group.GetBlocks())
             {
                 // Rotate the local position of the block to get displacements, then validate those displacements
@@ -439,9 +441,9 @@ namespace Tetris
                     return false;
                 }
 
-                var position = new Vector2(localX, localY);
+                var position = new Vector2Int(localX, localY);
                 var displacement = position.Rotate(rotation.AsDegrees()) - position + srsTranslation;
-                if (!IsBlockMovementValid(block, Convert.ToInt32(displacement.x), Convert.ToInt32(displacement.y)))
+                if (!IsBlockMovementValid(block, displacement.x, displacement.y))
                 {
                     return false;
                 }

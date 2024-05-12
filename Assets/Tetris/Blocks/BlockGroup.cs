@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
 using UnityExtensions;
@@ -59,7 +58,7 @@ namespace Tetris.Blocks
             return shouldRequestSerialization;
         }
 
-        public int SerializeInto(byte[] buffer, int offset)
+        public int SerializeInto(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax)
         {
             // TODO: stub
             shouldRequestSerialization = false;
@@ -305,9 +304,9 @@ namespace Tetris.Blocks
         {
             x = y = -1;
             if (!TryDecodePosition(position, out var localX, out var localY)) return false;
-            var adjusted = new Vector2(localX, localY).Rotate(Orientation.AsDegrees());
-            x = Convert.ToInt32(adjusted.x);
-            y = Convert.ToInt32(adjusted.y);
+            var adjusted = new Vector2Int(localX, localY).Rotate(Orientation.AsDegrees());
+            x = adjusted.x;
+            y = adjusted.y;
             return true;
         }
 
