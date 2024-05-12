@@ -37,7 +37,7 @@ namespace Tetris
 
         public override void OnPreSerialization()
         {
-            PlayArea.SerializeInto(networkState);
+            PlayArea.SerializeInto(networkState, 0);
         }
 
         /// <summary>

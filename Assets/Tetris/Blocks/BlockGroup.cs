@@ -59,10 +59,11 @@ namespace Tetris.Blocks
             return shouldRequestSerialization;
         }
 
-        public void SerializeInto(byte[] buffer)
+        public int SerializeInto(byte[] buffer, int offset)
         {
             // TODO: stub
             shouldRequestSerialization = false;
+            return 0;
         }
 
         /// <summary>

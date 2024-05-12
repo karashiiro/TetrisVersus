@@ -13,6 +13,18 @@ namespace Tetris.Blocks
 
         public DataToken Token => new DataToken(this);
 
+        /// <summary>
+        /// Serializes this block into the provided buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to serialize into.</param>
+        /// <param name="offset">The offset within the buffer to serialize the data at.</param>
+        /// <returns>The number of bytes that were written.</returns>
+        public int SerializeInto(byte[] buffer, int offset)
+        {
+            buffer[offset] = (byte)State;
+            return 1;
+        }
+
         private void Awake()
         {
             if (TargetRenderer == null)

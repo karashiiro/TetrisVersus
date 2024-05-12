@@ -82,9 +82,9 @@ namespace Tetris
             return Grid.ShouldSerialize();
         }
 
-        public void SerializeInto(byte[] buffer)
+        public int SerializeInto(byte[] buffer, int offset)
         {
-            Grid.SerializeInto(buffer);
+            return Grid.SerializeInto(buffer, offset);
         }
 
         public void Tick()

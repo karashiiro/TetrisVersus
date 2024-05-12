@@ -1,6 +1,6 @@
 ﻿namespace Tetris.Blocks
 {
-    public enum BlockState
+    public enum BlockState : byte
     {
         AtRest,
         Controlled,
