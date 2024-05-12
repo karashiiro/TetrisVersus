@@ -7,9 +7,19 @@ namespace Tetris.Blocks
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
+        [field: SerializeField] public Renderer TargetRenderer { get; set; }
+
         public BlockState State { get; set; }
 
         public DataToken Token => new DataToken(this);
+
+        private void Awake()
+        {
+            if (TargetRenderer == null)
+            {
+                TargetRenderer = GetComponent<Renderer>();
+            }
+        }
 
         /// <summary>
         /// Sets the position of the block according to the provided position vector. The block should
@@ -27,9 +37,8 @@ namespace Tetris.Blocks
         /// <param name="color">The color to set the block to.</param>
         public void SetColor(Color color)
         {
-            var blockRenderer = GetComponent<Renderer>();
-            if (blockRenderer == null) return;
-            blockRenderer.material.color = color;
+            if (TargetRenderer == null) return;
+            TargetRenderer.material.color = color;
         }
     }
 }
