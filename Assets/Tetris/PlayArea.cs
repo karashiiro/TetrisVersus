@@ -20,6 +20,8 @@ namespace Tetris
         private const int Height = LimitHeight + BufferHeight;
         private const decimal SoftDropGravityBonus = 0.8m;
 
+        public const int RequiredNetworkBufferSize = 0;
+
         private readonly DataDictionary palette = new DataDictionary
         {
             { ShapeType.O.GetToken(), new DataToken(Color.yellow) },
@@ -73,6 +75,16 @@ namespace Tetris
 
             // Fill the queue initially
             RefillQueue();
+        }
+
+        public bool ShouldSerialize()
+        {
+            return Grid.ShouldSerialize();
+        }
+
+        public void SerializeInto(byte[] buffer)
+        {
+            Grid.SerializeInto(buffer);
         }
 
         public void Tick()

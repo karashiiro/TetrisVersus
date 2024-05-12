@@ -18,6 +18,8 @@ namespace Tetris.Blocks
         private readonly DataDictionary group = new DataDictionary();
         private readonly DataDictionary groupPositions = new DataDictionary();
 
+        private bool shouldRequestSerialization;
+
         public Orientation Orientation { get; private set; }
 
         /// <summary>
@@ -52,6 +54,17 @@ namespace Tetris.Blocks
             }
         }
 
+        public bool ShouldSerialize()
+        {
+            return shouldRequestSerialization;
+        }
+
+        public void SerializeInto(byte[] buffer)
+        {
+            // TODO: stub
+            shouldRequestSerialization = false;
+        }
+
         /// <summary>
         /// Adds a block to the block group.
         /// </summary>
@@ -67,6 +80,7 @@ namespace Tetris.Blocks
             var value = block.Token;
             group.SetValue(key, value);
             groupPositions.SetValue(value, key);
+            shouldRequestSerialization = true;
         }
 
         /// <summary>
@@ -77,10 +91,9 @@ namespace Tetris.Blocks
         public void Remove(int localX, int localY)
         {
             var key = Key(localX, localY);
-            if (group.Remove(key, out var block))
-            {
-                groupPositions.Remove(block);
-            }
+            if (!group.Remove(key, out var block)) return;
+            groupPositions.Remove(block);
+            shouldRequestSerialization = true;
         }
 
         /// <summary>
@@ -148,6 +161,8 @@ namespace Tetris.Blocks
                     block.SetPosition(new Vector2(x, y));
                 }
             }
+
+            shouldRequestSerialization = true;
         }
 
         /// <summary>
@@ -161,6 +176,8 @@ namespace Tetris.Blocks
                 var block = token.As<Block>();
                 block.State = state;
             }
+
+            shouldRequestSerialization = true;
         }
 
         /// <summary>
@@ -212,6 +229,8 @@ namespace Tetris.Blocks
                 var block = token.As<Block>();
                 block.SetColor(color);
             }
+
+            shouldRequestSerialization = true;
         }
 
         /// <summary>

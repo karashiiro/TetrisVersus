@@ -13,14 +13,11 @@ namespace Tetris
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class TetrisGame : UdonSharpBehaviour
     {
+        [UdonSynced] private readonly byte[] networkState = new byte[PlayArea.RequiredNetworkBufferSize];
+
         private VRCPlayerApi Player { get; set; }
 
         [field: SerializeField] public PlayArea PlayArea { get; set; }
-
-        public void SetOwningPlayer(VRCPlayerApi player)
-        {
-            Player = player;
-        }
 
         private void Awake()
         {
@@ -28,6 +25,19 @@ namespace Tetris
             Player = VRCPlayerApi.GetPlayerById(1);
             Player.Immobilize(true);
             Player.SetJumpImpulse(0);
+        }
+
+        public override void PostLateUpdate()
+        {
+            if (PlayArea.ShouldSerialize())
+            {
+                RequestSerialization();
+            }
+        }
+
+        public override void OnPreSerialization()
+        {
+            PlayArea.SerializeInto(networkState);
         }
 
         /// <summary>
