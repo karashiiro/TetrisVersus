@@ -8,6 +8,10 @@ using VRCExtensions;
 
 namespace Tetris.Blocks
 {
+    /// <summary>
+    /// A group of blocks. Groups of blocks can be moved together by repositioning the transform that
+    /// this behavior is attached to, without moving each block individually.
+    /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class BlockGroup : UdonSharpBehaviour
     {

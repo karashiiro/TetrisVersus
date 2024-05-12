@@ -6,6 +6,10 @@ using VRC.Udon.Common;
 
 namespace Tetris
 {
+    /// <summary>
+    /// Game logic controller for a single player. In networked configurations, this is responsible for
+    /// serializing all of a player's game state for syncing.
+    /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class TetrisGame : UdonSharpBehaviour
     {
