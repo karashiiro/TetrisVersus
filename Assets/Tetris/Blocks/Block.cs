@@ -4,6 +4,11 @@ using VRC.SDK3.Data;
 
 namespace Tetris.Blocks
 {
+    /// <summary>
+    /// A single block (mino). Blocks only track their own internal state, and do not know anything
+    /// about block groups they may be contained in. A block can be a member of multiple groups, but
+    /// only one group should be responsible for mutating the GameObject this behavior is attached to.
+    /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
