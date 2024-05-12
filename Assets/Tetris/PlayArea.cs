@@ -35,6 +35,7 @@ namespace Tetris
         private int randomBagIndex = RandomGenerator.SequenceLength - 1;
 
         private DataDictionary srsTables;
+        private int[] srsTranslationBuffer;
 
         private decimal gravityPerTick = 1m / 32;
         private decimal gravityProgress;
@@ -68,7 +69,7 @@ namespace Tetris
         {
             Debug.Log("Initializing play area");
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
-            srsTables = SRSHelpers.NewDataTable();
+            SRSHelpers.NewDataTable(out srsTables, out srsTranslationBuffer);
 
             // Fill the queue initially
             RefillQueue();
@@ -398,7 +399,8 @@ namespace Tetris
         {
             dX = dY = 0;
 
-            var translations = SRSHelpers.GetPossibleTranslations(srsTables, group.Type, group.Orientation, rotation);
+            var translations = SRSHelpers.GetPossibleTranslations(srsTables, srsTranslationBuffer, group.Type,
+                group.Orientation, rotation);
             foreach (var translation in translations)
             {
                 if (IsGroupMovementValid(group, rotation, translation[0], translation[1]))

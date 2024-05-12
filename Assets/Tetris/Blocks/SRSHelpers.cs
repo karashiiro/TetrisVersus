@@ -5,7 +5,7 @@ namespace Tetris.Blocks
 {
     public static class SRSHelpers
     {
-        public static DataDictionary NewDataTable()
+        public static void NewDataTable(out DataDictionary dataTable, out int[] translationBuffer)
         {
             // https://tetris.wiki/Super_Rotation_System
             var offsets = new DataDictionary();
@@ -17,11 +17,17 @@ namespace Tetris.Blocks
             offsets[ShapeType.J.GetToken()] = new DataToken(standardOffsets);
             offsets[ShapeType.I.GetToken()] = new DataToken(NewIOffsets());
             offsets[ShapeType.O.GetToken()] = new DataToken(NewOOffsets());
-            return offsets;
+
+            dataTable = offsets;
+            translationBuffer = new int[standardOffsets[0].Length];
         }
 
-        public static int[][] GetPossibleTranslations(DataDictionary dataTable, ShapeType shapeType,
-            Orientation orientation, Rotation rotation)
+        public static int[][] GetPossibleTranslations(
+            DataDictionary dataTable,
+            int[] translationBuffer,
+            ShapeType shapeType,
+            Orientation orientation,
+            Rotation rotation)
         {
             var offsets = dataTable[shapeType.GetToken()].As<int[][][]>();
             var nextOrientation = orientation.Rotate(rotation);
