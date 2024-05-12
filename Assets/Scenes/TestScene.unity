@@ -1497,7 +1497,7 @@ MonoBehaviour:
   SynchronizePosition: 1
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 066f3af3c5289fd468eddc9652c8960f,
     type: 2}
   programSource: {fileID: 11400000, guid: 19c6455fcf036f447a988be402108b3c, type: 2}
@@ -1858,13 +1858,15 @@ ParticleSystemRenderer:
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
+  m_UseCustomVertexStreams: 0
   m_VertexStreams: 00010304
+  m_UseCustomTrailVertexStreams: 0
+  m_TrailVertexStreams: 00010304
   m_Mesh: {fileID: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -10294,6 +10296,7 @@ MonoBehaviour:
   m_Script: {fileID: -1533785930, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AllowFocusView: 1
 --- !u!114 &851011276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10963,6 +10966,7 @@ MonoBehaviour:
   m_Script: {fileID: -1533785930, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AllowFocusView: 1
 --- !u!114 &970910944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15017,6 +15021,7 @@ MonoBehaviour:
   m_Script: {fileID: -1533785930, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AllowFocusView: 1
 --- !u!1 &1585301421
 GameObject:
   m_ObjectHideFlags: 0
@@ -15170,6 +15175,7 @@ MonoBehaviour:
   m_Script: {fileID: -1533785930, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AllowFocusView: 1
 --- !u!114 &1595294521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18427,7 +18433,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 4fbb49391fa71ce4cb1a60d4c5aaaecf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -18885,7 +18891,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: ca01a457f355c86498fc572d133e7ad2,
     type: 2}
   programSource: {fileID: 11400000, guid: d5d0346a3148a584da4572e44316e658, type: 2}
@@ -19554,7 +19560,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -19794,7 +19800,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -20672,6 +20678,7 @@ MonoBehaviour:
   m_Script: {fileID: -1533785930, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AllowFocusView: 1
 --- !u!1 &1439010667354970478
 GameObject:
   m_ObjectHideFlags: 0
@@ -20853,7 +20860,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -21271,7 +21278,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -21514,7 +21521,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -21834,7 +21841,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: e393818b9bb38234ab7ba8cd52e84604,
     type: 2}
   programSource: {fileID: 11400000, guid: 2de31a7dfc5718c47aa82772c351b8a3, type: 2}
@@ -22082,7 +22089,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -22475,7 +22482,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -22502,7 +22509,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -22647,7 +22654,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -22704,7 +22711,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -22731,7 +22738,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -22975,7 +22982,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -23071,7 +23078,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -23269,7 +23276,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -24011,7 +24018,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -24129,7 +24136,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -24677,7 +24684,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -25957,7 +25964,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -25984,7 +25991,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}
@@ -26813,7 +26820,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 0
+  _syncMethod: 2
   serializedProgramAsset: {fileID: 11400000, guid: 6beefcecc979d6e47b6ee83ea4f319d8,
     type: 2}
   programSource: {fileID: 11400000, guid: e1b45160fe9957145826cfa2a86419a1, type: 2}

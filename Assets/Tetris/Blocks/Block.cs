@@ -7,8 +7,6 @@ namespace Tetris.Blocks
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
-        private readonly int ShaderColorKey = Shader.PropertyToID("_Color");
-
         public BlockState State { get; set; }
 
         public DataToken Token => new DataToken(this);
@@ -31,7 +29,7 @@ namespace Tetris.Blocks
         {
             var blockRenderer = GetComponent<Renderer>();
             if (blockRenderer == null) return;
-            blockRenderer.material.SetColor(ShaderColorKey, color);
+            blockRenderer.material.color = color;
         }
     }
 }
