@@ -15,16 +15,26 @@ namespace Tetris
     {
         [UdonSynced] private readonly byte[] networkState = new byte[PlayArea.RequiredNetworkBufferSize];
 
-        private VRCPlayerApi Player { get; set; }
+        private bool rotateLeftHeld;
+        private bool rotateRightHeld;
 
         [field: SerializeField] public PlayArea PlayArea { get; set; }
 
-        private void Awake()
+        private void Start()
         {
             // Set the owner to the first player in the instance for now
-            Player = VRCPlayerApi.GetPlayerById(1);
-            Player.Immobilize(true);
-            Player.SetJumpImpulse(0);
+            var owner = Networking.GetOwner(gameObject);
+            if (owner == null) return;
+
+            Debug.Log($"TetrisGame.Start: Set owner to {owner.displayName}");
+            owner.Immobilize(true);
+            owner.SetJumpImpulse(0);
+
+            if (owner.isLocal)
+            {
+                Debug.Log("TetrisGame.Start: Owner is local player");
+                PlayArea.SetOwned(true);
+            }
         }
 
         public override void PostLateUpdate()
@@ -52,15 +62,33 @@ namespace Tetris
         /// <param name="args"></param>
         public override void InputUse(bool value, UdonInputEventArgs args)
         {
-            if (!value) return;
+            Debug.Log($"TetrisGame.InputUse: {args.handType} {args.floatValue} {args.boolValue} {value}");
 
+            // For some reason, InputUse fires twice on KBM inputs, unlike in the editor. We use some
+            // additional state to avoid re-rotating a block until the rotate button is released.
             if (args.handType == HandType.LEFT)
             {
-                PlayArea.RotateControlledGroupLeft();
+                if (!rotateLeftHeld && value)
+                {
+                    PlayArea.RotateControlledGroupLeft();
+                    rotateLeftHeld = true;
+                }
+                else if (!value)
+                {
+                    rotateLeftHeld = false;
+                }
             }
             else
             {
-                PlayArea.RotateControlledGroupRight();
+                if (!rotateRightHeld && value)
+                {
+                    PlayArea.RotateControlledGroupRight();
+                    rotateRightHeld = true;
+                }
+                else if (!value)
+                {
+                    rotateRightHeld = false;
+                }
             }
         }
 

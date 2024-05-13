@@ -49,8 +49,6 @@ namespace Tetris
 
         private void UpdatePositions()
         {
-            Debug.Log($"Queue.UpdatePositions: head={head}, tail={tail}");
-
             var i = head;
             for (var j = 0; j < count; j++)
             {

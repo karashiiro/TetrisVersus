@@ -48,6 +48,7 @@ namespace Tetris
         private bool softDropEnabled;
 
         private bool canExchangeWithHold = true;
+        private bool ownedByLocalPlayer;
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
@@ -80,9 +81,14 @@ namespace Tetris
             RefillQueue();
         }
 
+        public void SetOwned(bool value)
+        {
+            ownedByLocalPlayer = value;
+        }
+
         public bool ShouldSerialize()
         {
-            return Grid.ShouldSerialize();
+            return ownedByLocalPlayer && Grid.ShouldSerialize();
         }
 
         public int SerializeInto(byte[] buffer, int offset)
@@ -97,6 +103,8 @@ namespace Tetris
 
         public void Tick()
         {
+            if (!ownedByLocalPlayer) return;
+
             // Load the next shape if we don't have an active one yet
             if (controlledBlockGroup == null)
             {
@@ -337,6 +345,7 @@ namespace Tetris
             }
 
             var srsDisplacement = new Vector2Int(dXSrs, dYSrs);
+            var updates = $"PlayArea.RotateGroup: Rotating {blocks.Length} blocks: ";
             for (var i = 0; i < blocks.Length; i++)
             {
                 if (!group.TryGetPositionAbsolute(blocks[i], out var localX, out var localY)) continue;
@@ -349,7 +358,11 @@ namespace Tetris
                 var targetX = x + displacement.x;
                 var targetY = y + displacement.y;
                 Grid[targetX, targetY] = blocks[i];
+
+                updates += $"(<{x}, {y}> -> <{targetX}, {targetY}>) ";
             }
+
+            Debug.Log(updates);
 
             // Move the group in world space
             group.Translate(srsDisplacement);
@@ -484,20 +497,7 @@ namespace Tetris
 
             var targetX = x + dX;
             var targetY = y + dY;
-            if (!IsIndexInBounds(targetX, targetY))
-            {
-                Debug.Log($"IsBlockMovementValid: Destination <{targetX}, {targetY}> is out of bounds");
-                return false;
-            }
-
-            if (!IsLocationAvailable(targetX, targetY))
-            {
-                Debug.Log(
-                    $"IsBlockMovementValid: Destination <{targetX}, {targetY}> is occupied by another resting block");
-                return false;
-            }
-
-            return true;
+            return IsIndexInBounds(targetX, targetY) && IsLocationAvailable(targetX, targetY);
         }
 
         private bool IsLocationAvailable(int x, int y)
