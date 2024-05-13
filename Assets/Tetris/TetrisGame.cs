@@ -40,6 +40,11 @@ namespace Tetris
             PlayArea.SerializeInto(networkState, 0);
         }
 
+        public override void OnDeserialization()
+        {
+            PlayArea.DeserializeFrom(networkState, 0);
+        }
+
         /// <summary>
         /// Block rotations, controlled with the controller triggers.
         /// </summary>

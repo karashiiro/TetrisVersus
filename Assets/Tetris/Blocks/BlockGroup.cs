@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using UdonSharp;
 using UnityEngine;
 using UnityExtensions;
@@ -16,6 +17,9 @@ namespace Tetris.Blocks
     {
         private readonly DataDictionary group = new DataDictionary();
         private readonly DataDictionary groupPositions = new DataDictionary();
+
+        public const int RequiredNetworkBufferSizeBase = 2;
+        public const int RequiredNetworkBufferSizePerBlock = Block.RequiredNetworkBufferSize;
 
         private bool shouldRequestSerialization;
 
@@ -60,9 +64,61 @@ namespace Tetris.Blocks
 
         public int SerializeInto(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax)
         {
-            // TODO: stub
+            var nWritten = 0;
+
+            // Write the group data to the buffer first
+            buffer[offset] = Convert.ToByte(Orientation);
+            buffer[offset + 1] = Convert.ToByte(Type);
+            nWritten += 2;
+
+            // Write each block's data to the buffer in order
+            for (var x = boundsMin.x; x < boundsMax.x; x++)
+            {
+                for (var y = boundsMin.y; y < boundsMax.y; y++)
+                {
+                    if (group.TryGetValue(Key(x, y), TokenType.Reference, out var blockToken))
+                    {
+                        var block = blockToken.As<Block>();
+                        nWritten += block.SerializeInto(buffer, offset + nWritten);
+                    }
+                    else
+                    {
+                        nWritten += Block.RequiredNetworkBufferSize;
+                    }
+                }
+            }
+
             shouldRequestSerialization = false;
-            return 0;
+            return nWritten;
+        }
+
+        public void DeserializeFrom(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax,
+            BlockFactory blockFactory)
+        {
+            Orientation = (Orientation)Convert.ToInt32(buffer[offset]);
+            Type = (ShapeType)Convert.ToInt32(buffer[offset + 1]);
+
+            var nRead = 0;
+            for (var x = boundsMin.x; x < boundsMax.x; x++)
+            {
+                for (var y = boundsMin.y; y < boundsMax.y; y++)
+                {
+                    var blockExists = group.TryGetValue(Key(x, y), TokenType.Reference, out var blockToken);
+                    if (Block.ShouldDeserialize(buffer, offset + nRead))
+                    {
+                        var block = blockExists
+                            ? blockToken.As<Block>()
+                            : blockFactory.CreateBlock(this, x, y);
+                        block.DeserializeFrom(buffer, offset + nRead);
+                    }
+                    else if (blockExists)
+                    {
+                        Destroy(blockToken.As<Block>());
+                    }
+
+                    nRead += Block.RequiredNetworkBufferSize;
+                }
+            }
         }
 
         /// <summary>

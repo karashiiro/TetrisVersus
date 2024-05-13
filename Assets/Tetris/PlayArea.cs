@@ -19,7 +19,8 @@ namespace Tetris
         private const int Height = LimitHeight + BufferHeight;
         private const decimal SoftDropGravityBonus = 0.8m;
 
-        public const int RequiredNetworkBufferSize = Block.RequiredNetworkBufferSize * Width * Height;
+        public const int RequiredNetworkBufferSize = BlockGroup.RequiredNetworkBufferSizeBase +
+                                                     BlockGroup.RequiredNetworkBufferSizePerBlock * Width * Height;
 
         private readonly Vector2Int boundsMin = new Vector2Int(0, 0);
         private readonly Vector2Int boundsMax = new Vector2Int(Width, Height);
@@ -89,6 +90,11 @@ namespace Tetris
             return Grid.SerializeInto(buffer, offset, boundsMin, boundsMax);
         }
 
+        public void DeserializeFrom(byte[] buffer, int offset)
+        {
+            Grid.DeserializeFrom(buffer, offset, boundsMin, boundsMax, BlockFactory);
+        }
+
         public void Tick()
         {
             // Load the next shape if we don't have an active one yet
@@ -150,7 +156,7 @@ namespace Tetris
 
         public void ExchangeHold()
         {
-            if (!canExchangeWithHold) return;
+            if (!canExchangeWithHold || controlledBlockGroup == null) return;
             canExchangeWithHold = false;
 
             RemoveBlocksFromGroup(controlledBlockGroup);
