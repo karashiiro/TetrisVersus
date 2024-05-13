@@ -98,7 +98,7 @@ namespace Tetris.Blocks
             Orientation = (Orientation)Convert.ToInt32(buffer[offset]);
             Type = (ShapeType)Convert.ToInt32(buffer[offset + 1]);
 
-            var nRead = 0;
+            var nRead = RequiredNetworkBufferSizeBase;
             for (var x = boundsMin.x; x < boundsMax.x; x++)
             {
                 for (var y = boundsMin.y; y < boundsMax.y; y++)
