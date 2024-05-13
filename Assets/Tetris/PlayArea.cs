@@ -20,7 +20,8 @@ namespace Tetris
         private const decimal SoftDropGravityBonus = 0.8m;
 
         public const int RequiredNetworkBufferSize = BlockGroup.RequiredNetworkBufferSizeBase +
-                                                     BlockGroup.RequiredNetworkBufferSizePerBlock * Width * Height;
+                                                     BlockGroup.RequiredNetworkBufferSizePerBlock * Width * Height +
+                                                     Queue.RequiredNetworkBufferSize;
 
         private readonly Vector2Int boundsMin = new Vector2Int(0, 0);
         private readonly Vector2Int boundsMax = new Vector2Int(Width, Height);
@@ -93,12 +94,16 @@ namespace Tetris
 
         public int SerializeInto(byte[] buffer, int offset)
         {
-            return Grid.SerializeInto(buffer, offset, boundsMin, boundsMax);
+            var nWritten = 0;
+            nWritten += Queue.SerializeInto(buffer, offset);
+            nWritten += Grid.SerializeInto(buffer, offset + nWritten, boundsMin, boundsMax);
+            return nWritten;
         }
 
         public void DeserializeFrom(byte[] buffer, int offset)
         {
-            Grid.DeserializeFrom(buffer, offset, boundsMin, boundsMax, BlockFactory);
+            Queue.DeserializeFrom(buffer, offset, BlockFactory, palette);
+            Grid.DeserializeFrom(buffer, offset + Queue.RequiredNetworkBufferSize, boundsMin, boundsMax, BlockFactory);
         }
 
         public void Tick()
@@ -222,7 +227,7 @@ namespace Tetris
                 var nextShapeType = RandomGenerator.GetNextShape(randomBag, ref randomBagIndex);
                 if (!palette.TryGetValue(nextShapeType.GetToken(), TokenType.Reference, out var colorToken))
                 {
-                    Debug.LogError($"RefillQueue: Failed to get color for shape: {nextShapeType}");
+                    Debug.LogError($"PlayArea.RefillQueue: Failed to get color for shape: {nextShapeType}");
                     colorToken = new DataToken(Color.grey);
                 }
 

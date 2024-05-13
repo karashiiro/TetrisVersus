@@ -27,13 +27,15 @@ namespace Tetris
             if (owner == null) return;
 
             Debug.Log($"TetrisGame.Start: Set owner to {owner.displayName}");
-            owner.Immobilize(true);
-            owner.SetJumpImpulse(0);
-
             if (owner.isLocal)
             {
                 Debug.Log("TetrisGame.Start: Owner is local player");
                 PlayArea.SetOwned(true);
+            }
+            else
+            {
+                owner.Immobilize(true);
+                owner.SetJumpImpulse(0);
             }
         }
 

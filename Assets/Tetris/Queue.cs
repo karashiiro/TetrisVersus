@@ -1,7 +1,10 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using Tetris.Blocks;
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Data;
+using VRCExtensions;
 
 namespace Tetris
 {
@@ -10,7 +13,14 @@ namespace Tetris
     {
         private const int QueueSize = 5;
 
+        private const int RequiredNetworkBufferSizePerGroup = 1;
+        public const int RequiredNetworkBufferSize = QueueSize * RequiredNetworkBufferSizePerGroup;
+
         private readonly BlockGroup[] incoming = new BlockGroup[QueueSize];
+
+        // These are the bounds for each queue element, and are derived from the spawn positions in BlockFactory
+        private readonly Vector2Int boundsMin = new Vector2Int(-1, -1);
+        private readonly Vector2Int boundsMax = new Vector2Int(2, 1);
 
         private int head;
         private int tail;
@@ -18,6 +28,59 @@ namespace Tetris
 
         public bool IsFull => incoming[tail] != null;
         public bool IsEmpty => incoming[head] == null;
+
+        public int SerializeInto(byte[] buffer, int offset)
+        {
+            buffer[offset] = Convert.ToByte(head);
+            buffer[offset + 1] = Convert.ToByte(tail);
+            buffer[offset + 2] = Convert.ToByte(count);
+
+            var nWritten = 0;
+            var i = head;
+            for (var j = 0; j < count; j++)
+            {
+                buffer[offset + nWritten++] = Convert.ToByte(incoming[i].Type);
+                i = GetNextIndex(i);
+            }
+
+            return nWritten;
+        }
+
+        public void DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
+        {
+            head = 0;
+            tail = 0;
+            count = 0;
+
+            for (var n = 0; n < QueueSize; n++)
+            {
+                if (incoming[n] != null)
+                {
+                    Destroy(incoming[n]);
+                }
+            }
+
+            var nRead = 0;
+            for (var i = 0; i < QueueSize; i++)
+            {
+                var shapeType = (ShapeType)Convert.ToInt32(buffer[offset + nRead]);
+                if (shapeType != ShapeType.None)
+                {
+                    if (!palette.TryGetValue(shapeType.GetToken(), TokenType.Reference, out var colorToken))
+                    {
+                        Debug.LogError($"Queue.DeserializeFrom: Failed to get color for shape: {shapeType}");
+                        colorToken = new DataToken(Color.grey);
+                    }
+
+                    var group = blockFactory.CreateShape(shapeType, colorToken.As<Color>());
+                    Push(group);
+                }
+
+                nRead += RequiredNetworkBufferSizePerGroup;
+
+                i = GetNextIndex(i);
+            }
+        }
 
         [CanBeNull]
         public BlockGroup Pop(Transform parent)
