@@ -24,16 +24,14 @@ namespace Tetris
         {
             // Set the owner to the first player in the instance for now
             var owner = Networking.GetOwner(gameObject);
-            if (ReferenceEquals(owner, null)) return;
+            if (owner == null) return;
 
             Debug.Log($"TetrisGame.Start: Set owner to {owner.displayName}");
             if (owner.isLocal)
             {
                 Debug.Log("TetrisGame.Start: Owner is local player");
                 PlayArea.SetOwned(true);
-            }
-            else
-            {
+
                 owner.Immobilize(true);
                 owner.SetJumpImpulse(0);
             }
