@@ -110,10 +110,12 @@ namespace Tetris.Blocks
                             ? blockToken.As<Block>()
                             : blockFactory.CreateBlock(this, x, y);
                         block.DeserializeFrom(buffer, offset + nRead);
+                        this[x, y] = block;
                     }
                     else if (blockExists)
                     {
-                        Destroy(blockToken.As<Block>());
+                        this[x, y] = null;
+                        Destroy(blockToken.As<Block>().gameObject);
                     }
 
                     nRead += Block.RequiredNetworkBufferSize;

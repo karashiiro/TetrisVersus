@@ -18,10 +18,6 @@ namespace Tetris
 
         private readonly BlockGroup[] incoming = new BlockGroup[QueueSize];
 
-        // These are the bounds for each queue element, and are derived from the spawn positions in BlockFactory
-        private readonly Vector2Int boundsMin = new Vector2Int(-1, -1);
-        private readonly Vector2Int boundsMax = new Vector2Int(2, 1);
-
         private int head;
         private int tail;
         private int count;
@@ -56,7 +52,8 @@ namespace Tetris
             {
                 if (incoming[n] != null)
                 {
-                    Destroy(incoming[n]);
+                    Destroy(incoming[n].gameObject);
+                    incoming[n] = null;
                 }
             }
 
