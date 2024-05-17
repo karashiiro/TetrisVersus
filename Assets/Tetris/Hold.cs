@@ -1,14 +1,53 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using Tetris.Blocks;
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Data;
+using VRCExtensions;
 
 namespace Tetris
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Hold : UdonSharpBehaviour
     {
+        public const int RequiredNetworkBufferSize = 1;
+
         [CanBeNull] private BlockGroup current;
+
+        public int SerializeInto(byte[] buffer, int offset)
+        {
+            if (current != null)
+            {
+                buffer[offset] = Convert.ToByte(current.Type);
+            }
+
+            return RequiredNetworkBufferSize;
+        }
+
+        public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
+        {
+            if (current != null)
+            {
+                Destroy(current.gameObject);
+                current = null;
+            }
+
+            var shapeType = (ShapeType)Convert.ToInt32(buffer[offset]);
+            if (shapeType != ShapeType.None)
+            {
+                if (!palette.TryGetValue(shapeType.GetToken(), TokenType.Reference, out var colorToken))
+                {
+                    Debug.LogError($"Hold.DeserializeFrom: Failed to get color for shape: {shapeType}");
+                    colorToken = new DataToken(Color.grey);
+                }
+
+                var group = blockFactory.CreateShape(shapeType, colorToken.As<Color>());
+                Exchange(ref group, BlockState.AtRest);
+            }
+
+            return RequiredNetworkBufferSize;
+        }
 
         /// <summary>
         /// Exchanges the provided block group with the block group currently stored in the hold.

@@ -92,7 +92,7 @@ namespace Tetris.Blocks
             return nWritten;
         }
 
-        public void DeserializeFrom(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax,
+        public int DeserializeFrom(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax,
             BlockFactory blockFactory)
         {
             Orientation = (Orientation)Convert.ToInt32(buffer[offset]);
@@ -121,6 +121,8 @@ namespace Tetris.Blocks
                     nRead += Block.RequiredNetworkBufferSize;
                 }
             }
+
+            return nRead;
         }
 
         /// <summary>

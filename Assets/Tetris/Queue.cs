@@ -39,10 +39,10 @@ namespace Tetris
                 i = GetNextIndex(i);
             }
 
-            return nWritten;
+            return RequiredNetworkBufferSize;
         }
 
-        public void DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
+        public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
         {
             head = 0;
             tail = 0;
@@ -77,6 +77,8 @@ namespace Tetris
 
                 i = GetNextIndex(i);
             }
+
+            return RequiredNetworkBufferSize;
         }
 
         [CanBeNull]

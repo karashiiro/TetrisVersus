@@ -21,7 +21,8 @@ namespace Tetris
 
         public const int RequiredNetworkBufferSize = BlockGroup.RequiredNetworkBufferSizeBase +
                                                      BlockGroup.RequiredNetworkBufferSizePerBlock * Width * Height +
-                                                     Queue.RequiredNetworkBufferSize;
+                                                     Queue.RequiredNetworkBufferSize +
+                                                     Hold.RequiredNetworkBufferSize;
 
         private readonly Vector2Int boundsMin = new Vector2Int(0, 0);
         private readonly Vector2Int boundsMax = new Vector2Int(Width, Height);
@@ -94,16 +95,18 @@ namespace Tetris
 
         public int SerializeInto(byte[] buffer, int offset)
         {
-            var nWritten = 0;
-            nWritten += Queue.SerializeInto(buffer, offset);
+            var nWritten = Queue.SerializeInto(buffer, offset);
+            nWritten += Hold.SerializeInto(buffer, offset + nWritten);
             nWritten += Grid.SerializeInto(buffer, offset + nWritten, boundsMin, boundsMax);
             return nWritten;
         }
 
-        public void DeserializeFrom(byte[] buffer, int offset)
+        public int DeserializeFrom(byte[] buffer, int offset)
         {
-            Queue.DeserializeFrom(buffer, offset, BlockFactory, palette);
-            Grid.DeserializeFrom(buffer, offset + Queue.RequiredNetworkBufferSize, boundsMin, boundsMax, BlockFactory);
+            var nRead = Queue.DeserializeFrom(buffer, offset, BlockFactory, palette);
+            nRead += Hold.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
+            nRead += Grid.DeserializeFrom(buffer, offset + nRead, boundsMin, boundsMax, BlockFactory);
+            return nRead;
         }
 
         public void Tick()
