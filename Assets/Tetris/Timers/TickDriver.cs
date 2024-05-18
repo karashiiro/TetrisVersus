@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Tetris.Timers
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class TickDriver : UdonSharpBehaviour
     {
         // Emulate 60Hz

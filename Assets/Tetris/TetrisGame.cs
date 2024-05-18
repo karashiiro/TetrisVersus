@@ -1,4 +1,5 @@
 ﻿using System;
+using Tetris.Timers;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -19,6 +20,13 @@ namespace Tetris
         private bool rotateRightHeld;
 
         [field: SerializeField] public PlayArea PlayArea { get; set; }
+        [field: SerializeField] public TickDriver TickDriver { get; set; }
+
+        private void Awake()
+        {
+            if (PlayArea == null) Debug.LogError("TetrisGame.Awake: PlayArea is null.");
+            if (TickDriver == null) Debug.LogError("TetrisGame.Awake: TickDriver is null.");
+        }
 
         private void Start()
         {
@@ -26,14 +34,29 @@ namespace Tetris
             var owner = Networking.GetOwner(gameObject);
             if (owner == null) return;
 
-            Debug.Log($"TetrisGame.Start: Set owner to {owner.displayName}");
-            if (owner.isLocal)
+            InitGame(owner);
+        }
+
+        private void InitGame(VRCPlayerApi player)
+        {
+            Debug.Log($"TetrisGame.Start: Set owner to {player.displayName}");
+            if (player.isLocal)
             {
                 Debug.Log("TetrisGame.Start: Owner is local player");
                 PlayArea.SetOwned(true);
 
-                owner.Immobilize(true);
-                owner.SetJumpImpulse(0);
+                player.Immobilize(true);
+                player.SetJumpImpulse(0);
+            }
+
+            SetGameState(GameState.Playing);
+        }
+
+        public void SetGameState(GameState nextState)
+        {
+            if (nextState == GameState.Playing)
+            {
+                TickDriver.enabled = true;
             }
         }
 

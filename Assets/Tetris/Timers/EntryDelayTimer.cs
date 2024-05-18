@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Tetris.Timers
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class EntryDelayTimer : UdonSharpBehaviour
     {
         private const int EntryDelayTicks = 6;

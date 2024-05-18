@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Tetris.Timers
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class AutoRepeatTimer : UdonSharpBehaviour
     {
         private const int DASTicks = 10;

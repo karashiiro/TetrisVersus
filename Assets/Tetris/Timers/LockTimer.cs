@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Tetris.Timers
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class LockTimer : UdonSharpBehaviour
     {
         private const int LockTicks = 30;

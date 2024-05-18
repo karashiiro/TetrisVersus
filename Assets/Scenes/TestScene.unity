@@ -559,6 +559,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 357710615545213769, guid: 5145ca0b0484b3543ad25e61a4ea072a,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 489130777644716335, guid: 5145ca0b0484b3543ad25e61a4ea072a,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 489130777644716335, guid: 5145ca0b0484b3543ad25e61a4ea072a,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1461673107495855619, guid: 5145ca0b0484b3543ad25e61a4ea072a,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -612,6 +627,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3811542560172051175, guid: 5145ca0b0484b3543ad25e61a4ea072a,
         type: 3}
+    - target: {fileID: 4175375619229147783, guid: 5145ca0b0484b3543ad25e61a4ea072a,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4965659771694873563, guid: 5145ca0b0484b3543ad25e61a4ea072a,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -686,6 +706,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7766764777392657340, guid: 5145ca0b0484b3543ad25e61a4ea072a,
         type: 3}
+    - target: {fileID: 8001192124047811233, guid: 5145ca0b0484b3543ad25e61a4ea072a,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
