@@ -4,5 +4,6 @@
     {
         NotStarted,
         Playing,
+        Stopped,
     }
 }

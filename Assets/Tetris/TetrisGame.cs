@@ -58,6 +58,10 @@ namespace Tetris
             {
                 TickDriver.enabled = true;
             }
+            else if (nextState == GameState.Stopped)
+            {
+                TickDriver.enabled = false;
+            }
         }
 
         public override void PostLateUpdate()
