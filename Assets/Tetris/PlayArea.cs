@@ -71,6 +71,8 @@ namespace Tetris
             if (LockTimer == null) Debug.LogError("PlayArea.Awake: LockTimer is null.");
             if (AutoRepeatTimer == null) Debug.LogError("PlayArea.Awake: AutoRepeatTimer is null.");
             if (EntryDelayTimer == null) Debug.LogError("PlayArea.Awake: EntryDelayTimer is null.");
+
+            Grid.ShouldDestroyOnClear = false;
         }
 
         private void Start()

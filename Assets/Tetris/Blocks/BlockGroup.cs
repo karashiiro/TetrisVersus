@@ -23,6 +23,8 @@ namespace Tetris.Blocks
 
         private bool shouldRequestSerialization;
 
+        public bool ShouldDestroyOnClear { get; set; } = true;
+
         public Orientation Orientation { get; private set; }
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace Tetris.Blocks
         private void OnTransformChildrenChanged()
         {
             // Clean up block groups when all of their children are destroyed
-            if (transform.childCount == 0)
+            if (ShouldDestroyOnClear && transform.childCount == 0)
             {
                 Destroy(gameObject);
             }
@@ -64,14 +66,12 @@ namespace Tetris.Blocks
 
         public int SerializeInto(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax)
         {
-            var nWritten = 0;
-
             // Write the group data to the buffer first
             buffer[offset] = Convert.ToByte(Orientation);
             buffer[offset + 1] = Convert.ToByte(Type);
-            nWritten += 2;
 
             // Write each block's data to the buffer in order
+            var nWritten = RequiredNetworkBufferSizeBase;
             for (var x = boundsMin.x; x < boundsMax.x; x++)
             {
                 for (var y = boundsMin.y; y < boundsMax.y; y++)
@@ -83,7 +83,7 @@ namespace Tetris.Blocks
                     }
                     else
                     {
-                        nWritten += Block.RequiredNetworkBufferSize;
+                        nWritten += Block.SerializeEmpty(buffer, offset + nWritten);
                     }
                 }
             }
@@ -103,19 +103,21 @@ namespace Tetris.Blocks
             {
                 for (var y = boundsMin.y; y < boundsMax.y; y++)
                 {
-                    var blockExists = group.TryGetValue(Key(x, y), TokenType.Reference, out var blockToken);
+                    var block = this[x, y];
                     if (Block.ShouldDeserialize(buffer, offset + nRead))
                     {
-                        var block = blockExists
-                            ? blockToken.As<Block>()
-                            : blockFactory.CreateBlock(this, x, y);
+                        if (block == null)
+                        {
+                            block = blockFactory.CreateBlock(this, x, y);
+                            this[x, y] = block;
+                        }
+
                         block.DeserializeFrom(buffer, offset + nRead);
-                        this[x, y] = block;
                     }
-                    else if (blockExists)
+                    else if (block != null)
                     {
                         this[x, y] = null;
-                        Destroy(blockToken.As<Block>().gameObject);
+                        Destroy(block.gameObject);
                     }
 
                     nRead += Block.RequiredNetworkBufferSize;

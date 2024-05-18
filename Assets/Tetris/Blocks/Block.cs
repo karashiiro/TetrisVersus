@@ -40,6 +40,7 @@ namespace Tetris.Blocks
         public int SerializeInto(byte[] buffer, int offset)
         {
             buffer[offset] = Convert.ToByte(State);
+            buffer[offset] |= 0b10000000;
 
             // Copy the color without the alpha channel since we don't use it
             var color32 = (Color32)color;
@@ -47,6 +48,12 @@ namespace Tetris.Blocks
             buffer[offset + 2] = color32.g;
             buffer[offset + 3] = color32.b;
 
+            return RequiredNetworkBufferSize;
+        }
+
+        public static int SerializeEmpty(byte[] buffer, int offset)
+        {
+            buffer[offset] = 0;
             return RequiredNetworkBufferSize;
         }
 
