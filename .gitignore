@@ -76,3 +76,6 @@ crashlytics-build.properties
 
 # Visual Studio ManagedGame upgrade log
 UpgradeLog.htm
+
+# Udon
+/[Aa]ssets/[Ss]erializedUdonPrograms/
