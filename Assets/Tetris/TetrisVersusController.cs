@@ -1,5 +1,6 @@
 ﻿using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Data;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 using Random = UnityEngine.Random;
@@ -18,17 +19,20 @@ namespace Tetris
 
         public void TetrisGameOnClearedLines()
         {
-            if (!TryFindLocalGame(out var from, out var fromIdx))
+            var activeGames = GetActiveGames();
+            if (activeGames.Length < 2) return;
+
+            if (!TryFindLocalGame(activeGames, out var from, out var fromIdx))
             {
-                Debug.LogError("TetrisVersusController.FindSender: Could not find event sender!");
+                Debug.LogWarning("TetrisVersusController.FindSender: Could not find event sender.");
                 return;
             }
 
-            var toIdx = Random.Range(0, ParticipatingGames.Length);
+            var toIdx = Random.Range(0, activeGames.Length);
             if (toIdx == fromIdx)
             {
                 // Don't send yourself garbage
-                toIdx = (toIdx + 1) % ParticipatingGames.Length;
+                toIdx = (toIdx + 1) % activeGames.Length;
             }
 
             var lines = from.PlayArea.LastLinesCleared;
@@ -41,17 +45,37 @@ namespace Tetris
             to.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(TetrisGame.SendGarbage));
         }
 
-        private bool TryFindLocalGame(out TetrisGame game, out int idx)
+        private TetrisGame[] GetActiveGames()
+        {
+            var activeGameIndexes = new DataList();
+            for (var i = 0; i < ParticipatingGames.Length; i++)
+            {
+                if (ParticipatingGames[i].CurrentState == GameState.Playing)
+                {
+                    activeGameIndexes.Add(i);
+                }
+            }
+
+            var games = new TetrisGame[activeGameIndexes.Count];
+            for (var i = 0; i < games.Length; i++)
+            {
+                games[i] = ParticipatingGames[activeGameIndexes[i].Int];
+            }
+
+            return games;
+        }
+
+        private bool TryFindLocalGame(TetrisGame[] games, out TetrisGame game, out int idx)
         {
             game = null;
             idx = -1;
-            
-            for (var i = 0; i < ParticipatingGames.Length; i++)
+
+            for (var i = 0; i < games.Length; i++)
             {
-                if (Networking.IsOwner(ParticipatingGames[i].gameObject) &&
-                    ParticipatingGames[i].CurrentState == GameState.Playing)
+                if (Networking.IsOwner(games[i].gameObject) &&
+                    games[i].CurrentState == GameState.Playing)
                 {
-                    game = ParticipatingGames[i];
+                    game = games[i];
                     idx = i;
                     return true;
                 }

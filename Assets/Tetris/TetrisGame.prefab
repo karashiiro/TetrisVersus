@@ -1439,6 +1439,7 @@ MonoBehaviour:
   <NotifyLineClearsTo>k__BackingField: {fileID: 0}
   <PlayArea>k__BackingField: {fileID: 1835222984171924923}
   <TickDriver>k__BackingField: {fileID: 2878117452562826341}
+  CurrentState: 0
 --- !u!114 &7715534649046676936
 MonoBehaviour:
   m_ObjectHideFlags: 0
