@@ -32,6 +32,8 @@ namespace Tetris.Timers
 
         public void BeginTimer()
         {
+            if (entryDelayEnabled) return;
+            Debug.Log("EntryDelayTimer.BeginTimer: Beginning entry delay timer");
             entryDelayEnabled = true;
         }
 

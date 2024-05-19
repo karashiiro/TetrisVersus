@@ -19,13 +19,15 @@ namespace Tetris
         private bool rotateLeftHeld;
         private bool rotateRightHeld;
 
-        [UdonSynced] private GameState currentState;
-
+        [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
         [field: SerializeField] public PlayArea PlayArea { get; set; }
         [field: SerializeField] public TickDriver TickDriver { get; set; }
 
+        [field: UdonSynced] public GameState CurrentState;
+
         private void Awake()
         {
+            if (NotifyLineClearsTo == null) Debug.LogWarning("TetrisGame.Awake: NotifyLineClearsTo is null.");
             if (PlayArea == null) Debug.LogError("TetrisGame.Awake: PlayArea is null.");
             if (TickDriver == null) Debug.LogError("TetrisGame.Awake: TickDriver is null.");
         }
@@ -48,7 +50,7 @@ namespace Tetris
         {
             // OnOwnershipRequest is triggered by the requesting player (who should always be the interact player?)
             // The current owner still needs to approve the request after this event resolves.
-            var shouldRequest = currentState == GameState.NotStarted;
+            var shouldRequest = CurrentState == GameState.NotStarted;
             Debug.Log($"TetrisGame.OnOwnershipRequest: shouldRequest={shouldRequest}");
 
             // Unfreeze the player if they were the owner and are having ownership reassigned
@@ -88,7 +90,7 @@ namespace Tetris
 
         public void StopGame()
         {
-            if (currentState == GameState.Stopped) return;
+            if (CurrentState == GameState.Stopped) return;
 
             Debug.Log("TetrisGame.StopGame: Stopping game");
 
@@ -108,7 +110,7 @@ namespace Tetris
 
         private void SetGameState(GameState nextState)
         {
-            currentState = nextState;
+            CurrentState = nextState;
             switch (nextState)
             {
                 case GameState.Playing:
@@ -118,6 +120,26 @@ namespace Tetris
                     TickDriver.enabled = false;
                     break;
             }
+        }
+
+        public void PlayAreaOnClearedLines()
+        {
+            if (NotifyLineClearsTo != null)
+            {
+                Debug.Log("TetrisGame.PlayAreaOnClearedLines: Sending cleared lines to listeners.");
+                NotifyLineClearsTo.SendCustomEvent("TetrisGameOnClearedLines");
+            }
+            else
+            {
+                Debug.LogWarning("TetrisGame.PlayAreaOnClearedLines: NotifyLineClearsTo is null.");
+            }
+        }
+
+        public void SendGarbage()
+        {
+            // TODO: Send garbage based on line clears
+            Debug.Log("TetrisGame.SendGarbage: Sending garbage lines to play area.");
+            PlayArea.SendGarbage(2);
         }
 
         public override void PostLateUpdate()
@@ -234,7 +256,7 @@ namespace Tetris
 
         private bool ShouldBeControllable()
         {
-            return currentState == GameState.Playing && Networking.IsOwner(gameObject);
+            return CurrentState == GameState.Playing && Networking.IsOwner(gameObject);
         }
     }
 }

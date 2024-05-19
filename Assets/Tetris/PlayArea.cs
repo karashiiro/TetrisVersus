@@ -52,8 +52,11 @@ namespace Tetris
         private bool canExchangeWithHold = true;
         private bool ownedByLocalPlayer;
 
+        private int queuedGarbageLines;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
+        [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
         [field: SerializeField] public BlockGroup Grid { get; set; }
         [field: SerializeField] public Hold Hold { get; set; }
@@ -62,8 +65,11 @@ namespace Tetris
         [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
         [field: SerializeField] public EntryDelayTimer EntryDelayTimer { get; set; }
 
+        public int LastLinesCleared { get; private set; }
+
         private void Awake()
         {
+            if (NotifyLineClearsTo == null) Debug.LogWarning("PlayArea.Awake: NotifyLineClearsTo is null.");
             if (BlockFactory == null) Debug.LogError("PlayArea.Awake: BlockFactory is null.");
             if (Grid == null) Debug.LogError("PlayArea.Awake: Grid is null.");
             if (Hold == null) Debug.LogError("PlayArea.Awake: Hold is null.");
@@ -71,13 +77,11 @@ namespace Tetris
             if (LockTimer == null) Debug.LogError("PlayArea.Awake: LockTimer is null.");
             if (AutoRepeatTimer == null) Debug.LogError("PlayArea.Awake: AutoRepeatTimer is null.");
             if (EntryDelayTimer == null) Debug.LogError("PlayArea.Awake: EntryDelayTimer is null.");
-
-            Grid.ShouldDestroyOnClear = false;
         }
 
         private void Start()
         {
-            Debug.Log("Initializing play area");
+            Debug.Log("PlayArea.Start: Initializing play area");
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
             SRSHelpers.NewDataTable(out srsTables, out srsTranslationBuffer);
 
@@ -113,6 +117,24 @@ namespace Tetris
 
         public void Clear()
         {
+            Debug.Log("PlayArea.Clear: Clearing play area");
+
+            EntryDelayTimer.ResetTimer();
+            AutoRepeatTimer.ResetTimer();
+            LockTimer.ResetTimer();
+            SetOwned(false);
+
+            LastLinesCleared = 0;
+            queuedGarbageLines = 0;
+            gravityProgress = 0;
+            softDropEnabled = false;
+
+            if (controlledBlockGroup != null)
+            {
+                Destroy(controlledBlockGroup.gameObject);
+                controlledBlockGroup = null;
+            }
+
             Grid.Clear();
             Hold.Clear();
             Queue.Clear();
@@ -147,26 +169,34 @@ namespace Tetris
 
         public void SendGarbage(int lines = 1)
         {
+            queuedGarbageLines += lines;
+        }
+
+        private void LoadQueuedGarbage()
+        {
+            if (queuedGarbageLines <= 0) return;
+
             // Push all existing blocks upwards
-            // TODO: Avoid possible race condition where garbage causes the controlled group to get stuck in another block
-            for (var y = Height - lines - 1; y >= 0; y--)
+            for (var y = Height - queuedGarbageLines - 1; y >= 0; y--)
             {
                 for (var x = 0; x < Width; x++)
                 {
                     var block = Grid[x, y];
                     if (block == null) continue;
 
-                    Grid[x, y + lines] = block;
-                    block.transform.Translate(new Vector3(0, lines));
+                    Grid[x, y + queuedGarbageLines] = block;
+                    block.transform.Translate(new Vector3(0, queuedGarbageLines));
                     Grid[x, y] = null;
                 }
             }
 
-            for (var y = 0; y < lines; y++)
+            for (var y = 0; y < queuedGarbageLines; y++)
             {
                 var garbageLine = CreateGarbageLine();
                 AddBlocks(garbageLine, 0, y);
             }
+
+            queuedGarbageLines = 0;
         }
 
         private BlockGroup CreateGarbageLine()
@@ -222,12 +252,17 @@ namespace Tetris
             // Check if any lines were cleared
             HandleLineClears();
 
+            // Load any queued garbage lines
+            LoadQueuedGarbage();
+
             // Re-enable the hold function
             canExchangeWithHold = true;
         }
 
         public void LoadNextShape()
         {
+            Debug.Log("PlayArea.LoadNextShape: Loading next controlled group");
+
             var shape = Queue.Pop(transform);
             if (shape == null) return;
             AddControlledBlocks(shape);
@@ -457,7 +492,8 @@ namespace Tetris
                 group.Orientation, rotation);
             foreach (var translation in translations)
             {
-                if (IsGroupMovementValid(group, rotation, translation[0], translation[1]))
+                if (IsGroupMovementValid(group, rotation, translation[0], translation[1],
+                        caller: nameof(IsGroupMovementValidSRS)))
                 {
                     dX = translation[0];
                     dY = translation[1];
@@ -468,7 +504,8 @@ namespace Tetris
             return false;
         }
 
-        private bool IsGroupMovementValid(BlockGroup group, Rotation rotation, int dX, int dY)
+        private bool IsGroupMovementValid(BlockGroup group, Rotation rotation, int dX, int dY,
+            string caller = "unknown")
         {
             var srsTranslation = new Vector2Int(dX, dY);
             foreach (var block in group.GetBlocks())
@@ -477,13 +514,13 @@ namespace Tetris
                 if (!group.TryGetPositionAbsolute(block, out var localX, out var localY,
                         caller: nameof(IsGroupMovementValid)))
                 {
-                    Debug.LogError("IsGroupMovementValid: Could not get absolute block position in group");
+                    Debug.LogError($"IsGroupMovementValid({caller}): Could not get absolute block position in group");
                     return false;
                 }
 
                 var position = new Vector2Int(localX, localY);
                 var displacement = position.Rotate(rotation.AsDegrees()) - position + srsTranslation;
-                if (!IsBlockMovementValid(block, displacement.x, displacement.y))
+                if (!IsBlockMovementValid(block, displacement.x, displacement.y, caller: nameof(IsGroupMovementValid)))
                 {
                     return false;
                 }
@@ -498,7 +535,7 @@ namespace Tetris
 
             foreach (var block in group.GetBlocks())
             {
-                if (!IsBlockMovementValid(block, dX, dY))
+                if (!IsBlockMovementValid(block, dX, dY, caller: nameof(IsGroupMovementValid)))
                 {
                     // We're either at the edge of the grid, or there's a block where we want to go
                     return false;
@@ -508,11 +545,15 @@ namespace Tetris
             return true;
         }
 
-        private bool IsBlockMovementValid(Block block, int dX, int dY)
+        private bool IsBlockMovementValid(Block block, int dX, int dY, string caller = "unknown")
         {
             if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(IsBlockMovementValid)))
             {
-                Debug.LogError("IsBlockMovementValid: Could not get block position");
+                var gridBlocks = Grid.GetBlocks();
+                Debug.LogError(gridBlocks == null
+                    ? $"PlayArea.IsBlockMovementValid({caller}): Grid.GetBlocks() returned null!"
+                    : $"PlayArea.IsBlockMovementValid({caller}): Could not get block position, gridCount={gridBlocks.Length}");
+
                 return false;
             }
 
@@ -553,6 +594,13 @@ namespace Tetris
             // Remove all the cleared lines at once
             var lines = linesToRemove.ToIntArray();
             ClearLines(lines);
+
+            if (lines.Length > 0 && NotifyLineClearsTo != null)
+            {
+                Debug.Log("PlayArea.HandleLineClears: Sending cleared lines to listeners.");
+                LastLinesCleared = lines.Length;
+                NotifyLineClearsTo.SendCustomEvent("PlayAreaOnClearedLines");
+            }
         }
 
         private void ClearLines(int[] ys)

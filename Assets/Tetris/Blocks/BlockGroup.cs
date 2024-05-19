@@ -23,8 +23,6 @@ namespace Tetris.Blocks
 
         private bool shouldRequestSerialization;
 
-        public bool ShouldDestroyOnClear { get; set; } = true;
-
         public Orientation Orientation { get; private set; }
 
         /// <summary>
@@ -47,15 +45,6 @@ namespace Tetris.Blocks
                 {
                     Add(value, x, y);
                 }
-            }
-        }
-
-        private void OnTransformChildrenChanged()
-        {
-            // Clean up block groups when all of their children are destroyed
-            if (ShouldDestroyOnClear && transform.childCount == 0)
-            {
-                Destroy(gameObject);
             }
         }
 
