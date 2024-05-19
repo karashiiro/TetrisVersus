@@ -175,17 +175,8 @@ namespace Tetris
             }
         }
 
-        public override void InputDrop(bool value, UdonInputEventArgs args)
-        {
-            if (!ShouldBeControllable()) return;
-
-            // TODO: Use a different event for VR
-            if (!value) return;
-            PlayArea.ExchangeHold();
-        }
-
         /// <summary>
-        /// Hard drop.
+        /// Exchange with the hold.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="args"></param>
@@ -194,7 +185,7 @@ namespace Tetris
             if (!ShouldBeControllable()) return;
 
             if (!value) return;
-            PlayArea.HardDrop();
+            PlayArea.ExchangeHold();
         }
 
         /// <summary>
@@ -226,10 +217,19 @@ namespace Tetris
         {
             if (!ShouldBeControllable()) return;
 
-            const int down = -1;
-
             var direction = Math.Sign(value);
-            PlayArea.SoftDrop(direction == down);
+            if (direction == -1)
+            {
+                PlayArea.SoftDrop(true);
+            }
+            else
+            {
+                PlayArea.SoftDrop(false);
+                if (direction == 1)
+                {
+                    PlayArea.HardDrop();
+                }
+            }
         }
 
         private bool ShouldBeControllable()
