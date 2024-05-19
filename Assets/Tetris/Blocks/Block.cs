@@ -15,6 +15,8 @@ namespace Tetris.Blocks
     {
         public const int RequiredNetworkBufferSize = 4;
 
+        private readonly int emission = Shader.PropertyToID("_EmissionColor");
+
         private Color color = Color.grey;
 
         [field: SerializeField] public Renderer TargetRenderer { get; set; }
@@ -88,6 +90,7 @@ namespace Tetris.Blocks
         {
             if (TargetRenderer == null) return;
             TargetRenderer.material.color = color = nextColor;
+            TargetRenderer.material.SetColor(emission, nextColor);
         }
     }
 }
