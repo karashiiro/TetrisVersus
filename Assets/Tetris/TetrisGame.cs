@@ -4,6 +4,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon.Common;
+using Random = UnityEngine.Random;
 
 namespace Tetris
 {
@@ -75,6 +76,8 @@ namespace Tetris
 
         private void InitGame(VRCPlayerApi player)
         {
+            Random.InitState(Networking.GetServerTimeInMilliseconds());
+
             Debug.Log($"TetrisGame.InitGame: Set owner to {player.displayName}");
             if (player.isLocal)
             {
