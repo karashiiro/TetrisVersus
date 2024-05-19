@@ -50,6 +50,15 @@ namespace Tetris
             // The current owner still needs to approve the request after this event resolves.
             var shouldRequest = currentState == GameState.NotStarted;
             Debug.Log($"TetrisGame.OnOwnershipRequest: shouldRequest={shouldRequest}");
+
+            // Unfreeze the player if they were the owner and are having ownership reassigned
+            if (shouldRequest && Networking.IsOwner(gameObject))
+            {
+                // TODO: Make this not break for the instance owner
+                Networking.LocalPlayer.Immobilize(false);
+                Networking.LocalPlayer.SetJumpImpulse();
+            }
+
             return shouldRequest;
         }
 
