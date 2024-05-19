@@ -397,8 +397,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Stop
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 719ddb487bff9bd4ca0b88c1b56fb71f, type: 2}
+  m_sharedMaterial: {fileID: 6406572320025854678, guid: 719ddb487bff9bd4ca0b88c1b56fb71f,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1041,8 +1042,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Reset
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 719ddb487bff9bd4ca0b88c1b56fb71f, type: 2}
+  m_sharedMaterial: {fileID: 6406572320025854678, guid: 719ddb487bff9bd4ca0b88c1b56fb71f,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1312,7 +1314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactTextPlacement: {fileID: 0}
-  interactText: Use (Immobilizes)
+  interactText: Start (Immobilizes)
   interactTextGO: {fileID: 0}
   proximity: 2
   SynchronizePosition: 0
