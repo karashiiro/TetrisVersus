@@ -59,6 +59,17 @@ namespace Tetris.Blocks
             }
         }
 
+        public void Clear()
+        {
+            foreach (var block in GetBlocks())
+            {
+                Destroy(block.gameObject);
+            }
+
+            group.Clear();
+            groupPositions.Clear();
+        }
+
         public bool ShouldSerialize()
         {
             return shouldRequestSerialization;

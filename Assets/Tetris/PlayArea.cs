@@ -111,6 +111,17 @@ namespace Tetris
             return nRead;
         }
 
+        public void Clear()
+        {
+            Grid.Clear();
+            Hold.Clear();
+            Queue.Clear();
+
+            randomBag = RandomGenerator.NewSequence(out randomBagIndex);
+            SRSHelpers.NewDataTable(out srsTables, out srsTranslationBuffer);
+            RefillQueue();
+        }
+
         public void Tick()
         {
             if (!ownedByLocalPlayer) return;

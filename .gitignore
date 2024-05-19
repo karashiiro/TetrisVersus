@@ -79,3 +79,6 @@ UpgradeLog.htm
 
 # Udon
 /[Aa]ssets/[Ss]erializedUdonPrograms/
+
+# TextMesh Pro
+/[Aa]ssets/[Tt]extMesh Pro/Examples & Extras*

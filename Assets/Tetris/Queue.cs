@@ -44,18 +44,7 @@ namespace Tetris
 
         public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
         {
-            head = 0;
-            tail = 0;
-            count = 0;
-
-            for (var n = 0; n < QueueSize; n++)
-            {
-                if (incoming[n] != null)
-                {
-                    Destroy(incoming[n].gameObject);
-                    incoming[n] = null;
-                }
-            }
+            Clear();
 
             var nRead = 0;
             for (var i = 0; i < QueueSize; i++)
@@ -79,6 +68,22 @@ namespace Tetris
             }
 
             return RequiredNetworkBufferSize;
+        }
+
+        public void Clear()
+        {
+            head = 0;
+            tail = 0;
+            count = 0;
+
+            for (var n = 0; n < QueueSize; n++)
+            {
+                if (incoming[n] != null)
+                {
+                    Destroy(incoming[n].gameObject);
+                    incoming[n] = null;
+                }
+            }
         }
 
         [CanBeNull]

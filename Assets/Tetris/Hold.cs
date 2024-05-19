@@ -15,6 +15,15 @@ namespace Tetris
 
         [CanBeNull] private BlockGroup current;
 
+        public void Clear()
+        {
+            if (current != null)
+            {
+                Destroy(current.gameObject);
+                current = null;
+            }
+        }
+
         public int SerializeInto(byte[] buffer, int offset)
         {
             if (current != null)
@@ -27,11 +36,7 @@ namespace Tetris
 
         public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
         {
-            if (current != null)
-            {
-                Destroy(current.gameObject);
-                current = null;
-            }
+            Clear();
 
             var shapeType = (ShapeType)Convert.ToInt32(buffer[offset]);
             if (shapeType != ShapeType.None)

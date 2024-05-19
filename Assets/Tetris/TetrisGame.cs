@@ -73,10 +73,10 @@ namespace Tetris
 
         private void InitGame(VRCPlayerApi player)
         {
-            Debug.Log($"TetrisGame.Start: Set owner to {player.displayName}");
+            Debug.Log($"TetrisGame.InitGame: Set owner to {player.displayName}");
             if (player.isLocal)
             {
-                Debug.Log("TetrisGame.Start: Owner is local player");
+                Debug.Log("TetrisGame.InitGame: Owner is local player");
                 PlayArea.SetOwned(true);
 
                 player.Immobilize(true);
@@ -86,8 +86,29 @@ namespace Tetris
             SetGameState(GameState.Playing);
         }
 
+        public void StopGame()
+        {
+            if (currentState == GameState.Stopped) return;
+
+            Debug.Log("TetrisGame.StopGame: Stopping game");
+
+            // TODO: Make this not break for the instance owner
+            Networking.LocalPlayer.Immobilize(false);
+            Networking.LocalPlayer.SetJumpImpulse();
+
+            SetGameState(GameState.Stopped);
+        }
+
+        public void ResetGame()
+        {
+            Debug.Log("TetrisGame.ResetGame: Resetting game");
+            StopGame();
+            PlayArea.Clear();
+        }
+
         private void SetGameState(GameState nextState)
         {
+            currentState = nextState;
             switch (nextState)
             {
                 case GameState.Playing:
@@ -124,7 +145,7 @@ namespace Tetris
         /// <param name="args"></param>
         public override void InputUse(bool value, UdonInputEventArgs args)
         {
-            if (!Networking.IsOwner(gameObject)) return;
+            if (!ShouldBeControllable()) return;
 
             // For some reason, InputUse fires twice on KBM inputs, unlike in the editor. We use some
             // additional state to avoid re-rotating a block until the rotate button is released.
@@ -156,7 +177,7 @@ namespace Tetris
 
         public override void InputDrop(bool value, UdonInputEventArgs args)
         {
-            if (!Networking.IsOwner(gameObject)) return;
+            if (!ShouldBeControllable()) return;
 
             // TODO: Use a different event for VR
             if (!value) return;
@@ -170,7 +191,7 @@ namespace Tetris
         /// <param name="args"></param>
         public override void InputJump(bool value, UdonInputEventArgs args)
         {
-            if (!Networking.IsOwner(gameObject)) return;
+            if (!ShouldBeControllable()) return;
 
             if (!value) return;
             PlayArea.HardDrop();
@@ -183,7 +204,7 @@ namespace Tetris
         /// <param name="args"></param>
         public override void InputMoveHorizontal(float value, UdonInputEventArgs args)
         {
-            if (!Networking.IsOwner(gameObject)) return;
+            if (!ShouldBeControllable()) return;
 
             var sign = Math.Sign(value);
             if (sign == 0)
@@ -203,12 +224,17 @@ namespace Tetris
         /// <param name="args"></param>
         public override void InputMoveVertical(float value, UdonInputEventArgs args)
         {
-            if (!Networking.IsOwner(gameObject)) return;
+            if (!ShouldBeControllable()) return;
 
             const int down = -1;
 
             var direction = Math.Sign(value);
             PlayArea.SoftDrop(direction == down);
+        }
+
+        private bool ShouldBeControllable()
+        {
+            return currentState == GameState.Playing && Networking.IsOwner(gameObject);
         }
     }
 }
