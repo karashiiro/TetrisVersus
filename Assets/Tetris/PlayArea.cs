@@ -56,7 +56,7 @@ namespace Tetris
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
 
-        [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
+        [field: SerializeField] public UdonSharpBehaviour NotifyEventsTo { get; set; }
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
         [field: SerializeField] public BlockGroup Grid { get; set; }
         [field: SerializeField] public Hold Hold { get; set; }
@@ -69,7 +69,7 @@ namespace Tetris
 
         private void Awake()
         {
-            if (NotifyLineClearsTo == null) Debug.LogWarning("PlayArea.Awake: NotifyLineClearsTo is null.");
+            if (NotifyEventsTo == null) Debug.LogWarning("PlayArea.Awake: NotifyEventsTo is null.");
             if (BlockFactory == null) Debug.LogError("PlayArea.Awake: BlockFactory is null.");
             if (Grid == null) Debug.LogError("PlayArea.Awake: Grid is null.");
             if (Hold == null) Debug.LogError("PlayArea.Awake: Hold is null.");
@@ -239,6 +239,13 @@ namespace Tetris
                 return;
             }
 
+            // Check if the game should end after this lock
+            if (IsGroupOut(controlledBlockGroup) && NotifyEventsTo != null)
+            {
+                Debug.Log("PlayArea.LockControlledGroup: LOCK OUT");
+                NotifyEventsTo.SendCustomEvent("PlayAreaOnLockOut");
+            }
+
             // Lock the controlled block group
             if (controlledBlockGroup != null)
             {
@@ -298,9 +305,43 @@ namespace Tetris
         /// <param name="group">The group of blocks to add.</param>
         private void AddControlledBlocks(BlockGroup group)
         {
+            // Check if the game should end after this spawn
+            if (WillGroupBlockOut(group) && NotifyEventsTo != null)
+            {
+                Debug.Log("PlayArea.AddControlledBlocks: TOP OUT");
+                NotifyEventsTo.SendCustomEvent("PlayAreaOnTopOut");
+            }
+
             // Move the block group into the play area at the limit line
             AddBlocks(group, 5, LimitHeight);
             SetControlledBlockGroup(group);
+        }
+
+        private bool IsGroupOut(BlockGroup group)
+        {
+            foreach (var block in group.GetBlocks())
+            {
+                if (Grid.TryGetPosition(block, out var x, out var y) && y > LimitHeight)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool WillGroupBlockOut(BlockGroup group)
+        {
+            foreach (var pos in group.GetEncodedPositions())
+            {
+                if (!group.TryDecodePosition(pos, out var localX, out var localY)) continue;
+                if (Grid[5 + localX, LimitHeight + localY] != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void AddBlocks(BlockGroup group, int x, int y)
@@ -595,11 +636,11 @@ namespace Tetris
             var lines = linesToRemove.ToIntArray();
             ClearLines(lines);
 
-            if (lines.Length > 0 && NotifyLineClearsTo != null)
+            if (lines.Length > 0 && NotifyEventsTo != null)
             {
                 Debug.Log("PlayArea.HandleLineClears: Sending cleared lines to listeners.");
                 LastLinesCleared = lines.Length;
-                NotifyLineClearsTo.SendCustomEvent("PlayAreaOnClearedLines");
+                NotifyEventsTo.SendCustomEvent("PlayAreaOnClearedLines");
             }
         }
 

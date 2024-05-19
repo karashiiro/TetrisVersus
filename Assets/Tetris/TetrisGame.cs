@@ -23,6 +23,8 @@ namespace Tetris
         [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
         [field: SerializeField] public PlayArea PlayArea { get; set; }
         [field: SerializeField] public TickDriver TickDriver { get; set; }
+        [field: SerializeField] public GameObject LockOutText { get; set; }
+        [field: SerializeField] public GameObject TopOutText { get; set; }
 
         [field: UdonSynced] public GameState CurrentState;
 
@@ -31,6 +33,11 @@ namespace Tetris
             if (NotifyLineClearsTo == null) Debug.LogWarning("TetrisGame.Awake: NotifyLineClearsTo is null.");
             if (PlayArea == null) Debug.LogError("TetrisGame.Awake: PlayArea is null.");
             if (TickDriver == null) Debug.LogError("TetrisGame.Awake: TickDriver is null.");
+            if (LockOutText == null) Debug.LogError("TetrisGame.Awake: LockOutText is null.");
+            if (TopOutText == null) Debug.LogError("TetrisGame.Awake: TopOutText is null.");
+
+            LockOutText.SetActive(false);
+            TopOutText.SetActive(false);
         }
 
         public override void Interact()
@@ -57,9 +64,7 @@ namespace Tetris
             // Unfreeze the player if they were the owner and are having ownership reassigned
             if (shouldRequest && Networking.IsOwner(gameObject))
             {
-                // TODO: Make this not break for the instance owner
-                Networking.LocalPlayer.Immobilize(false);
-                Networking.LocalPlayer.SetJumpImpulse();
+                UnfreezeOwner();
             }
 
             return shouldRequest;
@@ -83,9 +88,7 @@ namespace Tetris
             {
                 Debug.Log("TetrisGame.InitGame: Owner is local player");
                 PlayArea.SetOwned(true);
-
-                player.Immobilize(true);
-                player.SetJumpImpulse(0);
+                FreezeOwner(player);
             }
 
             SetGameState(GameState.Playing);
@@ -97,11 +100,26 @@ namespace Tetris
 
             Debug.Log("TetrisGame.StopGame: Stopping game");
 
+
+            SetGameState(GameState.Stopped);
+        }
+
+        private static void FreezeOwner()
+        {
+            FreezeOwner(Networking.LocalPlayer);
+        }
+
+        private static void FreezeOwner(VRCPlayerApi player)
+        {
+            player.Immobilize(true);
+            player.SetJumpImpulse(0);
+        }
+
+        private void UnfreezeOwner()
+        {
             // TODO: Make this not break for the instance owner
             Networking.LocalPlayer.Immobilize(false);
             Networking.LocalPlayer.SetJumpImpulse();
-
-            SetGameState(GameState.Stopped);
         }
 
         public void ResetGame()
@@ -109,6 +127,9 @@ namespace Tetris
             Debug.Log("TetrisGame.ResetGame: Resetting game");
             StopGame();
             PlayArea.Clear();
+            LockOutText.SetActive(false);
+            TopOutText.SetActive(false);
+            RequestSerialization();
         }
 
         private void SetGameState(GameState nextState)
@@ -118,9 +139,11 @@ namespace Tetris
             {
                 case GameState.Playing:
                     TickDriver.enabled = true;
+                    FreezeOwner();
                     break;
                 case GameState.Stopped:
                     TickDriver.enabled = false;
+                    UnfreezeOwner();
                     break;
             }
         }
@@ -136,6 +159,18 @@ namespace Tetris
             {
                 Debug.LogWarning("TetrisGame.PlayAreaOnClearedLines: NotifyLineClearsTo is null.");
             }
+        }
+
+        public void PlayAreaOnLockOut()
+        {
+            SetGameState(GameState.Stopped);
+            LockOutText.SetActive(true);
+        }
+
+        public void PlayAreaOnTopOut()
+        {
+            SetGameState(GameState.Stopped);
+            TopOutText.SetActive(true);
         }
 
         public void SendGarbage()
