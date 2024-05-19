@@ -55,7 +55,7 @@ namespace Tetris
                     if (!palette.TryGetValue(shapeType.GetToken(), TokenType.Reference, out var colorToken))
                     {
                         Debug.LogError($"Queue.DeserializeFrom: Failed to get color for shape: {shapeType}");
-                        colorToken = new DataToken(Color.grey);
+                        colorToken = new DataToken(PaletteHelpers.DefaultColor());
                     }
 
                     var group = blockFactory.CreateShape(shapeType, colorToken.As<Color>());

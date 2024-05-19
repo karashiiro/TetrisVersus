@@ -13,15 +13,14 @@ namespace Tetris.Blocks
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
-        public const int RequiredNetworkBufferSize = 4;
+        public const int RequiredNetworkBufferSize = 2;
 
         private readonly int emission = Shader.PropertyToID("_EmissionColor");
-
-        private Color color = Color.grey;
 
         [field: SerializeField] public Renderer TargetRenderer { get; set; }
 
         public BlockState State { get; set; }
+        public ShapeType ShapeType { get; set; }
 
         public DataToken Token => new DataToken(this);
 
@@ -43,13 +42,7 @@ namespace Tetris.Blocks
         {
             buffer[offset] = Convert.ToByte(State);
             buffer[offset] |= 0b10000000;
-
-            // Copy the color without the alpha channel since we don't use it
-            var color32 = (Color32)color;
-            buffer[offset + 1] = color32.r;
-            buffer[offset + 2] = color32.g;
-            buffer[offset + 3] = color32.b;
-
+            buffer[offset + 1] = Convert.ToByte(ShapeType);
             return RequiredNetworkBufferSize;
         }
 
@@ -67,9 +60,7 @@ namespace Tetris.Blocks
         public void DeserializeFrom(byte[] buffer, int offset)
         {
             State = (BlockState)Convert.ToInt32(buffer[offset] & 0b01111111);
-
-            var color32 = new Color32(buffer[offset + 1], buffer[offset + 2], buffer[offset + 3], 0);
-            SetColor(color32);
+            ShapeType = (ShapeType)Convert.ToInt32(buffer[offset + 1]);
         }
 
         /// <summary>
@@ -89,7 +80,7 @@ namespace Tetris.Blocks
         public void SetColor(Color nextColor)
         {
             if (TargetRenderer == null) return;
-            TargetRenderer.material.color = color = nextColor;
+            TargetRenderer.material.color = nextColor;
             TargetRenderer.material.SetColor(emission, nextColor);
         }
     }

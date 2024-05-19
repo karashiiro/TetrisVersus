@@ -29,6 +29,7 @@ namespace Tetris
 
         private readonly DataDictionary palette = new DataDictionary
         {
+            { ShapeType.None.GetToken(), new DataToken(Color.grey) },
             { ShapeType.O.GetToken(), new DataToken(Color.yellow) },
             { ShapeType.I.GetToken(), new DataToken(Color.cyan) },
             { ShapeType.S.GetToken(), new DataToken(Color.green) },
@@ -111,7 +112,7 @@ namespace Tetris
         {
             var nRead = Queue.DeserializeFrom(buffer, offset, BlockFactory, palette);
             nRead += Hold.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
-            nRead += Grid.DeserializeFrom(buffer, offset + nRead, boundsMin, boundsMax, BlockFactory);
+            nRead += Grid.DeserializeFrom(buffer, offset + nRead, boundsMin, boundsMax, BlockFactory, palette);
             return nRead;
         }
 
@@ -209,7 +210,6 @@ namespace Tetris
                 BlockFactory.CreateBlock(group, x, 0);
             }
 
-            group.SetColor(Color.grey);
             return group;
         }
 
@@ -317,8 +317,10 @@ namespace Tetris
             SetControlledBlockGroup(group);
         }
 
-        private bool IsGroupOut(BlockGroup group)
+        private bool IsGroupOut([CanBeNull] BlockGroup group)
         {
+            if (group == null) return false;
+
             foreach (var block in group.GetBlocks())
             {
                 if (Grid.TryGetPosition(block, out var x, out var y) && y > LimitHeight)
@@ -330,8 +332,10 @@ namespace Tetris
             return false;
         }
 
-        private bool WillGroupBlockOut(BlockGroup group)
+        private bool WillGroupBlockOut([CanBeNull] BlockGroup group)
         {
+            if (group == null) return false;
+
             foreach (var pos in group.GetEncodedPositions())
             {
                 if (!group.TryDecodePosition(pos, out var localX, out var localY)) continue;

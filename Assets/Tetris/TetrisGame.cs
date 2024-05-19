@@ -26,7 +26,7 @@ namespace Tetris
         [field: SerializeField] public GameObject LockOutText { get; set; }
         [field: SerializeField] public GameObject TopOutText { get; set; }
 
-        [field: UdonSynced] public GameState CurrentState;
+        [field: UdonSynced] public GameState CurrentState { get; set; }
 
         private void Awake()
         {

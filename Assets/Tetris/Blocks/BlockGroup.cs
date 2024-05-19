@@ -27,7 +27,7 @@ namespace Tetris.Blocks
 
         /// <summary>
         /// The group's shape type. Note that this does not reflect the number of blocks remaining in the
-        /// group (in the event that some were cleared). This is only used for SRS.
+        /// group (in the event that some were cleared).
         /// </summary>
         public ShapeType Type { get; set; }
 
@@ -93,7 +93,7 @@ namespace Tetris.Blocks
         }
 
         public int DeserializeFrom(byte[] buffer, int offset, Vector2Int boundsMin, Vector2Int boundsMax,
-            BlockFactory blockFactory)
+            BlockFactory blockFactory, DataDictionary palette)
         {
             Orientation = (Orientation)Convert.ToInt32(buffer[offset]);
             Type = (ShapeType)Convert.ToInt32(buffer[offset + 1]);
@@ -123,6 +123,8 @@ namespace Tetris.Blocks
                     nRead += Block.RequiredNetworkBufferSize;
                 }
             }
+
+            UpdateBlockColors(palette);
 
             return nRead;
         }
@@ -290,6 +292,35 @@ namespace Tetris.Blocks
             {
                 var block = token.As<Block>();
                 block.SetColor(color);
+            }
+
+            shouldRequestSerialization = true;
+        }
+
+        private void UpdateBlockColors(DataDictionary palette)
+        {
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+
+                if (!palette.TryGetValue(block.ShapeType.GetToken(), TokenType.Reference, out var colorToken))
+                {
+                    Debug.LogError($"BlockGroup.UpdateBlockColors: Failed to get color for shape: {block.ShapeType}");
+                    colorToken = new DataToken(PaletteHelpers.DefaultColor());
+                }
+
+                block.SetColor(colorToken.As<Color>());
+            }
+        }
+
+        public void SetShapeType(ShapeType type)
+        {
+            Type = type;
+
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+                block.ShapeType = type;
             }
 
             shouldRequestSerialization = true;
