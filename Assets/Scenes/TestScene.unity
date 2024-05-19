@@ -130,6 +130,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5545096732839669347}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &263360870 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6787173272742886074, guid: 5145ca0b0484b3543ad25e61a4ea072a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5545096732839669347}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &309480421 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6039960579755663633, guid: 5145ca0b0484b3543ad25e61a4ea072a,
@@ -757,8 +763,6 @@ MonoBehaviour:
   DynamicPrefabs: []
   DynamicMaterials:
   - {fileID: 2100000, guid: 4fbb49391fa71ce4cb1a60d4c5aaaecf, type: 2}
-  - {fileID: 2100000, guid: 1c987494452b85f4ab4cac3322415907, type: 2}
-  - {fileID: 2100000, guid: c815f7613a04b724089c206857e57c6a, type: 2}
   - {fileID: 2100000, guid: fd20e45036ef323459e8286e9c23c02c, type: 2}
   LightMapsNear: []
   LightMapsFar: []
@@ -813,183 +817,6 @@ MonoBehaviour:
   RenderReflectionIntensity: 0
   RenderSkybox: {fileID: 0}
   NetworkIDs:
-  - gameObject: {fileID: 0}
-    ID: 10
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 11
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 12
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 13
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 14
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 15
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 16
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 17
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 18
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 19
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 20
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 21
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 22
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 23
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 24
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 25
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 26
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 27
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 28
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 29
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 30
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 31
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 32
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 33
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 34
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 35
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 36
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 37
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 38
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 39
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 40
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 41
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 42
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 43
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 44
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 45
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 46
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 47
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 48
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 49
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 50
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 51
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 52
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 53
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 54
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 55
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 56
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 57
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 58
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 59
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 60
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 61
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 62
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 63
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 64
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 65
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 66
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 67
-    SerializedTypeNames: []
-  - gameObject: {fileID: 0}
-    ID: 68
-    SerializedTypeNames: []
   - gameObject: {fileID: 3480278762663670689}
     ID: 69
     SerializedTypeNames: []
@@ -1039,6 +866,10 @@ MonoBehaviour:
     - VRC.Udon.UdonBehaviour
   - gameObject: {fileID: 1793490742}
     ID: 81
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 263360870}
+    ID: 82
     SerializedTypeNames:
     - VRC.Udon.UdonBehaviour
   portraitCameraPositionOffset: {x: 0, y: 0, z: 0}
