@@ -273,12 +273,30 @@ namespace Tetris.Blocks
         public void Rotate(Rotation rotation)
         {
             transform.Rotate(Vector3.forward, rotation.AsDegrees(), Space.Self);
+
+            // Rotate all blocks in the opposite direction to keep textures oriented correctly
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+                block.transform.Rotate(Vector3.forward, -rotation.AsDegrees(), Space.Self);
+            }
+
             Orientation = Orientation.Rotate(rotation);
         }
 
         public void SetOrientation(Orientation orientation)
         {
-            transform.Rotate(Vector3.forward, orientation.AsDegrees(), Space.Self);
+            transform.SetLocalPositionAndRotation(transform.localPosition,
+                Quaternion.Euler(Vector3.forward * orientation.AsDegrees()));
+
+            // Rotate all blocks in the opposite direction to keep textures oriented correctly
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+                block.transform.SetLocalPositionAndRotation(block.transform.localPosition,
+                    Quaternion.Euler(Vector3.forward * -orientation.AsDegrees()));
+            }
+
             Orientation = orientation;
         }
 
