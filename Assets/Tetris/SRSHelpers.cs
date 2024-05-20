@@ -1,7 +1,8 @@
-﻿using VRC.SDK3.Data;
+﻿using Tetris.Blocks;
+using VRC.SDK3.Data;
 using VRCExtensions;
 
-namespace Tetris.Blocks
+namespace Tetris
 {
     public static class SRSHelpers
     {
