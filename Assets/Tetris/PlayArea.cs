@@ -685,7 +685,16 @@ namespace Tetris
             foreach (var pos in group.GetEncodedPositions())
             {
                 if (!group.TryDecodePosition(pos, out var localX, out var localY)) continue;
-                Grid[bottomLeftX + localX, bottomLeftY + localY] = group[localX, localY];
+                var targetX = bottomLeftX + localX;
+                var targetY = bottomLeftY + localY;
+                var existing = Grid[targetX, targetY];
+                if (existing != null)
+                {
+                    Debug.LogWarning($"PlayArea.CopyBlocksFromGroup: Overwriting block at {targetX}, {targetY}");
+                    Destroy(existing.gameObject);
+                }
+
+                Grid[targetX, targetY] = group[localX, localY];
             }
         }
 
