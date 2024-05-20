@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: TetrisVersusController
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 708e60cb3d5fbd54b865c16df8b78c50,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 903721b5ef57b0243a5a95db2256094e,
     type: 2}
   udonAssembly: 
   assemblyError: 
