@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using Tetris.Blocks;
 using Tetris.Timers;
 using UdonSharp;
@@ -17,7 +18,6 @@ namespace Tetris
         private const int LimitHeight = 20;
         private const int BufferHeight = 20;
         private const int Height = LimitHeight + BufferHeight;
-        private const decimal SoftDropGravityBonus = 0.8m;
 
         public const int RequiredNetworkBufferSize = BlockGroup.RequiredNetworkBufferSizeBase +
                                                      BlockGroup.RequiredNetworkBufferSizePerBlock * Width * Height +
@@ -45,8 +45,10 @@ namespace Tetris
         private DataDictionary srsTables;
         private int[] srsTranslationBuffer;
 
-        private decimal gravityPerTick = 1m / 32;
-        private decimal gravityProgress;
+        private double gravityPerTick = GetGravityPerTick();
+        private double gravityProgress;
+        private int goalProgress;
+        private int level = 1;
 
         private bool softDropEnabled;
 
@@ -127,7 +129,10 @@ namespace Tetris
 
             LastLinesCleared = 0;
             queuedGarbageLines = 0;
+            level = 1;
+            goalProgress = 0;
             gravityProgress = 0;
+            gravityPerTick = GetGravityPerTick();
             softDropEnabled = false;
 
             if (controlledBlockGroup != null)
@@ -157,8 +162,14 @@ namespace Tetris
             }
 
             // Increment gravity progress
-            gravityProgress += gravityPerTick;
-            if (softDropEnabled) gravityProgress += SoftDropGravityBonus;
+            if (!softDropEnabled)
+            {
+                gravityProgress += gravityPerTick;
+            }
+            else
+            {
+                gravityProgress += gravityPerTick * 20;
+            }
 
             // Do updates for the current controlled block group
             while (gravityProgress >= 1)
@@ -636,6 +647,8 @@ namespace Tetris
                 }
             }
 
+            IncrementGoalProgress(linesToRemove.Count);
+
             // Remove all the cleared lines at once
             var lines = linesToRemove.ToIntArray();
             ClearLines(lines);
@@ -645,6 +658,19 @@ namespace Tetris
                 Debug.Log("PlayArea.HandleLineClears: Sending cleared lines to listeners.");
                 LastLinesCleared = lines.Length;
                 NotifyEventsTo.SendCustomEvent("PlayAreaOnClearedLines");
+            }
+        }
+
+        private void IncrementGoalProgress(int lines)
+        {
+            goalProgress += lines;
+
+            while (goalProgress >= 10)
+            {
+                level++;
+                goalProgress -= 10;
+                gravityPerTick = GetGravityPerTick(level);
+                Debug.Log($"PlayArea.IncrementGoalProgress: Fall speed set to {GetFallSpeed(level)}");
             }
         }
 
@@ -710,6 +736,16 @@ namespace Tetris
         private static bool IsIndexInBounds(int x, int y)
         {
             return y >= 0 && y < Height && x >= 0 && x < Width;
+        }
+
+        private static double GetGravityPerTick(int level = 1)
+        {
+            return 1 / GetFallSpeed(level) / 60;
+        }
+
+        private static double GetFallSpeed(int level = 1)
+        {
+            return Math.Pow(0.8 - (level - 1) * 0.007, level - 1);
         }
     }
 }
