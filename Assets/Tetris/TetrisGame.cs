@@ -15,10 +15,16 @@ namespace Tetris
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class TetrisGame : UdonSharpBehaviour
     {
+        private const float JoystickDeadZone = 0.7f;
+        private const float TriggerDeadZone = 0.5f;
+
         [UdonSynced] private readonly byte[] networkState = new byte[PlayArea.RequiredNetworkBufferSize];
 
+        private bool moveLeftHeld;
+        private bool moveRightHeld;
         private bool rotateLeftHeld;
         private bool rotateRightHeld;
+        private bool hardDropHeld;
 
         [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
         [field: SerializeField] public PlayArea PlayArea { get; set; }
@@ -207,6 +213,12 @@ namespace Tetris
         {
             if (!ShouldBeControllable()) return;
 
+            if (args.eventType == UdonInputEventType.AXIS)
+            {
+                // Quantize axis inputs
+                value = args.floatValue >= TriggerDeadZone;
+            }
+
             // For some reason, InputUse fires twice on KBM inputs, unlike in the editor. We use some
             // additional state to avoid re-rotating a block until the rotate button is released.
             if (args.handType == HandType.LEFT)
@@ -257,14 +269,33 @@ namespace Tetris
         {
             if (!ShouldBeControllable()) return;
 
-            var sign = Math.Sign(value);
-            if (sign == 0)
+            // Quantize axis inputs
+            if (args.eventType == UdonInputEventType.AXIS && Math.Abs(args.floatValue) < JoystickDeadZone)
             {
+                value = 0;
+            }
+
+            var sign = Math.Sign(value);
+            if (!moveRightHeld && sign == 1)
+            {
+                PlayArea.MoveControlledGroup(1, 0);
+                moveLeftHeld = false;
+                moveRightHeld = true;
+            }
+            else if (!moveLeftHeld && sign == -1)
+            {
+                PlayArea.MoveControlledGroup(-1, 0);
+                moveRightHeld = false;
+                moveLeftHeld = true;
+            }
+            else if (sign == 0)
+            {
+                moveRightHeld = false;
+                moveLeftHeld = false;
                 PlayArea.DisableAutoRepeat();
                 return;
             }
 
-            PlayArea.MoveControlledGroup(sign, 0);
             PlayArea.PrepareAutoRepeat(sign == -1 ? AutoRepeatDirection.Left : AutoRepeatDirection.Right);
         }
 
@@ -277,6 +308,12 @@ namespace Tetris
         {
             if (!ShouldBeControllable()) return;
 
+            // Quantize axis inputs
+            if (args.eventType == UdonInputEventType.AXIS && Math.Abs(args.floatValue) < JoystickDeadZone)
+            {
+                value = 0;
+            }
+
             var direction = Math.Sign(value);
             if (direction == -1)
             {
@@ -285,9 +322,14 @@ namespace Tetris
             else
             {
                 PlayArea.SoftDrop(false);
-                if (direction == 1)
+                if (!hardDropHeld && direction == 1)
                 {
                     PlayArea.HardDrop();
+                    hardDropHeld = true;
+                }
+                else if (direction == 0)
+                {
+                    hardDropHeld = false;
                 }
             }
         }
