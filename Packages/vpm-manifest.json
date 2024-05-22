@@ -3,11 +3,11 @@
     "com.vrchat.worlds": {
       "version": "3.6.0"
     },
-    "com.llealloo.audiolink": {
-      "version": "1.4.0"
-    },
     "com.vrchat.core.vpm-resolver": {
       "version": "0.1.29"
+    },
+    "com.llealloo.audiolink": {
+      "version": "1.4.0"
     }
   },
   "locked": {
@@ -21,12 +21,12 @@
       "version": "3.6.0",
       "dependencies": {}
     },
-    "com.llealloo.audiolink": {
-      "version": "1.4.0",
-      "dependencies": {}
-    },
     "com.vrchat.core.vpm-resolver": {
       "version": "0.1.29",
+      "dependencies": {}
+    },
+    "com.llealloo.audiolink": {
+      "version": "1.4.0",
       "dependencies": {}
     }
   }
