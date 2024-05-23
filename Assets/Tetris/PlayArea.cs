@@ -412,11 +412,7 @@ namespace Tetris
         public void HardDrop()
         {
             // Drop the block as far as possible
-            bool landed;
-            do
-            {
-                landed = !MoveGroup(controlledBlockGroup, 0, -1);
-            } while (!landed);
+            MoveGroup(controlledBlockGroup, 0, AllowedMaximumDrop());
 
             // Clear the lock timer and lock the controlled group immediately
             LockTimer.ResetTimer();
