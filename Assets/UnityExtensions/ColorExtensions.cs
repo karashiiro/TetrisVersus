@@ -9,5 +9,10 @@ namespace UnityExtensions
         {
             return new DataToken(color);
         }
+
+        public static Color WithAlpha(this Color color, float value)
+        {
+            return new Color(color.r, color.g, color.b, value);
+        }
     }
 }

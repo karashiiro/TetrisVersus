@@ -1,6 +1,7 @@
 ﻿using System;
 using UdonSharp;
 using UnityEngine;
+using UnityExtensions;
 using VRC.SDK3.Data;
 
 namespace Tetris.Blocks
@@ -18,6 +19,7 @@ namespace Tetris.Blocks
         private readonly int emission = Shader.PropertyToID("_EmissionColor");
 
         [field: SerializeField] public Renderer TargetRenderer { get; set; }
+        [field: SerializeField] public Material GhostMaterial { get; set; }
 
         public BlockState State { get; set; }
         public ShapeType ShapeType { get; set; }
@@ -82,6 +84,14 @@ namespace Tetris.Blocks
             if (TargetRenderer == null) return;
             TargetRenderer.material.color = nextColor;
             TargetRenderer.material.SetColor(emission, nextColor);
+        }
+
+        public void EnableGhostMode()
+        {
+            if (TargetRenderer == null) return;
+            var originalColor = TargetRenderer.material.color;
+            TargetRenderer.material = GhostMaterial;
+            TargetRenderer.material.color = originalColor.WithAlpha(0.5f);
         }
     }
 }

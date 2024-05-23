@@ -58,6 +58,7 @@ namespace Tetris
         private int queuedGarbageLines;
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
+        [CanBeNull] private BlockGroup ghostPiece;
 
         [field: SerializeField] public UdonSharpBehaviour NotifyEventsTo { get; set; }
         [field: SerializeField] public BlockFactory BlockFactory { get; set; }
@@ -273,6 +274,8 @@ namespace Tetris
             // Load any queued garbage lines
             LoadQueuedGarbage();
 
+            if (ghostPiece != null) Destroy(ghostPiece.gameObject);
+
             // Re-enable the hold function
             canExchangeWithHold = true;
         }
@@ -284,6 +287,7 @@ namespace Tetris
             var shape = Queue.Pop(transform);
             if (shape == null) return;
             AddControlledBlocks(shape);
+            ReplicateControlledGroupToGhost();
 
             // Refill the queue immediately
             RefillQueue();
@@ -435,6 +439,8 @@ namespace Tetris
                 // Reset the lock timer on successful rotations, but keep it running if it's active
                 LockTimer.ResetTimerWhileLocking();
             }
+
+            ReplicateControlledGroupToGhost();
         }
 
         private bool RotateGroup(BlockGroup group, Rotation rotation)
@@ -507,6 +513,8 @@ namespace Tetris
                 // Reset the lock timer on successful moves, but keep it running if it's active
                 LockTimer.ResetTimerWhileLocking();
             }
+
+            ReplicateControlledGroupToGhost();
         }
 
         private bool MoveGroup(BlockGroup group, int dX, int dY)
@@ -731,6 +739,53 @@ namespace Tetris
                 if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
                 Grid[x, y] = null;
             }
+        }
+
+        private void ReplicateControlledGroupToGhost()
+        {
+            if (controlledBlockGroup == null) return;
+
+            if (!PaletteHelpers.TryGetColor(palette, controlledBlockGroup.Type, out var color))
+            {
+                Debug.LogError(
+                    $"PlayArea.ReplicateControlledGroupAsGhost: Failed to get color for shape: {controlledBlockGroup.Type}");
+            }
+
+            if (ghostPiece != null) Destroy(ghostPiece.gameObject);
+
+            var gp = ghostPiece = BlockFactory.CreateShape(controlledBlockGroup.Type, color);
+            gp.transform.SetParent(transform);
+            gp.transform.SetLocalPositionAndRotation(controlledBlockGroup.transform.localPosition,
+                gp.transform.localRotation);
+            gp.SetOrientation(controlledBlockGroup.Orientation);
+            gp.EnableGhostMode();
+
+            gp.Translate(new Vector2(0, AllowedMaximumDrop()));
+        }
+
+        private int AllowedMaximumDrop()
+        {
+            if (controlledBlockGroup == null) return 0;
+
+            var currY = Height;
+            foreach (var block in controlledBlockGroup.GetBlocks())
+            {
+                if (!Grid.TryGetPosition(block, out var x, out var y)) continue;
+                if (y < currY) currY = y;
+            }
+
+            var dY = 0;
+            for (var y = 0; y >= -currY; y--)
+            {
+                if (!IsGroupMovementValid(controlledBlockGroup, 0, y))
+                {
+                    break;
+                }
+
+                dY = y;
+            }
+
+            return dY;
         }
 
         private static bool IsIndexInBounds(int x, int y)

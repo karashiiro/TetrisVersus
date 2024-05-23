@@ -1443,6 +1443,8 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 821186960257306292}
   <TargetRenderer>k__BackingField: {fileID: 8320172790974622566}
+  <GhostMaterial>k__BackingField: {fileID: 2100000, guid: 91dee77d9e5395c49bf27cea98648339,
+    type: 2}
 --- !u!114 &821186960257306292
 MonoBehaviour:
   m_ObjectHideFlags: 0

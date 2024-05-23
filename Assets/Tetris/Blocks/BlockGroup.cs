@@ -315,6 +315,15 @@ namespace Tetris.Blocks
             shouldRequestSerialization = true;
         }
 
+        public void EnableGhostMode()
+        {
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+                block.EnableGhostMode();
+            }
+        }
+
         private void UpdateBlockColors(DataDictionary palette)
         {
             foreach (var token in group.GetValues().ToArray())
