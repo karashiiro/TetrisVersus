@@ -80,5 +80,8 @@ UpgradeLog.htm
 # Udon
 /[Aa]ssets/[Ss]erializedUdonPrograms/
 
-# TextMesh Pro
+# TextMesh Pro samples
 /[Aa]ssets/[Tt]extMesh Pro/Examples & Extras*
+
+# Test-generated scenes
+/[Aa]ssets/[Ii]nitTestScene*.unity*

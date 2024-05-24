@@ -1,0 +1,19 @@
+{
+    "name": "Tetris",
+    "rootNamespace": "",
+    "references": [
+        "GUID:99835874ee819da44948776e0df4ff1d",
+        "GUID:064cf18266c2ff741bbabcb6aacb117f",
+        "GUID:dd56bc1d5d0f2694d9222dd1f2b7209e",
+        "GUID:3c1bc1267eab5884ebe7f232c09ee0d9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
