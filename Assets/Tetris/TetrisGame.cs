@@ -18,7 +18,7 @@ namespace Tetris
         private const float JoystickDeadZone = 0.7f;
         private const float TriggerDeadZone = 0.5f;
 
-        [UdonSynced] private readonly byte[] networkState = new byte[PlayArea.RequiredNetworkBufferSize];
+        [UdonSynced] private readonly byte[] networkState = new byte[Tetris.PlayArea.PlayArea.RequiredNetworkBufferSize];
 
         private bool moveLeftHeld;
         private bool moveRightHeld;
@@ -27,7 +27,7 @@ namespace Tetris
         private bool hardDropHeld;
 
         [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
-        [field: SerializeField] public PlayArea PlayArea { get; set; }
+        [field: SerializeField] public PlayArea.PlayArea PlayArea { get; set; }
         [field: SerializeField] public TickDriver TickDriver { get; set; }
         [field: SerializeField] public GameObject LockOutText { get; set; }
         [field: SerializeField] public GameObject TopOutText { get; set; }

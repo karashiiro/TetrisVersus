@@ -13,7 +13,7 @@ namespace Tetris.Timers
         private bool lockTimerEnabled;
         private int lockTimerResets;
 
-        [field: SerializeField] public PlayArea PlayArea { get; set; }
+        [field: SerializeField] public PlayArea.PlayArea PlayArea { get; set; }
 
         private void Awake()
         {

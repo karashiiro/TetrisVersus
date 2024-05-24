@@ -6,7 +6,7 @@ using UnityEngine;
 using VRC.SDK3.Data;
 using VRCExtensions;
 
-namespace Tetris
+namespace Tetris.PlayArea
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Queue : UdonSharpBehaviour

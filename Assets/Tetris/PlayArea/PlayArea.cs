@@ -9,7 +9,7 @@ using VRC.SDK3.Data;
 using VRCExtensions;
 using Random = UnityEngine.Random;
 
-namespace Tetris
+namespace Tetris.PlayArea
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class PlayArea : UdonSharpBehaviour
@@ -38,6 +38,8 @@ namespace Tetris
             { ShapeType.L.GetToken(), new DataToken(PaletteHelpers.FromHex("ff7425")) },
             { ShapeType.J.GetToken(), new DataToken(Color.blue) },
         };
+
+        private readonly int Drop = Animator.StringToHash("HardDrop");
 
         private ShapeType[] randomBag;
         private int randomBagIndex = RandomGenerator.SequenceLength - 1;
@@ -68,6 +70,7 @@ namespace Tetris
         [field: SerializeField] public LockTimer LockTimer { get; set; }
         [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
         [field: SerializeField] public EntryDelayTimer EntryDelayTimer { get; set; }
+        [field: SerializeField] public Animator Animator { get; set; }
 
         public int LastLinesCleared { get; private set; }
 
@@ -81,6 +84,7 @@ namespace Tetris
             if (LockTimer == null) Debug.LogError("PlayArea.Awake: LockTimer is null.");
             if (AutoRepeatTimer == null) Debug.LogError("PlayArea.Awake: AutoRepeatTimer is null.");
             if (EntryDelayTimer == null) Debug.LogError("PlayArea.Awake: EntryDelayTimer is null.");
+            if (Animator == null) Debug.LogError("PlayArea.Awake: Animator is null.");
         }
 
         private void Start()
@@ -140,6 +144,12 @@ namespace Tetris
             {
                 Destroy(controlledBlockGroup.gameObject);
                 controlledBlockGroup = null;
+            }
+
+            if (ghostPiece != null)
+            {
+                Destroy(ghostPiece.gameObject);
+                ghostPiece = null;
             }
 
             Grid.Clear();
@@ -417,6 +427,9 @@ namespace Tetris
             // Clear the lock timer and lock the controlled group immediately
             LockTimer.ResetTimer();
             LockControlledGroup();
+
+            Animator.ResetTrigger(Drop);
+            Animator.SetTrigger(Drop);
         }
 
         public void RotateControlledGroupLeft()

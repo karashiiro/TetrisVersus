@@ -16,7 +16,7 @@ namespace Tetris.Timers
         private bool autoRepeatEnabled;
         private int autoRepeatProgress;
 
-        [field: SerializeField] public PlayArea PlayArea { get; set; }
+        [field: SerializeField] public PlayArea.PlayArea PlayArea { get; set; }
 
         private void Awake()
         {

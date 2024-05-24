@@ -11,7 +11,7 @@ namespace Tetris.Timers
 
         private float elapsedTime;
 
-        [field: SerializeField] public PlayArea PlayArea { get; set; }
+        [field: SerializeField] public PlayArea.PlayArea PlayArea { get; set; }
         [field: SerializeField] public LockTimer LockTimer { get; set; }
         [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
         [field: SerializeField] public EntryDelayTimer EntryDelayTimer { get; set; }
