@@ -156,15 +156,40 @@ namespace Tetris
 
         public void PlayAreaOnClearedLines()
         {
-            if (NotifyLineClearsTo != null)
-            {
-                Debug.Log("TetrisGame.PlayAreaOnClearedLines: Sending cleared lines to listeners.");
-                NotifyLineClearsTo.SendCustomEvent("TetrisGameOnClearedLines");
-            }
-            else
+            // Each kind of line clear needs to be sent as a separate event, since Udon events can't have
+            // any parameters
+            var linesCleared = PlayArea.LastLinesCleared;
+            if (NotifyLineClearsTo == null)
             {
                 Debug.LogWarning("TetrisGame.PlayAreaOnClearedLines: NotifyLineClearsTo is null.");
             }
+            else switch (linesCleared)
+            {
+                case 2:
+                    NotifyDoubleLineClear();
+                    break;
+                case 3:
+                    NotifyTripleLineClear();
+                    break;
+                case 4:
+                    NotifyTetrisLineClear();
+                    break;
+            }
+        }
+
+        private void NotifyDoubleLineClear()
+        {
+            NotifyLineClearsTo.SendCustomEvent("TetrisGameOnDoubleLineClear");
+        }
+
+        private void NotifyTripleLineClear()
+        {
+            NotifyLineClearsTo.SendCustomEvent("TetrisGameOnTripleLineClear");
+        }
+
+        private void NotifyTetrisLineClear()
+        {
+            NotifyLineClearsTo.SendCustomEvent("TetrisGameOnTetrisLineClear");
         }
 
         public void PlayAreaOnLockOut()
@@ -179,11 +204,25 @@ namespace Tetris
             TopOutText.SetActive(true);
         }
 
-        public void SendGarbage()
+        public void SendGarbage1()
         {
-            // TODO: Send garbage based on line clears
-            Debug.Log("TetrisGame.SendGarbage: Sending garbage lines to play area.");
-            PlayArea.SendGarbage(2);
+            SendGarbage(1);
+        }
+
+        public void SendGarbage2()
+        {
+            SendGarbage(2);
+        }
+
+        public void SendGarbage4()
+        {
+            SendGarbage(4);
+        }
+
+        private void SendGarbage(int lines)
+        {
+            Debug.Log($"TetrisGame.SendGarbage: Sending {lines} garbage lines to play area.");
+            PlayArea.SendGarbage(lines);
         }
 
         public override void PostLateUpdate()

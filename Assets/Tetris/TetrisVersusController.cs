@@ -17,14 +17,29 @@ namespace Tetris
             if (ParticipatingGames == null) Debug.LogError("TetrisVersusController.Awake: ParticipatingGames is null.");
         }
 
-        public void TetrisGameOnClearedLines()
+        public void TetrisGameOnDoubleLineClear()
+        {
+            SendGarbageRandomly(1);
+        }
+
+        public void TetrisGameOnTripleLineClear()
+        {
+            SendGarbageRandomly(2);
+        }
+
+        public void TetrisGameOnTetrisLineClear()
+        {
+            SendGarbageRandomly(4);
+        }
+
+        private void SendGarbageRandomly(int garbageLines)
         {
             var activeGames = GetActiveGames();
             if (activeGames.Length < 2) return;
 
             if (!TryFindLocalGame(activeGames, out var from, out var fromIdx))
             {
-                Debug.LogWarning("TetrisVersusController.FindSender: Could not find event sender.");
+                Debug.LogWarning("TetrisVersusController.TetrisGameOnDoubleLineClear: Could not find event sender.");
                 return;
             }
 
@@ -35,14 +50,23 @@ namespace Tetris
                 toIdx = (toIdx + 1) % activeGames.Length;
             }
 
-            var lines = from.PlayArea.LastLinesCleared;
-
             Debug.Log(
-                $"TetrisVersusController.TetrisGameOnClearedLines: Sending {lines} garbage lines from game {fromIdx} to {toIdx}");
+                $"TetrisVersusController.TetrisGameOnDoubleLineClear: Sending {garbageLines} garbage lines from game {fromIdx} to {toIdx}");
 
             // TODO: Use OnDeserialization instead of risking desync with the network event
             var to = ParticipatingGames[toIdx];
-            to.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(TetrisGame.SendGarbage));
+            switch (garbageLines)
+            {
+                case 1:
+                    to.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(TetrisGame.SendGarbage1));
+                    break;
+                case 2:
+                    to.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(TetrisGame.SendGarbage2));
+                    break;
+                case 4:
+                    to.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(TetrisGame.SendGarbage4));
+                    break;
+            }
         }
 
         private TetrisGame[] GetActiveGames()
