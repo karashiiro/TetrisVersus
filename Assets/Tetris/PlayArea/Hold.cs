@@ -15,11 +15,11 @@ namespace Tetris.PlayArea
 
         [CanBeNull] private BlockGroup current;
 
-        public void Clear()
+        public void Clear(BlockFactory blockFactory)
         {
             if (current != null)
             {
-                Destroy(current.gameObject);
+                blockFactory.ReturnBlockGroup(current);
                 current = null;
             }
         }
@@ -36,7 +36,7 @@ namespace Tetris.PlayArea
 
         public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
         {
-            Clear();
+            Clear(blockFactory);
 
             var shapeType = (ShapeType)Convert.ToInt32(buffer[offset]);
             if (shapeType != ShapeType.None)

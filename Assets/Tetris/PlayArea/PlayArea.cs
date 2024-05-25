@@ -132,19 +132,19 @@ namespace Tetris.PlayArea
 
             if (controlledBlockGroup != null)
             {
-                Destroy(controlledBlockGroup.gameObject);
+                BlockFactory.ReturnBlockGroup(controlledBlockGroup);
                 controlledBlockGroup = null;
             }
 
             if (ghostPiece != null)
             {
-                Destroy(ghostPiece.gameObject);
+                BlockFactory.ReturnBlockGroup(ghostPiece);
                 ghostPiece = null;
             }
 
-            Grid.Clear();
-            Hold.Clear();
-            Queue.Clear();
+            Grid.Clear(BlockFactory);
+            Hold.Clear(BlockFactory);
+            Queue.Clear(BlockFactory);
 
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
             SRSHelpers.NewDataTable(out srsTables, out srsTranslationBuffer);
@@ -274,7 +274,7 @@ namespace Tetris.PlayArea
             // Load any queued garbage lines
             LoadQueuedGarbage();
 
-            if (ghostPiece != null) Destroy(ghostPiece.gameObject);
+            if (ghostPiece != null) BlockFactory.ReturnBlockGroup(ghostPiece);
 
             // Re-enable the hold function
             canExchangeWithHold = true;
@@ -308,7 +308,7 @@ namespace Tetris.PlayArea
                 var nextShape = BlockFactory.CreateShape(nextShapeType, nextColor);
                 if (!Queue.Push(nextShape))
                 {
-                    Destroy(nextShape.gameObject);
+                    BlockFactory.ReturnBlockGroup(nextShape);
                     break;
                 }
             }
@@ -690,7 +690,7 @@ namespace Tetris.PlayArea
                 {
                     var block = Grid[x, y];
                     if (block == null) continue;
-                    Destroy(block.gameObject);
+                    BlockFactory.ReturnBlock(block);
                     Grid[x, y] = null;
                 }
             }
@@ -724,7 +724,7 @@ namespace Tetris.PlayArea
                 if (existing != null)
                 {
                     Debug.LogWarning($"PlayArea.CopyBlocksFromGroup: Overwriting block at {targetX}, {targetY}");
-                    Destroy(existing.gameObject);
+                    BlockFactory.ReturnBlock(existing);
                 }
 
                 Grid[targetX, targetY] = group[localX, localY];
@@ -750,7 +750,7 @@ namespace Tetris.PlayArea
                     $"PlayArea.ReplicateControlledGroupAsGhost: Failed to get color for shape: {controlledBlockGroup.Type}");
             }
 
-            if (ghostPiece != null) Destroy(ghostPiece.gameObject);
+            if (ghostPiece != null) BlockFactory.ReturnBlockGroup(ghostPiece);
 
             var gp = ghostPiece = BlockFactory.CreateShape(controlledBlockGroup.Type, color);
             gp.transform.SetParent(transform);

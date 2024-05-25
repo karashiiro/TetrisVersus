@@ -18,8 +18,12 @@ namespace Tetris.Blocks
 
         private readonly int emission = Shader.PropertyToID("_EmissionColor");
 
+        private Color color;
+        private bool isGhost;
+
         [field: SerializeField] public Renderer TargetRenderer { get; set; }
         [field: SerializeField] public Material GhostMaterial { get; set; }
+        [field: SerializeField] public Material MainMaterial { get; set; }
 
         public BlockState State { get; set; }
         public ShapeType ShapeType { get; set; }
@@ -28,10 +32,7 @@ namespace Tetris.Blocks
 
         private void Awake()
         {
-            if (TargetRenderer == null)
-            {
-                TargetRenderer = GetComponent<Renderer>();
-            }
+            if (TargetRenderer == null) TargetRenderer = GetComponent<Renderer>();
         }
 
         /// <summary>
@@ -82,16 +83,25 @@ namespace Tetris.Blocks
         public void SetColor(Color nextColor)
         {
             if (TargetRenderer == null) return;
-            TargetRenderer.material.color = nextColor;
+            TargetRenderer.material.color = color = nextColor;
             TargetRenderer.material.SetColor(emission, nextColor);
         }
 
         public void EnableGhostMode()
         {
-            if (TargetRenderer == null) return;
+            if (isGhost || TargetRenderer == null) return;
             var originalColor = TargetRenderer.material.color;
             TargetRenderer.material = GhostMaterial;
             TargetRenderer.material.color = originalColor.WithAlpha(0.5f);
+            isGhost = true;
+        }
+
+        public void DisableGhostMode()
+        {
+            if (!isGhost || TargetRenderer == null) return;
+            TargetRenderer.material = MainMaterial;
+            SetColor(color);
+            isGhost = false;
         }
     }
 }

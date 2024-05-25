@@ -14,17 +14,56 @@ namespace Tests.Tetris.Blocks
         {
             var factory = Helpers.CreateBlockFactory();
 
+            BlockGroup group = null;
+            Measure.Method(() => { group = factory.CreateShape(shapeType, Color.black); }).Run();
+
+            Assert.NotNull(group);
+            Assert.AreEqual(shapeType, group.Type);
+            foreach (var block in group.GetBlocks())
+            {
+                Assert.AreEqual(BlockState.AtRest, block.State);
+                Assert.AreEqual(shapeType, block.ShapeType);
+            }
+        }
+
+        [Test, Performance]
+        public void TestCreateShapePooled(
+            [Values(ShapeType.L, ShapeType.J, ShapeType.S, ShapeType.Z, ShapeType.O, ShapeType.I, ShapeType.T)]
+            ShapeType shapeType)
+        {
+            var factory = Helpers.CreateBlockFactory();
+
             Measure.Method(() =>
             {
-                var group = factory.CreateShape(shapeType, Color.magenta);
-
-                Assert.AreEqual(shapeType, group.Type);
-                foreach (var block in group.GetBlocks())
-                {
-                    Assert.AreEqual(BlockState.AtRest, block.State);
-                    Assert.AreEqual(shapeType, block.ShapeType);
-                }
+                var group = factory.CreateShape(shapeType, Color.black);
+                factory.ReturnBlockGroup(group);
             }).Run();
+        }
+
+        [Test]
+        public void TestBasicPooling()
+        {
+            var factory = Helpers.CreateBlockFactory();
+
+            Assert.AreEqual(0, factory.PoolSize);
+
+            var group1 = factory.CreateShape(ShapeType.O, Color.yellow);
+            Assert.AreEqual(0, factory.PoolSize);
+
+            factory.ReturnBlockGroup(group1);
+            Assert.AreEqual(4, factory.PoolSize);
+
+            var group2 = factory.CreateShape(ShapeType.T, Color.magenta);
+            Assert.AreEqual(0, factory.PoolSize);
+
+            factory.ReturnBlockGroup(group2);
+            Assert.AreEqual(4, factory.PoolSize);
+
+            foreach (var block in group2.GetBlocks())
+            {
+                Assert.AreEqual(BlockState.AtRest, block.State);
+                Assert.AreEqual(ShapeType.T, block.ShapeType);
+            }
         }
     }
 }

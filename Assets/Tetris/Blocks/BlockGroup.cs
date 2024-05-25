@@ -48,11 +48,11 @@ namespace Tetris.Blocks
             }
         }
 
-        public void Clear()
+        public void Clear(BlockFactory blockFactory)
         {
             foreach (var block in GetBlocks())
             {
-                ObjectHelpers.Destroy(block.gameObject);
+                blockFactory.ReturnBlock(block);
             }
 
             group.Clear();
@@ -117,7 +117,7 @@ namespace Tetris.Blocks
                     else if (block != null)
                     {
                         this[x, y] = null;
-                        ObjectHelpers.Destroy(block.gameObject);
+                        blockFactory.ReturnBlock(block);
                     }
 
                     nRead += Block.RequiredNetworkBufferSize;
@@ -321,6 +321,15 @@ namespace Tetris.Blocks
             {
                 var block = token.As<Block>();
                 block.EnableGhostMode();
+            }
+        }
+
+        public void DisableGhostMode()
+        {
+            foreach (var token in group.GetValues().ToArray())
+            {
+                var block = token.As<Block>();
+                block.DisableGhostMode();
             }
         }
 

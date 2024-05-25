@@ -44,7 +44,7 @@ namespace Tetris.PlayArea
 
         public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
         {
-            Clear();
+            Clear(blockFactory);
 
             var nRead = 0;
             for (var i = 0; i < QueueSize; i++)
@@ -70,7 +70,7 @@ namespace Tetris.PlayArea
             return RequiredNetworkBufferSize;
         }
 
-        public void Clear()
+        public void Clear(BlockFactory blockFactory)
         {
             head = 0;
             tail = 0;
@@ -80,7 +80,7 @@ namespace Tetris.PlayArea
             {
                 if (incoming[n] != null)
                 {
-                    Destroy(incoming[n].gameObject);
+                    blockFactory.ReturnBlockGroup(incoming[n]);
                     incoming[n] = null;
                 }
             }

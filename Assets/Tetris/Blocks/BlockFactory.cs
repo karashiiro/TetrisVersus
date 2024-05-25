@@ -1,15 +1,20 @@
 ﻿using UdonSharp;
 using UnityEngine;
-using VRC.Udon;
+using VRC.SDK3.Data;
+using VRCExtensions;
 
 namespace Tetris.Blocks
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class BlockFactory : UdonSharpBehaviour
     {
+        private readonly DataList blockPool = new DataList();
+
         [field: SerializeField] public BlockGroup PrototypeBlockGroup { get; set; }
         [field: SerializeField] public Block PrototypeBlock { get; set; }
         [field: SerializeField] public Transform BlockGroupParent { get; set; }
+
+        public int PoolSize => blockPool.Count;
 
         /// <summary>
         /// Creates a new block group by cloning the provided group prototype instance.
@@ -38,11 +43,10 @@ namespace Tetris.Blocks
         /// <returns></returns>
         public Block CreateBlock(BlockGroup group, int localX, int localY)
         {
-            var blockObject = Instantiate(PrototypeBlock.gameObject, group.transform, true);
-            blockObject.name = "Block";
-
-            var component = (UdonSharpBehaviour)blockObject.GetComponent(typeof(UdonSharpBehaviour));
-            var block = (Block)component;
+            if (!TryGetBlockFromPool(group, out var block))
+            {
+                block = CreateNewBlock(group);
+            }
 
             // Put the cloned block on top of the group transform, then translate the block
             // where it needs to be relative to the group root.
@@ -51,6 +55,29 @@ namespace Tetris.Blocks
             group[localX, localY] = block;
 
             return block;
+        }
+
+        private Block CreateNewBlock(BlockGroup group)
+        {
+            var blockObject = Instantiate(PrototypeBlock.gameObject, group.transform, true);
+            blockObject.name = "Block";
+
+            var component = (UdonSharpBehaviour)blockObject.GetComponent(typeof(UdonSharpBehaviour));
+            return (Block)component;
+        }
+
+        private bool TryGetBlockFromPool(BlockGroup group, out Block block)
+        {
+            block = null;
+            if (blockPool.TryGetValue(0, TokenType.Reference, out var blockToken))
+            {
+                blockPool.RemoveAt(0);
+                block = blockToken.As<Block>();
+                block.transform.SetParent(group.transform, true);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -222,6 +249,25 @@ namespace Tetris.Blocks
                     Debug.LogError($"CreateShape: Unrecognized shape type provided: {type}");
                     return CreateBlockGroup();
             }
+        }
+
+        public void ReturnBlock(Block block)
+        {
+            block.transform.SetParent(transform);
+            block.transform.position = transform.position;
+            block.DisableGhostMode();
+            blockPool.Add(block.Token);
+        }
+
+        public void ReturnBlockGroup(BlockGroup group)
+        {
+            group.DisableGhostMode();
+            foreach (var block in group.GetBlocks())
+            {
+                ReturnBlock(block);
+            }
+
+            ObjectHelpers.Destroy(group.gameObject);
         }
     }
 }

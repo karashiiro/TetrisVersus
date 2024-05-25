@@ -54,7 +54,7 @@ namespace Tetris
                 $"TetrisVersusController.TetrisGameOnDoubleLineClear: Sending {garbageLines} garbage lines from game {fromIdx} to {toIdx}");
 
             // TODO: Use OnDeserialization instead of risking desync with the network event
-            var to = ParticipatingGames[toIdx];
+            var to = activeGames[toIdx];
             switch (garbageLines)
             {
                 case 1:
@@ -89,7 +89,7 @@ namespace Tetris
             return games;
         }
 
-        private bool TryFindLocalGame(TetrisGame[] games, out TetrisGame game, out int idx)
+        private static bool TryFindLocalGame(TetrisGame[] games, out TetrisGame game, out int idx)
         {
             game = null;
             idx = -1;
