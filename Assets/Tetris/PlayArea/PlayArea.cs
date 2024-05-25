@@ -2,11 +2,11 @@
 using JetBrains.Annotations;
 using Tetris.Blocks;
 using Tetris.Timers;
+using Tetris.UnityExtensions;
+using Tetris.VRCExtensions;
 using UdonSharp;
 using UnityEngine;
-using UnityExtensions;
 using VRC.SDK3.Data;
-using VRCExtensions;
 using Random = UnityEngine.Random;
 
 namespace Tetris.PlayArea

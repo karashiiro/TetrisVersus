@@ -1,6 +1,6 @@
 ﻿using VRC.SDK3.Data;
 
-namespace VRCExtensions
+namespace Tetris.VRCExtensions
 {
     public static class DataListExtensions
     {

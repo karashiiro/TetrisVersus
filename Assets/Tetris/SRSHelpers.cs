@@ -1,6 +1,6 @@
 ﻿using Tetris.Blocks;
+using Tetris.VRCExtensions;
 using VRC.SDK3.Data;
-using VRCExtensions;
 
 namespace Tetris
 {

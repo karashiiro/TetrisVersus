@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using Tetris.Blocks;
+using Tetris.VRCExtensions;
 using UnityEngine;
 using VRC.SDK3.Data;
-using VRCExtensions;
 
 namespace Tetris
 {

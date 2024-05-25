@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UnityExtensions
+namespace Tetris.UnityExtensions
 {
     public static class Vector2IntExtensions
     {

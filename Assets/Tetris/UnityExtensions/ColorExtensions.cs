@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using VRC.SDK3.Data;
 
-namespace UnityExtensions
+namespace Tetris.UnityExtensions
 {
     public static class ColorExtensions
     {

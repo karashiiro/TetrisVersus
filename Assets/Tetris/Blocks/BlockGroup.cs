@@ -1,10 +1,10 @@
 ﻿using System;
 using JetBrains.Annotations;
+using Tetris.UnityExtensions;
+using Tetris.VRCExtensions;
 using UdonSharp;
 using UnityEngine;
-using UnityExtensions;
 using VRC.SDK3.Data;
-using VRCExtensions;
 
 namespace Tetris.Blocks
 {

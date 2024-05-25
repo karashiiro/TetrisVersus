@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
+using Tetris.VRCExtensions;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Data;
-using VRCExtensions;
 
 namespace Tetris.Blocks
 {
