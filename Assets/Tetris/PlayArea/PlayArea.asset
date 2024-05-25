@@ -272,7 +272,7 @@ MonoBehaviour:
       Data: 14|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Blocks.ShapeType[], Assembly-CSharp
+      Data: Tetris.Blocks.ShapeType[], Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -872,7 +872,7 @@ MonoBehaviour:
       Data: 42|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Blocks.BlockGroup, Assembly-CSharp
+      Data: Tetris.Blocks.BlockGroup, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -1052,7 +1052,7 @@ MonoBehaviour:
       Data: 54|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Blocks.BlockFactory, Assembly-CSharp
+      Data: Tetris.Blocks.BlockFactory, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -1166,7 +1166,7 @@ MonoBehaviour:
       Data: 61|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.PlayArea.Hold, Assembly-CSharp
+      Data: Tetris.PlayArea.Hold, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -1226,7 +1226,7 @@ MonoBehaviour:
       Data: 65|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.PlayArea.Queue, Assembly-CSharp
+      Data: Tetris.PlayArea.Queue, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -1286,7 +1286,7 @@ MonoBehaviour:
       Data: 69|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Timers.LockTimer, Assembly-CSharp
+      Data: Tetris.Timers.LockTimer, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -1346,7 +1346,7 @@ MonoBehaviour:
       Data: 73|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Timers.AutoRepeatTimer, Assembly-CSharp
+      Data: Tetris.Timers.AutoRepeatTimer, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -1406,7 +1406,7 @@ MonoBehaviour:
       Data: 77|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Timers.EntryDelayTimer, Assembly-CSharp
+      Data: Tetris.Timers.EntryDelayTimer, Tetris
     - Name: 
       Entry: 8
       Data: 

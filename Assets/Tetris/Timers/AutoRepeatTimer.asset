@@ -170,7 +170,7 @@ MonoBehaviour:
       Data: 9|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.AutoRepeatDirection, Assembly-CSharp
+      Data: Tetris.AutoRepeatDirection, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -320,7 +320,7 @@ MonoBehaviour:
       Data: 16|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.PlayArea.PlayArea, Assembly-CSharp
+      Data: Tetris.PlayArea.PlayArea, Tetris
     - Name: 
       Entry: 8
       Data: 

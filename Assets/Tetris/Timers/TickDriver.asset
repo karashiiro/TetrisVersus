@@ -116,7 +116,7 @@ MonoBehaviour:
       Data: 6|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.PlayArea.PlayArea, Assembly-CSharp
+      Data: Tetris.PlayArea.PlayArea, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -182,7 +182,7 @@ MonoBehaviour:
       Data: 11|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Timers.LockTimer, Assembly-CSharp
+      Data: Tetris.Timers.LockTimer, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -242,7 +242,7 @@ MonoBehaviour:
       Data: 15|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Timers.AutoRepeatTimer, Assembly-CSharp
+      Data: Tetris.Timers.AutoRepeatTimer, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -302,7 +302,7 @@ MonoBehaviour:
       Data: 19|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Timers.EntryDelayTimer, Assembly-CSharp
+      Data: Tetris.Timers.EntryDelayTimer, Tetris
     - Name: 
       Entry: 8
       Data: 

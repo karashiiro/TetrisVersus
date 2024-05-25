@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 3|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Blocks.BlockGroup, Assembly-CSharp
+      Data: Tetris.Blocks.BlockGroup, Tetris
     - Name: 
       Entry: 8
       Data: 
@@ -128,7 +128,7 @@ MonoBehaviour:
       Data: 8|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.Blocks.Block, Assembly-CSharp
+      Data: Tetris.Blocks.Block, Tetris
     - Name: 
       Entry: 8
       Data: 
