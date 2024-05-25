@@ -37,14 +37,26 @@ namespace Tests.Tetris
             return gameObject.AddUdonSharpComponent<Hold>();
         }
 
+        public static Queue CreateQueue()
+        {
+            var gameObject = CreateObject();
+            return gameObject.AddUdonSharpComponent<Queue>();
+        }
+
         public static BlockFactory CreateBlockFactory()
         {
-            var parentObject = CreateObject();
+            var blockGroupParent = CreateObject();
             var gameObject = CreateObject();
             var blockFactory = gameObject.AddUdonSharpComponent<BlockFactory>();
             blockFactory.PrototypeBlockGroup = CreateBlockGroup();
             blockFactory.PrototypeBlock = CreateBlock();
-            blockFactory.BlockGroupParent = parentObject.transform;
+            blockFactory.BlockGroupParent = blockGroupParent.transform;
+            
+            // Parent all the properties to the factory so that destroying the factory destroys its parameters, too
+            blockFactory.PrototypeBlockGroup.transform.SetParent(blockFactory.transform);
+            blockFactory.PrototypeBlock.transform.SetParent(blockFactory.transform);
+            blockFactory.BlockGroupParent.transform.SetParent(blockFactory.transform);
+
             return blockFactory;
         }
     }

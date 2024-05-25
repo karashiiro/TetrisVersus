@@ -32,6 +32,7 @@ namespace Tests.Tetris.Blocks
 
             var block1 = Helpers.CreateBlock();
             var block2 = Helpers.CreateBlock();
+            using var _ = DisposeGameObjects.Of(block1, block2);
 
             block1.State = BlockState.Controlled;
             block1.ShapeType = ShapeType.Z;

@@ -11,29 +11,29 @@ namespace Tetris.PlayArea
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Queue : UdonSharpBehaviour
     {
-        private const int QueueSize = 5;
+        public const int Capacity = 5;
 
         private const int RequiredNetworkBufferSizePerGroup = 1;
-        public const int RequiredNetworkBufferSize = QueueSize * RequiredNetworkBufferSizePerGroup;
+        public const int RequiredNetworkBufferSize = Capacity * RequiredNetworkBufferSizePerGroup;
 
-        private readonly BlockGroup[] incoming = new BlockGroup[QueueSize];
+        private readonly BlockGroup[] incoming = new BlockGroup[Capacity];
 
         private int head;
         private int tail;
-        private int count;
 
         public bool IsFull => incoming[tail] != null;
         public bool IsEmpty => incoming[head] == null;
+        public int Count { get; private set; }
 
         public int SerializeInto(byte[] buffer, int offset)
         {
             buffer[offset] = Convert.ToByte(head);
             buffer[offset + 1] = Convert.ToByte(tail);
-            buffer[offset + 2] = Convert.ToByte(count);
+            buffer[offset + 2] = Convert.ToByte(Count);
 
             var nWritten = 0;
             var i = head;
-            for (var j = 0; j < count; j++)
+            for (var j = 0; j < Count; j++)
             {
                 buffer[offset + nWritten++] = Convert.ToByte(incoming[i].Type);
                 i = GetNextIndex(i);
@@ -47,7 +47,7 @@ namespace Tetris.PlayArea
             Clear(blockFactory);
 
             var nRead = 0;
-            for (var i = 0; i < QueueSize; i++)
+            for (var i = 0; i < Capacity; i++)
             {
                 var shapeType = (ShapeType)Convert.ToInt32(buffer[offset + nRead]);
                 if (shapeType != ShapeType.None)
@@ -74,9 +74,9 @@ namespace Tetris.PlayArea
         {
             head = 0;
             tail = 0;
-            count = 0;
+            Count = 0;
 
-            for (var n = 0; n < QueueSize; n++)
+            for (var n = 0; n < Capacity; n++)
             {
                 if (incoming[n] != null)
                 {
@@ -94,7 +94,7 @@ namespace Tetris.PlayArea
             var next = incoming[head];
             incoming[head] = null;
             head = GetNextIndex(head);
-            count--;
+            Count--;
 
             next.transform.SetParent(parent);
             UpdatePositions();
@@ -107,7 +107,7 @@ namespace Tetris.PlayArea
 
             incoming[tail] = group;
             tail = GetNextIndex(tail);
-            count++;
+            Count++;
 
             group.transform.SetParent(transform, false);
             UpdatePositions();
@@ -117,7 +117,7 @@ namespace Tetris.PlayArea
         private void UpdatePositions()
         {
             var i = head;
-            for (var j = 0; j < count; j++)
+            for (var j = 0; j < Count; j++)
             {
                 incoming[i].SetPosition(new Vector2(0, -j * 3));
                 i = GetNextIndex(i);

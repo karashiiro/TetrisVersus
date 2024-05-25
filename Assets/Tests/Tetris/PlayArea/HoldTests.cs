@@ -15,6 +15,7 @@ namespace Tests.Tetris.PlayArea
             var parent = Helpers.CreateObject();
             var originalGroup1 = group1;
             var originalGroup2 = group2;
+            using var _ = DisposeGameObjects.Of(hold, group1, group2, parent);
 
             // Store group1 inside the hold, expecting it to be null afterward
             hold.Exchange(ref group1, parent.transform, BlockState.AtRest);
@@ -52,6 +53,7 @@ namespace Tests.Tetris.PlayArea
             var group = Helpers.CreateBlockGroup();
             var parent = Helpers.CreateObject();
             var originalGroup = group;
+            using var _ = DisposeGameObjects.Of(hold, group, parent);
 
             // Store a non-null group inside the hold, expecting group to be null afterward
             hold.Exchange(ref group, parent.transform, BlockState.AtRest);
@@ -71,6 +73,8 @@ namespace Tests.Tetris.PlayArea
             var group1 = Helpers.CreateBlockGroup();
             var group2 = Helpers.CreateBlockGroup();
             var parent = Helpers.CreateObject();
+            using var _ = DisposeGameObjects.Of(hold, group1, group2, parent);
+
             hold.Exchange(ref group1, parent.transform, BlockState.AtRest);
 
             Measure.Method(() => hold.Exchange(ref group2, parent.transform, BlockState.AtRest)).Run();
@@ -82,6 +86,7 @@ namespace Tests.Tetris.PlayArea
             var hold = Helpers.CreateHold();
             var group = Helpers.CreateBlockGroup();
             var parent = Helpers.CreateObject();
+            using var _ = DisposeGameObjects.Of(hold, group, parent);
 
             Measure.Method(() => hold.Exchange(ref group, parent.transform, BlockState.AtRest)).Run();
         }

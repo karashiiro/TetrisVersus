@@ -13,9 +13,12 @@ namespace Tests.Tetris.Blocks
             ShapeType shapeType)
         {
             var factory = Helpers.CreateBlockFactory();
+            using var disposeAll = DisposeGameObjects.Of(factory);
 
             BlockGroup group = null;
-            Measure.Method(() => { group = factory.CreateShape(shapeType, Color.black); }).Run();
+
+            // ReSharper disable once AccessToDisposedClosure
+            Measure.Method(() => disposeAll.Add(group = factory.CreateShape(shapeType, Color.black))).Run();
 
             Assert.NotNull(group);
             Assert.AreEqual(shapeType, group.Type);
@@ -32,6 +35,7 @@ namespace Tests.Tetris.Blocks
             ShapeType shapeType)
         {
             var factory = Helpers.CreateBlockFactory();
+            using var _ = DisposeGameObjects.Of(factory);
 
             Measure.Method(() =>
             {
@@ -44,6 +48,7 @@ namespace Tests.Tetris.Blocks
         public void TestBasicPooling()
         {
             var factory = Helpers.CreateBlockFactory();
+            using var _ = DisposeGameObjects.Of(factory);
 
             Assert.AreEqual(0, factory.PoolSize);
 

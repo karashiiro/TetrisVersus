@@ -25,6 +25,7 @@ namespace Tests.Tetris.Blocks
 
             var blockGroup1 = factory.CreateI(Color.cyan);
             var blockGroup2 = factory.CreateZ(Color.red);
+            using var _ = DisposeGameObjects.Of(factory, blockGroup1, blockGroup2);
 
             Measure.Method(() =>
             {
