@@ -19,7 +19,10 @@ namespace Tetris.PlayArea
         private const int BufferHeight = 20;
         private const int Height = LimitHeight + BufferHeight;
 
-        public const int RequiredNetworkBufferSize = BlockGroup.RequiredNetworkBufferSizeBase +
+        public const int RequiredNetworkBufferSizeBase = 1;
+
+        public const int RequiredNetworkBufferSize = RequiredNetworkBufferSizeBase +
+                                                     BlockGroup.RequiredNetworkBufferSizeBase +
                                                      BlockGroup.RequiredNetworkBufferSizePerBlock * Width * Height +
                                                      Queue.RequiredNetworkBufferSize +
                                                      Hold.RequiredNetworkBufferSize;
@@ -48,6 +51,8 @@ namespace Tetris.PlayArea
         private bool ownedByLocalPlayer;
 
         private int queuedGarbageLines;
+
+        private PlayAreaEffect serializedEffect;
 
         [CanBeNull] private BlockGroup controlledBlockGroup;
         [CanBeNull] private BlockGroup ghostPiece;
@@ -99,15 +104,23 @@ namespace Tetris.PlayArea
 
         public int SerializeInto(byte[] buffer, int offset)
         {
-            var nWritten = Queue.SerializeInto(buffer, offset);
+            buffer[offset] = Convert.ToByte(serializedEffect);
+
+            var nWritten = RequiredNetworkBufferSizeBase;
+            nWritten += Queue.SerializeInto(buffer, offset + nWritten);
             nWritten += Hold.SerializeInto(buffer, offset + nWritten);
             nWritten += Grid.SerializeInto(buffer, offset + nWritten, boundsMin, boundsMax);
+
+            serializedEffect = PlayAreaEffect.None;
             return nWritten;
         }
 
         public int DeserializeFrom(byte[] buffer, int offset)
         {
-            var nRead = Queue.DeserializeFrom(buffer, offset, BlockFactory, palette);
+            DispatchEffect((PlayAreaEffect)Convert.ToInt32(buffer[offset]));
+
+            var nRead = RequiredNetworkBufferSizeBase;
+            nRead += Queue.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
             nRead += Hold.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
             nRead += Grid.DeserializeFrom(buffer, offset + nRead, boundsMin, boundsMax, BlockFactory, palette);
             return nRead;
@@ -419,8 +432,7 @@ namespace Tetris.PlayArea
             LockTimer.ResetTimer();
             LockControlledGroup();
 
-            Animator.ResetTrigger(Drop);
-            Animator.SetTrigger(Drop);
+            DispatchEffect(PlayAreaEffect.HardDrop);
         }
 
         public void RotateControlledGroupLeft()
@@ -791,6 +803,17 @@ namespace Tetris.PlayArea
             }
 
             return dY;
+        }
+
+        private void DispatchEffect(PlayAreaEffect effect)
+        {
+            serializedEffect = effect;
+
+            if (effect == PlayAreaEffect.HardDrop)
+            {
+                Animator.ResetTrigger(Drop);
+                Animator.SetTrigger(Drop);
+            }
         }
 
         private static bool IsIndexInBounds(int x, int y)
