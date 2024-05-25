@@ -13,6 +13,21 @@ namespace Tetris
             return Color.black;
         }
 
+        public static DataDictionary DefaultPalette()
+        {
+            return new DataDictionary
+            {
+                { ShapeType.None.GetToken(), new DataToken(Color.grey) },
+                { ShapeType.O.GetToken(), new DataToken(Color.yellow) },
+                { ShapeType.I.GetToken(), new DataToken(Color.cyan) },
+                { ShapeType.S.GetToken(), new DataToken(Color.green) },
+                { ShapeType.Z.GetToken(), new DataToken(Color.red) },
+                { ShapeType.T.GetToken(), new DataToken(Color.magenta) },
+                { ShapeType.L.GetToken(), new DataToken(FromHex("ff7425")) },
+                { ShapeType.J.GetToken(), new DataToken(Color.blue) },
+            };
+        }
+
         public static Color FromHex(string color)
         {
             if (color.Length < 6) return DefaultColor();

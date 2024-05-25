@@ -52,7 +52,7 @@ namespace Tetris.Blocks
         {
             foreach (var block in GetBlocks())
             {
-                Destroy(block.gameObject);
+                ObjectHelpers.Destroy(block.gameObject);
             }
 
             group.Clear();
@@ -117,7 +117,7 @@ namespace Tetris.Blocks
                     else if (block != null)
                     {
                         this[x, y] = null;
-                        Destroy(block.gameObject);
+                        ObjectHelpers.Destroy(block.gameObject);
                     }
 
                     nRead += Block.RequiredNetworkBufferSize;

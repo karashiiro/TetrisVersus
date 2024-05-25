@@ -24,7 +24,8 @@ namespace Tetris.Blocks
             // weird like a player spawn area. We'll move it somewhere meaningful later.
             group.transform.position = PrototypeBlockGroup.transform.position;
 
-            return (BlockGroup)group.GetComponent(typeof(UdonBehaviour));
+            var component = (UdonSharpBehaviour)group.GetComponent(typeof(UdonSharpBehaviour));
+            return (BlockGroup)component;
         }
 
         /// <summary>
@@ -40,7 +41,8 @@ namespace Tetris.Blocks
             var blockObject = Instantiate(PrototypeBlock.gameObject, group.transform, true);
             blockObject.name = "Block";
 
-            var block = (Block)blockObject.GetComponent(typeof(UdonBehaviour));
+            var component = (UdonSharpBehaviour)blockObject.GetComponent(typeof(UdonSharpBehaviour));
+            var block = (Block)component;
 
             // Put the cloned block on top of the group transform, then translate the block
             // where it needs to be relative to the group root.
@@ -218,7 +220,7 @@ namespace Tetris.Blocks
                     return CreateJ(color);
                 default:
                     Debug.LogError($"CreateShape: Unrecognized shape type provided: {type}");
-                    return null;
+                    return CreateBlockGroup();
             }
         }
     }

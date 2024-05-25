@@ -27,17 +27,7 @@ namespace Tetris.PlayArea
         private readonly Vector2Int boundsMin = new Vector2Int(0, 0);
         private readonly Vector2Int boundsMax = new Vector2Int(Width, Height);
 
-        private readonly DataDictionary palette = new DataDictionary
-        {
-            { ShapeType.None.GetToken(), new DataToken(Color.grey) },
-            { ShapeType.O.GetToken(), new DataToken(Color.yellow) },
-            { ShapeType.I.GetToken(), new DataToken(Color.cyan) },
-            { ShapeType.S.GetToken(), new DataToken(Color.green) },
-            { ShapeType.Z.GetToken(), new DataToken(Color.red) },
-            { ShapeType.T.GetToken(), new DataToken(Color.magenta) },
-            { ShapeType.L.GetToken(), new DataToken(PaletteHelpers.FromHex("ff7425")) },
-            { ShapeType.J.GetToken(), new DataToken(Color.blue) },
-        };
+        private readonly DataDictionary palette = PaletteHelpers.DefaultPalette();
 
         private readonly int Drop = Animator.StringToHash("HardDrop");
 

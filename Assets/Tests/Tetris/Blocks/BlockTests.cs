@@ -1,15 +1,13 @@
 using NUnit.Framework;
 using Tetris.Blocks;
-using UdonSharpEditor;
 using Unity.PerformanceTesting;
-using UnityEngine;
 
 namespace Tests.Tetris.Blocks
 {
     public class BlockTests
     {
         [Test, Performance]
-        public void TestBlockEmptySerialization()
+        public void TestEmptySerialization()
         {
             var buffer = new byte[Block.RequiredNetworkBufferSize];
 
@@ -28,15 +26,16 @@ namespace Tests.Tetris.Blocks
         }
 
         [Test, Performance]
-        public void TestBlockSerialization()
+        public void TestSerialization()
         {
             var buffer = new byte[Block.RequiredNetworkBufferSize];
 
-            var block1 = CreateBlock();
-            var block2 = CreateBlock();
+            var block1 = Helpers.CreateBlock();
+            var block2 = Helpers.CreateBlock();
 
             block1.State = BlockState.Controlled;
             block1.ShapeType = ShapeType.Z;
+            block2.ShapeType = ShapeType.S;
 
             Measure.Method(() =>
             {
@@ -44,14 +43,7 @@ namespace Tests.Tetris.Blocks
                 block2.DeserializeFrom(buffer, 0);
             }).Run();
 
-            Assert.AreEqual(block1.State, block2.State);
-            Assert.AreEqual(block1.ShapeType, block2.ShapeType);
-        }
-
-        private static Block CreateBlock()
-        {
-            var gameObject = UnityEditor.ObjectFactory.CreatePrimitive(PrimitiveType.Cube);
-            return gameObject.AddUdonSharpComponent<Block>();
+            Helpers.AssertEqual(block1, block2);
         }
     }
 }
