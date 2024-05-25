@@ -232,6 +232,7 @@ namespace Tetris.PlayArea
 
             RemoveBlocksFromGroup(controlledBlockGroup);
             Hold.Exchange(ref controlledBlockGroup, BlockState.Controlled);
+            ReplicateControlledGroupToGhost();
 
             if (controlledBlockGroup != null)
             {
@@ -742,7 +743,12 @@ namespace Tetris.PlayArea
 
         private void ReplicateControlledGroupToGhost()
         {
-            if (controlledBlockGroup == null) return;
+            if (controlledBlockGroup == null)
+            {
+                BlockFactory.ReturnBlockGroup(ghostPiece);
+                ghostPiece = null;
+                return;
+            }
 
             if (!PaletteHelpers.TryGetColor(palette, controlledBlockGroup.Type, out var color))
             {

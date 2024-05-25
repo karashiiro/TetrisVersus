@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using JetBrains.Annotations;
+using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Data;
 using VRCExtensions;
@@ -251,20 +252,33 @@ namespace Tetris.Blocks
             }
         }
 
-        public void ReturnBlock(Block block)
+        public void ReturnBlock([CanBeNull] Block block)
+        {
+            if (block == null) return;
+            block.DisableGhostMode();
+            ReturnBlockCore(block);
+        }
+
+        /// <summary>
+        /// Optimized form of <see cref="ReturnBlock"/>, used when a block is known not to be
+        /// ghosted and not null.
+        /// </summary>
+        /// <param name="block">The block.</param>
+        private void ReturnBlockCore([NotNull] Block block)
         {
             block.transform.SetParent(transform);
             block.transform.position = transform.position;
-            block.DisableGhostMode();
             blockPool.Add(block.Token);
         }
 
-        public void ReturnBlockGroup(BlockGroup group)
+        public void ReturnBlockGroup([CanBeNull] BlockGroup group)
         {
+            if (group == null) return;
+
             group.DisableGhostMode();
             foreach (var block in group.GetBlocks())
             {
-                ReturnBlock(block);
+                ReturnBlockCore(block);
             }
 
             ObjectHelpers.Destroy(group.gameObject);

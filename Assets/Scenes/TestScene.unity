@@ -1287,7 +1287,7 @@ PrefabInstance:
     - target: {fileID: 5699767620698802777, guid: 0d3d2df115d3d5147a07bd2e971a4443,
         type: 3}
       propertyPath: videoURL.url
-      value: https://www.youtube.com/watch?v=bEwIW8Ldelk
+      value: https://www.youtube.com/watch?v=lMJvDi0KNlM
       objectReference: {fileID: 0}
     - target: {fileID: 5699767620698802777, guid: 0d3d2df115d3d5147a07bd2e971a4443,
         type: 3}
