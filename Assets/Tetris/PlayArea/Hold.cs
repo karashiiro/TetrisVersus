@@ -34,7 +34,8 @@ namespace Tetris.PlayArea
             return RequiredNetworkBufferSize;
         }
 
-        public int DeserializeFrom(byte[] buffer, int offset, BlockFactory blockFactory, DataDictionary palette)
+        public int DeserializeFrom(byte[] buffer, int offset, Transform parent, BlockFactory blockFactory,
+            DataDictionary palette)
         {
             Clear(blockFactory);
 
@@ -48,7 +49,7 @@ namespace Tetris.PlayArea
                 }
 
                 var group = blockFactory.CreateShape(shapeType, colorToken.As<Color>());
-                Exchange(ref group, BlockState.AtRest);
+                Exchange(ref group, parent, BlockState.AtRest);
             }
 
             return RequiredNetworkBufferSize;
@@ -58,23 +59,49 @@ namespace Tetris.PlayArea
         /// Exchanges the provided block group with the block group currently stored in the hold.
         /// </summary>
         /// <param name="group">The block group to exchange.</param>
+        /// <param name="parent"></param>
         /// <param name="newState"></param>
-        public void Exchange(ref BlockGroup group, BlockState newState)
+        public void Exchange([CanBeNull] ref BlockGroup group, [NotNull] Transform parent, BlockState newState)
         {
-            var parent = group.transform.parent;
-            var last = current;
-            current = group;
-            current.transform.SetParent(transform, false);
-            current.SetPosition(new Vector2(0, 0));
-            current.SetOrientation(Orientation.Origin);
-            current.SetState(BlockState.Held);
-            group = last;
+            if (current == null && group == null) return;
 
-            if (group != null)
+            if (current == null && group != null)
             {
-                group.transform.SetParent(parent, false);
-                group.SetState(newState);
+                ClaimGroup(group);
+                current = group;
+                group = null;
             }
+            else if (current != null && group == null)
+            {
+                ReleaseCurrent(parent, newState);
+                group = current;
+                current = null;
+            }
+            else if (current != null && group != null)
+            {
+                ClaimGroup(group);
+                ReleaseCurrent(parent, newState);
+
+                // ReSharper disable once SwapViaDeconstruction
+                var last = current;
+                current = group;
+                group = last;
+            }
+        }
+
+        private void ClaimGroup([NotNull] BlockGroup group)
+        {
+            group.transform.SetParent(transform, false);
+            group.SetPosition(new Vector2(0, 0));
+            group.SetOrientation(Orientation.Origin);
+            group.SetState(BlockState.Held);
+        }
+
+        private void ReleaseCurrent([NotNull] Transform parent, BlockState newState)
+        {
+            Debug.Assert(current != null);
+            current.transform.SetParent(parent, false);
+            current.SetState(newState);
         }
     }
 }

@@ -121,7 +121,7 @@ namespace Tetris.PlayArea
 
             var nRead = RequiredNetworkBufferSizeBase;
             nRead += Queue.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
-            nRead += Hold.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
+            nRead += Hold.DeserializeFrom(buffer, offset + nRead, transform, BlockFactory, palette);
             nRead += Grid.DeserializeFrom(buffer, offset + nRead, boundsMin, boundsMax, BlockFactory, palette);
             return nRead;
         }
@@ -244,12 +244,12 @@ namespace Tetris.PlayArea
             canExchangeWithHold = false;
 
             RemoveBlocksFromGroup(controlledBlockGroup);
-            Hold.Exchange(ref controlledBlockGroup, BlockState.Controlled);
-            ReplicateControlledGroupToGhost();
+            Hold.Exchange(ref controlledBlockGroup, transform, BlockState.Controlled);
 
             if (controlledBlockGroup != null)
             {
                 AddControlledBlocks(controlledBlockGroup);
+                ReplicateControlledGroupToGhost();
             }
             else
             {
