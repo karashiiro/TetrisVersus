@@ -12,5 +12,6 @@
         L,
         J,
         MaxValue = J,
+        NetworkLimit = 0b00001111,
     }
 }

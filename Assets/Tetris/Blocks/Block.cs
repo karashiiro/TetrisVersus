@@ -14,7 +14,9 @@ namespace Tetris.Blocks
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Block : UdonSharpBehaviour
     {
-        public const int RequiredNetworkBufferSize = 2;
+        public const int RequiredNetworkBufferSize = 1;
+
+        private const byte Live = 0b10000000;
 
         private readonly int emission = Shader.PropertyToID("_EmissionColor");
 
@@ -43,9 +45,9 @@ namespace Tetris.Blocks
         /// <returns>The number of bytes that were written.</returns>
         public int SerializeInto(byte[] buffer, int offset)
         {
-            buffer[offset] = Convert.ToByte(State);
-            buffer[offset] |= 0b10000000;
-            buffer[offset + 1] = Convert.ToByte(ShapeType);
+            buffer[offset] = Live;
+            buffer[offset] |= Convert.ToByte((int)State << 4);
+            buffer[offset] |= Convert.ToByte(ShapeType);
             return RequiredNetworkBufferSize;
         }
 
@@ -57,13 +59,13 @@ namespace Tetris.Blocks
 
         public static bool ShouldDeserialize(byte[] buffer, int offset)
         {
-            return (buffer[offset] & 0b10000000) >> 7 == 1;
+            return (buffer[offset] & Live) >> 7 == 1;
         }
 
         public void DeserializeFrom(byte[] buffer, int offset)
         {
-            State = (BlockState)Convert.ToInt32(buffer[offset] & 0b01111111);
-            ShapeType = (ShapeType)Convert.ToInt32(buffer[offset + 1]);
+            State = (BlockState)(Convert.ToInt32(buffer[offset] & ~Live) >> 4);
+            ShapeType = (ShapeType)Convert.ToInt32(buffer[offset] & 0b00001111);
         }
 
         /// <summary>
