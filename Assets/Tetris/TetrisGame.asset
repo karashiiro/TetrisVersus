@@ -716,19 +716,19 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: <TargetVersusMiniView>k__BackingField
+      Data: <VersusMiniViews>k__BackingField
     - Name: $v
       Entry: 7
       Data: 41|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
     - Name: <Name>k__BackingField
       Entry: 1
-      Data: <TargetVersusMiniView>k__BackingField
+      Data: <VersusMiniViews>k__BackingField
     - Name: <UserType>k__BackingField
       Entry: 7
       Data: 42|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Tetris.PlayArea.VersusMiniView, Tetris
+      Data: Tetris.PlayArea.VersusMiniViewArray, Tetris
     - Name: 
       Entry: 8
       Data: 

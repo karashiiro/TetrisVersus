@@ -17,6 +17,22 @@ namespace Tetris
             if (ParticipatingGames == null) Debug.LogError("TetrisVersusController.Awake: ParticipatingGames is null.");
         }
 
+        private void Start()
+        {
+            foreach (var game1 in ParticipatingGames)
+            {
+                foreach (var game2 in ParticipatingGames)
+                {
+                    game1.VersusMiniViews.AddGame(game2);
+                }
+            }
+
+            foreach (var game in ParticipatingGames)
+            {
+                game.VersusMiniViews.ReplicateAll();
+            }
+        }
+
         public void TetrisGameOnDoubleLineClear()
         {
             SendGarbageRandomly(1);

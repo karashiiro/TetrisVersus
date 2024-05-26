@@ -11,13 +11,20 @@ namespace Tetris.PlayArea
 
         private void Awake()
         {
-            if (TargetRenderer == null) Debug.LogError("VersusHUD.Awake: TargetRenderer is null.");
-            if (ReplicateRenderer == null) Debug.LogError("VersusHUD.Awake: ReplicateRenderer is null.");
+            if (TargetRenderer == null) Debug.LogError("VersusMiniView.Awake: TargetRenderer is null.");
+            if (ReplicateRenderer == null) Debug.LogError("VersusMiniView.Awake: ReplicateRenderer is null.");
+        }
+
+        public void ReplicateMaterial(Material material)
+        {
+            if (TargetRenderer == null) return;
+            TargetRenderer.material = material;
         }
 
         public void Replicate()
         {
-            TargetRenderer.material = ReplicateRenderer.material;
+            if (ReplicateRenderer == null) return;
+            ReplicateMaterial(ReplicateRenderer.material);
         }
     }
 }
