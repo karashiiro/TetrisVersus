@@ -18,7 +18,8 @@ namespace Tetris
         private const float JoystickDeadZone = 0.7f;
         private const float TriggerDeadZone = 0.5f;
 
-        [UdonSynced] private readonly byte[] networkState = new byte[Tetris.PlayArea.PlayArea.RequiredNetworkBufferSize];
+        [UdonSynced]
+        private readonly byte[] networkState = new byte[Tetris.PlayArea.PlayArea.RequiredNetworkBufferSize];
 
         private bool moveLeftHeld;
         private bool moveRightHeld;
@@ -48,10 +49,15 @@ namespace Tetris
 
         public override void Interact()
         {
+            TakeOwnershipAndStart();
+        }
+
+        private void TakeOwnershipAndStart()
+        {
             if (Networking.IsOwner(gameObject))
             {
                 Debug.Log("TetrisGame.Interact: Already owner, skipping ownership request");
-                InitGame(VRCPlayerApi.GetPlayerById(1));
+                InitGame();
                 return;
             }
 
@@ -68,7 +74,7 @@ namespace Tetris
             Debug.Log($"TetrisGame.OnOwnershipRequest: shouldRequest={shouldRequest}");
 
             // Unfreeze the player if they were the owner and are having ownership reassigned
-            if (shouldRequest && Networking.IsOwner(gameObject))
+            if (shouldRequest && LocalPlayerIsOwner())
             {
                 UnfreezeOwner();
             }
@@ -82,71 +88,69 @@ namespace Tetris
             // back to the original owner if the request is rejected (this is still local to the requester). However,
             // after transfer approval, this is invoked by all players except for the requester. We need to assume
             // that the request succeeds, but be able to roll back safely if it doesn't.
-            InitGame(player);
+            if (player.isLocal)
+            {
+                InitGame();
+            }
         }
 
-        private void InitGame(VRCPlayerApi player)
+        private void InitGame()
         {
             Random.InitState(Networking.GetServerTimeInMilliseconds());
 
-            Debug.Log($"TetrisGame.InitGame: Set owner to {player.displayName}");
-            if (player.isLocal)
-            {
-                Debug.Log("TetrisGame.InitGame: Owner is local player");
-                PlayArea.SetOwned(true);
-                FreezeOwner(player);
-            }
+            Debug.Log("TetrisGame.InitGame: Starting game as local player");
+            PlayArea.SetOwned(true);
 
             SetGameState(GameState.Playing);
         }
 
-        public void StopGame()
+        public void PauseGame()
         {
-            if (CurrentState == GameState.Stopped) return;
-
-            Debug.Log("TetrisGame.StopGame: Stopping game");
-
-
+            if (CurrentState == GameState.Stopped || !LocalPlayerIsOwner()) return;
+            Debug.Log("TetrisGame.PauseGame: Stopping game");
             SetGameState(GameState.Stopped);
-        }
-
-        private static void FreezeOwner()
-        {
-            FreezeOwner(Networking.LocalPlayer);
-        }
-
-        private static void FreezeOwner(VRCPlayerApi player)
-        {
-            player.Immobilize(true);
-            player.SetJumpImpulse(0);
-        }
-
-        private void UnfreezeOwner()
-        {
-            // TODO: Make this not break for the instance owner
-            Networking.LocalPlayer.Immobilize(false);
-            Networking.LocalPlayer.SetJumpImpulse();
         }
 
         public void ResetGame()
         {
+            if (CurrentState == GameState.NotStarted || !LocalPlayerIsOwner()) return;
             Debug.Log("TetrisGame.ResetGame: Resetting game");
-            StopGame();
             PlayArea.Clear();
             LockOutText.SetActive(false);
             TopOutText.SetActive(false);
-            RequestSerialization();
+            SetGameState(GameState.NotStarted);
+        }
+
+        private void FreezeOwner()
+        {
+            if (!LocalPlayerIsOwner()) return;
+            Networking.LocalPlayer.Immobilize(true);
+            Networking.LocalPlayer.SetJumpImpulse(0);
+        }
+
+        private void UnfreezeOwner()
+        {
+            if (!LocalPlayerIsOwner()) return;
+            Networking.LocalPlayer.Immobilize(false);
+            Networking.LocalPlayer.SetJumpImpulse();
         }
 
         private void SetGameState(GameState nextState)
         {
+            var last = CurrentState;
             CurrentState = nextState;
+            if (CurrentState != last)
+            {
+                RequestSerialization();
+            }
+
             switch (nextState)
             {
                 case GameState.Playing:
                     TickDriver.enabled = true;
                     FreezeOwner();
                     break;
+                case GameState.NotStarted:
                 case GameState.Stopped:
                     TickDriver.enabled = false;
                     UnfreezeOwner();
@@ -163,18 +167,19 @@ namespace Tetris
             {
                 Debug.LogWarning("TetrisGame.PlayAreaOnClearedLines: NotifyLineClearsTo is null.");
             }
-            else switch (linesCleared)
-            {
-                case 2:
-                    NotifyDoubleLineClear();
-                    break;
-                case 3:
-                    NotifyTripleLineClear();
-                    break;
-                case 4:
-                    NotifyTetrisLineClear();
-                    break;
-            }
+            else
+                switch (linesCleared)
+                {
+                    case 2:
+                        NotifyDoubleLineClear();
+                        break;
+                    case 3:
+                        NotifyTripleLineClear();
+                        break;
+                    case 4:
+                        NotifyTetrisLineClear();
+                        break;
+                }
         }
 
         private void NotifyDoubleLineClear()
@@ -227,7 +232,7 @@ namespace Tetris
 
         public override void PostLateUpdate()
         {
-            if (PlayArea.ShouldSerialize())
+            if (LocalPlayerIsOwner() && PlayArea.ShouldSerialize())
             {
                 RequestSerialization();
             }
@@ -240,6 +245,7 @@ namespace Tetris
 
         public override void OnDeserialization()
         {
+            if (LocalPlayerIsOwner()) return;
             PlayArea.DeserializeFrom(networkState, 0);
         }
 
@@ -294,7 +300,6 @@ namespace Tetris
         public override void InputJump(bool value, UdonInputEventArgs args)
         {
             if (!ShouldBeControllable()) return;
-
             if (!value) return;
             PlayArea.ExchangeHold();
         }
@@ -375,7 +380,12 @@ namespace Tetris
 
         private bool ShouldBeControllable()
         {
-            return CurrentState == GameState.Playing && Networking.IsOwner(gameObject);
+            return CurrentState == GameState.Playing && LocalPlayerIsOwner();
+        }
+
+        private bool LocalPlayerIsOwner()
+        {
+            return Networking.IsOwner(gameObject);
         }
     }
 }

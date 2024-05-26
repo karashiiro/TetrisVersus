@@ -142,10 +142,15 @@ namespace Tetris.PlayArea
             gravityProgress = 0;
             gravityPerTick = GetGravityPerTick();
             softDropEnabled = false;
+            serializedEffect = PlayAreaEffect.None;
 
             if (controlledBlockGroup != null)
             {
-                BlockFactory.ReturnBlockGroup(controlledBlockGroup);
+                // Destroy the controlled block group rather than returning its blocks
+                // to the pool, because they're included in both the group and the grid.
+                // Returning blocks to the pool here would cause blocks to be returned
+                // twice, leading to weird visual bugs.
+                ObjectHelpers.Destroy(controlledBlockGroup);
                 controlledBlockGroup = null;
             }
 
@@ -402,7 +407,7 @@ namespace Tetris.PlayArea
             // Validate that the group is still active going into the next tick
             foreach (var block in controlledBlockGroup.GetBlocks())
             {
-                if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(HandleControlledBlockGravity)))
+                if (!Grid.TryGetPosition(block, out var x, out var y))
                     continue;
 
                 var nextBlock = Grid[x, y - 1];
@@ -475,7 +480,6 @@ namespace Tetris.PlayArea
             }
 
             var srsDisplacement = new Vector2Int(dXSrs, dYSrs);
-            var updates = $"PlayArea.RotateGroup: Rotating {blocks.Length} blocks: ";
             for (var i = 0; i < blocks.Length; i++)
             {
                 if (!group.TryGetPositionAbsolute(blocks[i], out var localX, out var localY)) continue;
@@ -488,11 +492,7 @@ namespace Tetris.PlayArea
                 var targetX = x + displacement.x;
                 var targetY = y + displacement.y;
                 Grid[targetX, targetY] = blocks[i];
-
-                updates += $"(<{x}, {y}> -> <{targetX}, {targetY}>) ";
             }
-
-            Debug.Log(updates);
 
             // Move the group in world space
             group.Translate(srsDisplacement);
@@ -590,13 +590,14 @@ namespace Tetris.PlayArea
                 if (!group.TryGetPositionAbsolute(block, out var localX, out var localY,
                         caller: nameof(IsGroupMovementValid)))
                 {
-                    Debug.LogError($"IsGroupMovementValid({caller}): Could not get absolute block position in group");
+                    Debug.LogError(
+                        $"PlayArea.IsGroupMovementValid({caller}): Could not get absolute block position in group");
                     return false;
                 }
 
                 var position = new Vector2Int(localX, localY);
                 var displacement = position.Rotate(rotation.AsDegrees()) - position + srsTranslation;
-                if (!IsBlockMovementValid(block, displacement.x, displacement.y, caller: nameof(IsGroupMovementValid)))
+                if (!IsBlockMovementValid(block, displacement.x, displacement.y))
                 {
                     return false;
                 }
@@ -611,7 +612,7 @@ namespace Tetris.PlayArea
 
             foreach (var block in group.GetBlocks())
             {
-                if (!IsBlockMovementValid(block, dX, dY, caller: nameof(IsGroupMovementValid)))
+                if (!IsBlockMovementValid(block, dX, dY))
                 {
                     // We're either at the edge of the grid, or there's a block where we want to go
                     return false;
@@ -621,15 +622,10 @@ namespace Tetris.PlayArea
             return true;
         }
 
-        private bool IsBlockMovementValid(Block block, int dX, int dY, string caller = "unknown")
+        private bool IsBlockMovementValid(Block block, int dX, int dY)
         {
-            if (!Grid.TryGetPosition(block, out var x, out var y, caller: nameof(IsBlockMovementValid)))
+            if (!Grid.TryGetPosition(block, out var x, out var y))
             {
-                var gridBlocks = Grid.GetBlocks();
-                Debug.LogError(gridBlocks == null
-                    ? $"PlayArea.IsBlockMovementValid({caller}): Grid.GetBlocks() returned null!"
-                    : $"PlayArea.IsBlockMovementValid({caller}): Could not get block position, gridCount={gridBlocks.Length}");
-
                 return false;
             }
 
@@ -698,7 +694,6 @@ namespace Tetris.PlayArea
         {
             foreach (var y in ys)
             {
-                Debug.Log($"ClearLines: {y}");
                 for (var x = 0; x < Width; x++)
                 {
                     var block = Grid[x, y];

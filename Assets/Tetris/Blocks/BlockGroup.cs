@@ -31,6 +31,8 @@ namespace Tetris.Blocks
         /// </summary>
         public ShapeType Type { get; set; }
 
+        public int Count => group.Count;
+
         [CanBeNull]
         public Block this[int x, int y]
         {
@@ -57,6 +59,21 @@ namespace Tetris.Blocks
 
             group.Clear();
             groupPositions.Clear();
+
+            Debug.Assert(Count == 0);
+            Debug.Assert(group.Count == groupPositions.Count);
+        }
+
+        public void LogDebugInfo()
+        {
+            var info = "BlockGroup.LogDebugInfo:";
+            info += $"\nCurrent blocks: {Count}";
+            info += $"\nCurrent children: {transform.childCount}";
+            foreach (var block in GetBlocks())
+            {
+                info += $"\n  Block parent: {block.transform.parent.gameObject.name}";
+            }
+            Debug.Log(info);
         }
 
         public bool ShouldSerialize()
@@ -173,20 +190,15 @@ namespace Tetris.Blocks
             return group.TryGetValue(key, TokenType.Reference, out var block) ? block.As<Block>() : null;
         }
 
-        public bool TryGetPosition([CanBeNull] Block block, out int localX, out int localY, string caller = "unknown")
+        public bool TryGetPosition([CanBeNull] Block block, out int localX, out int localY)
         {
             localX = -1;
             localY = -1;
 
             if (block == null) return false;
 
-            if (!groupPositions.TryGetValue(block.Token, TokenType.String, out var positionToken))
-            {
-                Debug.LogWarning($"TryGetPosition({caller}): Failed to get position token for block: {positionToken}");
-                return false;
-            }
-
-            return TryDecodePosition(positionToken, out localX, out localY);
+            return groupPositions.TryGetValue(block.Token, TokenType.String, out var positionToken) &&
+                   TryDecodePosition(positionToken, out localX, out localY);
         }
 
         public bool TryGetPositionAbsolute([CanBeNull] Block block, out int localX, out int localY,
@@ -220,7 +232,7 @@ namespace Tetris.Blocks
 
                 block.transform.SetParent(transform, true);
 
-                if (TryGetPosition(block, out var x, out var y, caller: nameof(ClaimUncontrolledBlocks)))
+                if (TryGetPosition(block, out var x, out var y))
                 {
                     block.SetPosition(new Vector2(x, y));
                 }

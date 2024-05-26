@@ -11,6 +11,9 @@ namespace Tetris.Blocks
     {
         private readonly DataList blockPool = new DataList();
 
+        private int blockCounter;
+        private int blockGroupCounter;
+
         [field: SerializeField] public BlockGroup PrototypeBlockGroup { get; set; }
         [field: SerializeField] public Block PrototypeBlock { get; set; }
         [field: SerializeField] public Transform BlockGroupParent { get; set; }
@@ -24,7 +27,7 @@ namespace Tetris.Blocks
         public BlockGroup CreateBlockGroup()
         {
             var group = Instantiate(PrototypeBlockGroup.gameObject, BlockGroupParent, true);
-            group.name = "BlockGroup";
+            group.name = $"BlockGroup {++blockGroupCounter}";
 
             // Put the cloned block group on top of its prototype, so we know we didn't spawn it somewhere
             // weird like a player spawn area. We'll move it somewhere meaningful later.
@@ -61,7 +64,7 @@ namespace Tetris.Blocks
         private Block CreateNewBlock(BlockGroup group)
         {
             var blockObject = Instantiate(PrototypeBlock.gameObject, group.transform, true);
-            blockObject.name = "Block";
+            blockObject.name = $"Block {++blockCounter}";
 
             var component = (UdonSharpBehaviour)blockObject.GetComponent(typeof(UdonSharpBehaviour));
             return (Block)component;

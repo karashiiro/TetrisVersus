@@ -39,6 +39,11 @@ namespace Tetris.PlayArea
                 i = GetNextIndex(i);
             }
 
+            for (var j = Count; j < Capacity; j++)
+            {
+                buffer[offset + nWritten++] = Convert.ToByte(ShapeType.None);
+            }
+
             return RequiredNetworkBufferSize;
         }
 

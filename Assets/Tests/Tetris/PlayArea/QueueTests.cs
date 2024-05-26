@@ -16,9 +16,13 @@ namespace Tests.Tetris.PlayArea
             using var _ = DisposeGameObjects.Of(queue);
 
             Assert.AreEqual(0, queue.Count);
+            Assert.False(queue.IsFull);
+            Assert.True(queue.IsEmpty);
 
             Assert.True(queue.Push(group));
             Assert.AreEqual(1, queue.Count);
+            Assert.False(queue.IsFull);
+            Assert.False(queue.IsEmpty);
         }
 
         [Test]
@@ -28,6 +32,8 @@ namespace Tests.Tetris.PlayArea
             using var disposeAll = DisposeGameObjects.Of(queue);
 
             Assert.AreEqual(0, queue.Count);
+            Assert.False(queue.IsFull);
+            Assert.True(queue.IsEmpty);
             for (var n = 1; n <= Queue.Capacity; n++)
             {
                 Assert.True(queue.Push(Helpers.CreateBlockGroup()));
@@ -38,6 +44,8 @@ namespace Tests.Tetris.PlayArea
             disposeAll.Add(nextGroup);
 
             Assert.False(queue.Push(nextGroup));
+            Assert.False(queue.IsEmpty);
+            Assert.True(queue.IsFull);
             Assert.AreEqual(Queue.Capacity, queue.Count);
         }
 
@@ -51,6 +59,8 @@ namespace Tests.Tetris.PlayArea
             queue.Push(inGroup);
 
             Assert.AreEqual(1, queue.Count);
+            Assert.False(queue.IsFull);
+            Assert.False(queue.IsEmpty);
 
             var parent = Helpers.CreateObject();
             disposeAll.Add(parent);
@@ -59,6 +69,8 @@ namespace Tests.Tetris.PlayArea
             Assert.AreEqual(0, queue.Count);
             Assert.NotNull(outGroup);
             Assert.AreEqual(inGroup, outGroup);
+            Assert.False(queue.IsFull);
+            Assert.True(queue.IsEmpty);
         }
 
         [Test]
@@ -77,6 +89,8 @@ namespace Tests.Tetris.PlayArea
             }
 
             Assert.AreEqual(Queue.Capacity, queue.Count);
+            Assert.True(queue.IsFull);
+            Assert.False(queue.IsEmpty);
 
             var parent = Helpers.CreateObject();
             disposeAll.Add(parent);
@@ -85,6 +99,8 @@ namespace Tests.Tetris.PlayArea
             Assert.AreEqual(Queue.Capacity - 1, queue.Count);
             Assert.NotNull(outGroup);
             Assert.AreEqual(groups.First(), outGroup);
+            Assert.False(queue.IsFull);
+            Assert.False(queue.IsEmpty);
         }
     }
 }
