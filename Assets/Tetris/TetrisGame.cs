@@ -5,6 +5,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon.Common;
 using Random = UnityEngine.Random;
+using VRCStation = VRC.SDK3.Components.VRCStation;
 
 namespace Tetris
 {
@@ -32,6 +33,7 @@ namespace Tetris
         [field: SerializeField] public TickDriver TickDriver { get; set; }
         [field: SerializeField] public GameObject LockOutText { get; set; }
         [field: SerializeField] public GameObject TopOutText { get; set; }
+        [field: SerializeField] public VRCStation Station { get; set; }
 
         [field: UdonSynced] public GameState CurrentState { get; set; }
 
@@ -42,6 +44,7 @@ namespace Tetris
             if (TickDriver == null) Debug.LogError("TetrisGame.Awake: TickDriver is null.");
             if (LockOutText == null) Debug.LogError("TetrisGame.Awake: LockOutText is null.");
             if (TopOutText == null) Debug.LogError("TetrisGame.Awake: TopOutText is null.");
+            if (Station == null) Debug.LogError("TetrisGame.Awake: Station is null.");
 
             LockOutText.SetActive(false);
             TopOutText.SetActive(false);
@@ -124,15 +127,13 @@ namespace Tetris
         private void FreezeOwner()
         {
             if (!LocalPlayerIsOwner()) return;
-            Networking.LocalPlayer.Immobilize(true);
-            Networking.LocalPlayer.SetJumpImpulse(0);
+            Station.UseStation(Networking.LocalPlayer);
         }
 
         private void UnfreezeOwner()
         {
             if (!LocalPlayerIsOwner()) return;
-            Networking.LocalPlayer.Immobilize(false);
-            Networking.LocalPlayer.SetJumpImpulse();
+            Station.ExitStation(Networking.LocalPlayer);
         }
 
         private void SetGameState(GameState nextState)
