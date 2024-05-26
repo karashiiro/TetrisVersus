@@ -54,6 +54,8 @@ namespace Tetris.PlayArea
 
         private PlayAreaEffect serializedEffect;
 
+        private Texture2D miniViewTexture;
+
         [CanBeNull] private BlockGroup controlledBlockGroup;
         [CanBeNull] private BlockGroup ghostPiece;
 
@@ -66,6 +68,7 @@ namespace Tetris.PlayArea
         [field: SerializeField] public AutoRepeatTimer AutoRepeatTimer { get; set; }
         [field: SerializeField] public EntryDelayTimer EntryDelayTimer { get; set; }
         [field: SerializeField] public Animator Animator { get; set; }
+        [field: SerializeField] public Renderer MiniViewRenderer { get; set; }
 
         public int LastLinesCleared { get; private set; }
 
@@ -80,6 +83,7 @@ namespace Tetris.PlayArea
             if (AutoRepeatTimer == null) Debug.LogError("PlayArea.Awake: AutoRepeatTimer is null.");
             if (EntryDelayTimer == null) Debug.LogError("PlayArea.Awake: EntryDelayTimer is null.");
             if (Animator == null) Debug.LogError("PlayArea.Awake: Animator is null.");
+            if (MiniViewRenderer == null) Debug.LogError("PlayArea.Awake: MiniViewRenderer is null.");
         }
 
         private void Start()
@@ -87,6 +91,12 @@ namespace Tetris.PlayArea
             Debug.Log("PlayArea.Start: Initializing play area");
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
             SRSHelpers.NewDataTable(out srsTables, out srsTranslationBuffer);
+
+            miniViewTexture = new Texture2D(Width, LimitHeight);
+            miniViewTexture.wrapMode = TextureWrapMode.Clamp;
+            miniViewTexture.filterMode = FilterMode.Point;
+            RenderToMiniView();
+            MiniViewRenderer.material.mainTexture = miniViewTexture;
 
             // Fill the queue initially
             RefillQueue();
@@ -123,6 +133,9 @@ namespace Tetris.PlayArea
             nRead += Queue.DeserializeFrom(buffer, offset + nRead, BlockFactory, palette);
             nRead += Hold.DeserializeFrom(buffer, offset + nRead, transform, BlockFactory, palette);
             nRead += Grid.DeserializeFrom(buffer, offset + nRead, boundsMin, boundsMax, BlockFactory, palette);
+
+            RenderToMiniView();
+
             return nRead;
         }
 
@@ -167,6 +180,7 @@ namespace Tetris.PlayArea
             randomBag = RandomGenerator.NewSequence(out randomBagIndex);
             SRSHelpers.NewDataTable(out srsTables, out srsTranslationBuffer);
             RefillQueue();
+            RenderToMiniView();
         }
 
         public void Tick()
@@ -255,6 +269,7 @@ namespace Tetris.PlayArea
             {
                 AddControlledBlocks(controlledBlockGroup);
                 ReplicateControlledGroupToGhost();
+                RenderToMiniView();
             }
             else
             {
@@ -297,6 +312,8 @@ namespace Tetris.PlayArea
 
             // Re-enable the hold function
             canExchangeWithHold = true;
+
+            RenderToMiniView();
         }
 
         public void LoadNextShape()
@@ -310,6 +327,7 @@ namespace Tetris.PlayArea
 
             // Refill the queue immediately
             RefillQueue();
+            RenderToMiniView();
         }
 
         private void RefillQueue()
@@ -447,6 +465,9 @@ namespace Tetris.PlayArea
                 // Reset the lock timer on successful rotations, but keep it running if it's active
                 LockTimer.ResetTimerWhileLocking();
             }
+
+            ReplicateControlledGroupToGhost();
+            RenderToMiniView();
         }
 
         public void RotateControlledGroupRight()
@@ -458,6 +479,7 @@ namespace Tetris.PlayArea
             }
 
             ReplicateControlledGroupToGhost();
+            RenderToMiniView();
         }
 
         private bool RotateGroup(BlockGroup group, Rotation rotation)
@@ -527,6 +549,7 @@ namespace Tetris.PlayArea
             }
 
             ReplicateControlledGroupToGhost();
+            RenderToMiniView();
         }
 
         private bool MoveGroup(BlockGroup group, int dX, int dY)
@@ -798,6 +821,32 @@ namespace Tetris.PlayArea
             }
 
             return dY;
+        }
+
+        private void RenderToMiniView()
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                for (var y = 0; y < LimitHeight; y++)
+                {
+                    var block = Grid[x, y];
+                    if (block == null)
+                    {
+                        miniViewTexture.SetPixel(x, y, Color.black);
+                        continue;
+                    }
+
+                    if (!PaletteHelpers.TryGetColor(palette, block.ShapeType, out var color))
+                    {
+                        Debug.LogError($"PlayArea.RenderToMiniView: Failed to get color for shape: {block.ShapeType}");
+                        color = Color.black;
+                    }
+
+                    miniViewTexture.SetPixel(x, y, color);
+                }
+            }
+
+            miniViewTexture.Apply();
         }
 
         private void DispatchEffect(PlayAreaEffect effect)
