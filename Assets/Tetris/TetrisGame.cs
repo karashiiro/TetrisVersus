@@ -1,4 +1,5 @@
 ﻿using System;
+using Tetris.PlayArea;
 using Tetris.Timers;
 using UdonSharp;
 using UnityEngine;
@@ -34,6 +35,7 @@ namespace Tetris
         [field: SerializeField] public GameObject LockOutText { get; set; }
         [field: SerializeField] public GameObject TopOutText { get; set; }
         [field: SerializeField] public VRCStation Station { get; set; }
+        [field: SerializeField] public VersusMiniView TargetVersusMiniView { get; set; }
 
         [field: UdonSynced] public GameState CurrentState { get; set; }
 
@@ -45,7 +47,11 @@ namespace Tetris
             if (LockOutText == null) Debug.LogError("TetrisGame.Awake: LockOutText is null.");
             if (TopOutText == null) Debug.LogError("TetrisGame.Awake: TopOutText is null.");
             if (Station == null) Debug.LogError("TetrisGame.Awake: Station is null.");
+            if (TargetVersusMiniView == null) Debug.LogError("TetrisGame.Awake: TargetVersusHUD is null.");
+        }
 
+        private void Start()
+        {
             LockOutText.SetActive(false);
             TopOutText.SetActive(false);
         }
@@ -103,6 +109,7 @@ namespace Tetris
 
             Debug.Log("TetrisGame.InitGame: Starting game as local player");
             PlayArea.SetOwned(true);
+            TargetVersusMiniView.Replicate();
 
             SetGameState(GameState.Playing);
         }
