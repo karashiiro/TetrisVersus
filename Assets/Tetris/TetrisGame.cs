@@ -36,6 +36,7 @@ namespace Tetris
         [field: SerializeField] public GameObject TopOutText { get; set; }
         [field: SerializeField] public VRCStation Station { get; set; }
         [field: SerializeField] public VersusMiniViewArray VersusMiniViews { get; set; }
+        [field: SerializeField] public OwnershipIndicator OwnershipIndicatorLine { get; set; }
 
         [field: UdonSynced] public GameState CurrentState { get; set; }
 
@@ -48,6 +49,7 @@ namespace Tetris
             if (TopOutText == null) Debug.LogError("TetrisGame.Awake: TopOutText is null.");
             if (Station == null) Debug.LogError("TetrisGame.Awake: Station is null.");
             if (VersusMiniViews == null) Debug.LogError("TetrisGame.Awake: VersusMiniViews is null.");
+            if (OwnershipIndicatorLine == null) Debug.LogError("TetrisGame.Awake: OwnershipIndicatorLine is null.");
         }
 
         private void Start()
@@ -164,6 +166,8 @@ namespace Tetris
                     UnfreezeOwner();
                     break;
             }
+
+            OwnershipIndicatorLine.ReplicateOwnership();
         }
 
         public void PlayAreaOnClearedLines()
@@ -386,7 +390,7 @@ namespace Tetris
             }
         }
 
-        private bool ShouldBeControllable()
+        public bool ShouldBeControllable()
         {
             return CurrentState == GameState.Playing && LocalPlayerIsOwner();
         }
