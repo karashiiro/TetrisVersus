@@ -19,6 +19,31 @@ namespace Tetris
 
         private void Start()
         {
+            LinkEvents();
+            LinkMiniViews();
+        }
+
+        public void StartGame()
+        {
+            foreach (var game in ParticipatingGames)
+            {
+                game.ResetGame();
+            }
+
+            LinkEvents();
+            LinkMiniViews();
+        }
+
+        private void LinkEvents()
+        {
+            foreach (var game in ParticipatingGames)
+            {
+                game.NotifyEventsTo = this;
+            }
+        }
+
+        private void LinkMiniViews()
+        {
             foreach (var game1 in ParticipatingGames)
             {
                 foreach (var game2 in ParticipatingGames)

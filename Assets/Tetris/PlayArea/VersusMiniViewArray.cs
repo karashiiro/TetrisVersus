@@ -32,6 +32,18 @@ namespace Tetris.PlayArea
             views.Add(new DataToken(miniView));
         }
 
+        public void Clear()
+        {
+            Debug.Log($"VersusMiniViewArray.Clear: Clearing {views.Count} views");
+            foreach (var token in views.ToArray())
+            {
+                var view = token.As<VersusMiniView>();
+                ObjectHelpers.Destroy(view.gameObject);
+            }
+
+            views.Clear();
+        }
+
         public void ReplicateAll()
         {
             Debug.Log($"VersusMiniViewArray.ReplicateAll: Replicating {views.Count} views");

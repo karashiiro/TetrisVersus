@@ -29,7 +29,7 @@ namespace Tetris
         private bool rotateRightHeld;
         private bool hardDropHeld;
 
-        [field: SerializeField] public UdonSharpBehaviour NotifyLineClearsTo { get; set; }
+        [field: SerializeField] public UdonSharpBehaviour NotifyEventsTo { get; set; }
         [field: SerializeField] public PlayArea.PlayArea PlayArea { get; set; }
         [field: SerializeField] public TickDriver TickDriver { get; set; }
         [field: SerializeField] public GameObject LockOutText { get; set; }
@@ -42,7 +42,7 @@ namespace Tetris
 
         private void Awake()
         {
-            if (NotifyLineClearsTo == null) Debug.LogWarning("TetrisGame.Awake: NotifyLineClearsTo is null.");
+            if (NotifyEventsTo == null) Debug.LogWarning("TetrisGame.Awake: NotifyLineClearsTo is null.");
             if (PlayArea == null) Debug.LogError("TetrisGame.Awake: PlayArea is null.");
             if (TickDriver == null) Debug.LogError("TetrisGame.Awake: TickDriver is null.");
             if (LockOutText == null) Debug.LogError("TetrisGame.Awake: LockOutText is null.");
@@ -127,6 +127,7 @@ namespace Tetris
         {
             if (CurrentState == GameState.NotStarted || !LocalPlayerIsOwner()) return;
             Debug.Log("TetrisGame.ResetGame: Resetting game");
+            VersusMiniViews.Clear();
             PlayArea.Clear();
             LockOutText.SetActive(false);
             TopOutText.SetActive(false);
@@ -175,9 +176,9 @@ namespace Tetris
             // Each kind of line clear needs to be sent as a separate event, since Udon events can't have
             // any parameters
             var linesCleared = PlayArea.LastLinesCleared;
-            if (NotifyLineClearsTo == null)
+            if (NotifyEventsTo == null)
             {
-                Debug.LogWarning("TetrisGame.PlayAreaOnClearedLines: NotifyLineClearsTo is null.");
+                Debug.LogWarning("TetrisGame.PlayAreaOnClearedLines: NotifyEventsTo is null.");
             }
             else
                 switch (linesCleared)
@@ -196,17 +197,17 @@ namespace Tetris
 
         private void NotifyDoubleLineClear()
         {
-            NotifyLineClearsTo.SendCustomEvent("TetrisGameOnDoubleLineClear");
+            NotifyEventsTo.SendCustomEvent("TetrisGameOnDoubleLineClear");
         }
 
         private void NotifyTripleLineClear()
         {
-            NotifyLineClearsTo.SendCustomEvent("TetrisGameOnTripleLineClear");
+            NotifyEventsTo.SendCustomEvent("TetrisGameOnTripleLineClear");
         }
 
         private void NotifyTetrisLineClear()
         {
-            NotifyLineClearsTo.SendCustomEvent("TetrisGameOnTetrisLineClear");
+            NotifyEventsTo.SendCustomEvent("TetrisGameOnTetrisLineClear");
         }
 
         public void PlayAreaOnLockOut()
