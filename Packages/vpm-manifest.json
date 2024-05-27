@@ -8,6 +8,9 @@
     },
     "com.llealloo.audiolink": {
       "version": "1.4.0"
+    },
+    "dev.onevr.vrworldtoolkit": {
+      "version": "3.1.0"
     }
   },
   "locked": {
@@ -27,6 +30,10 @@
     },
     "com.llealloo.audiolink": {
       "version": "1.4.0",
+      "dependencies": {}
+    },
+    "dev.onevr.vrworldtoolkit": {
+      "version": "3.1.0",
       "dependencies": {}
     }
   }

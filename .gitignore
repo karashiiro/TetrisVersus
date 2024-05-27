@@ -85,3 +85,5 @@ UpgradeLog.htm
 
 # Test-generated scenes
 /[Aa]ssets/[Ii]nitTestScene*.unity*
+
+/[Aa]ssets/_LastBuild*
