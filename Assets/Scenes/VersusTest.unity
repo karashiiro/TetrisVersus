@@ -297,6 +297,11 @@ PrefabInstance:
       propertyPath: m_Volume
       value: 0.8
       objectReference: {fileID: 0}
+    - target: {fileID: 6421412928139285895, guid: 87d772cf1b1ec7b49839dde29eb427be,
+        type: 3}
+      propertyPath: MaxDistance
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6421412928178292072, guid: 87d772cf1b1ec7b49839dde29eb427be,
         type: 3}
       propertyPath: serializedProgramAsset
@@ -369,6 +374,11 @@ PrefabInstance:
       propertyPath: m_Volume
       value: 0.8
       objectReference: {fileID: 0}
+    - target: {fileID: 6421412928426216311, guid: 87d772cf1b1ec7b49839dde29eb427be,
+        type: 3}
+      propertyPath: MaxDistance
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6421412928540815177, guid: 87d772cf1b1ec7b49839dde29eb427be,
         type: 3}
       propertyPath: m_Value
@@ -389,6 +399,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Volume
       value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6421412928723783923, guid: 87d772cf1b1ec7b49839dde29eb427be,
+        type: 3}
+      propertyPath: MaxDistance
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6421412928829976747, guid: 87d772cf1b1ec7b49839dde29eb427be,
         type: 3}
@@ -417,6 +432,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 1810449008956a44b9b785350e96fca5,
         type: 2}
+    - target: {fileID: 6985515869462361815, guid: 87d772cf1b1ec7b49839dde29eb427be,
+        type: 3}
+      propertyPath: audioRange
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6985515869462361815, guid: 87d772cf1b1ec7b49839dde29eb427be,
         type: 3}
       propertyPath: loopPlaylist
@@ -999,7 +1019,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1369,6 +1389,7 @@ MonoBehaviour:
   <PrototypeTetrisGamePrefab>k__BackingField: {fileID: 3760708491332590365, guid: 5145ca0b0484b3543ad25e61a4ea072a,
     type: 3}
   <GameArea>k__BackingField: {fileID: 1740249505}
+  <Floor>k__BackingField: {fileID: 1400010998}
 --- !u!1 &1019928047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1519,8 +1540,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1604,7 +1625,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!64 &1400010999
 MeshCollider:
@@ -1687,7 +1708,7 @@ Transform:
   m_GameObject: {fileID: 1400010998}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 22.05, y: 0, z: 0}
+  m_LocalPosition: {x: 3, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2865,7 +2886,7 @@ Transform:
   m_GameObject: {fileID: 1740249504}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: 0, z: 0}
+  m_LocalPosition: {x: 2.62, y: 1.4, z: 1.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3211,8 +3232,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

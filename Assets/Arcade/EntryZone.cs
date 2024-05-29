@@ -16,12 +16,15 @@ namespace Arcade
 
         private readonly DataList gameStations = new DataList();
 
+        private DataList floors;
+
         [field: SerializeField] public GameObject InstanceMasterIndicator { get; set; }
         [field: SerializeField] public GameObject PrototypePlayerIndicator { get; set; }
         [field: SerializeField] public Transform PlayerIndicators { get; set; }
         [field: SerializeField] public TetrisVersusController VersusController { get; set; }
         [field: SerializeField] public GameObject PrototypeTetrisGamePrefab { get; set; }
         [field: SerializeField] public Transform GameArea { get; set; }
+        [field: SerializeField] public GameObject Floor { get; set; }
 
         private void Awake()
         {
@@ -32,10 +35,13 @@ namespace Arcade
             if (PrototypeTetrisGamePrefab == null)
                 Debug.LogError("EntryZone.Awake: PrototypeTetrisGamePrefab is null.");
             if (GameArea == null) Debug.LogError("EntryZone.Awake: GameArea is null.");
+            if (Floor == null) Debug.LogError("EntryZone.Awake: Floor is null.");
         }
 
         private void Start()
         {
+            floors = new DataList();
+            floors.Add(new DataToken(Floor));
             UpdateInstanceMasterUI();
         }
 
@@ -76,11 +82,31 @@ namespace Arcade
 
         private TetrisGame[] CreateGamesForPlayers()
         {
+            const int gamesPerLayer = 4;
+            const int spacing = 25;
+
             var games = new TetrisGame[players.Count];
             for (var i = 0; i < players.Count; i++)
             {
                 var prefabInstance = Instantiate(PrototypeTetrisGamePrefab, GameArea, false);
-                prefabInstance.transform.Translate(new Vector3(0, 0, 25f * i));
+
+                var cycle = i % gamesPerLayer;
+                var layer = i / gamesPerLayer;
+                var angleRadians = cycle * Math.PI / 2;
+                var angleDegrees = Convert.ToSingle(angleRadians * 180 / Math.PI);
+                var x = spacing * Convert.ToSingle(Math.Cos(angleRadians));
+                var y = spacing * layer;
+                var z = -spacing * Convert.ToSingle(Math.Sin(angleRadians));
+                prefabInstance.transform.SetLocalPositionAndRotation(new Vector3(x, y, z),
+                    Quaternion.Euler(0, angleDegrees, 0));
+
+                if (layer >= floors.Count)
+                {
+                    var nextFloor = Instantiate(Floor);
+                    nextFloor.transform.Translate(new Vector3(0, 0, -layer * spacing));
+                    floors.Add(new DataToken(nextFloor));
+                }
+
                 gameStations.Add(prefabInstance);
                 games[i] = TetrisGameHelpers.GetBehaviorFromPrefabInstance(prefabInstance);
             }
