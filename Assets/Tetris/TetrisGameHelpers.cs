@@ -1,5 +1,6 @@
 ﻿using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Components;
 
 namespace Tetris
 {
@@ -10,6 +11,12 @@ namespace Tetris
             var controller = prefabInstance.transform.Find("TetrisController");
             var component = (UdonSharpBehaviour)controller.GetComponent(typeof(UdonSharpBehaviour));
             return (TetrisGame)component;
+        }
+
+        public static VRCStation GetStationFromPrefabInstance(GameObject prefabInstance)
+        {
+            var transform = prefabInstance.transform.Find("Station");
+            return transform.gameObject.GetComponent<VRCStation>();
         }
     }
 }

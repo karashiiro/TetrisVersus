@@ -68,13 +68,13 @@ namespace Tetris
         {
             if (Networking.IsOwner(gameObject))
             {
-                Debug.Log("TetrisGame.Interact: Already owner, skipping ownership request");
+                Debug.Log("TetrisGame.TakeOwnershipAndStart: Already owner, skipping ownership request");
                 InitGame();
                 return;
             }
 
-            // Interact is always triggered by the local player
-            Debug.Log("TetrisGame.Interact: Requesting ownership of game");
+            // TakeOwnershipAndStart is always triggered by the local player
+            Debug.Log("TetrisGame.TakeOwnershipAndStart: Requesting ownership of game");
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
         }
 

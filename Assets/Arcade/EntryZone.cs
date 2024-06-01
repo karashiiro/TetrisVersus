@@ -14,7 +14,7 @@ namespace Arcade
         private readonly DataList players = new DataList();
         private readonly DataDictionary playerIndicators = new DataDictionary();
 
-        private readonly DataList gameStations = new DataList();
+        private readonly DataDictionary gameStations = new DataDictionary();
 
         private DataList floors;
 
@@ -67,6 +67,15 @@ namespace Arcade
 
             // 3. Initialize the VS controller and start the game
             VersusController.StartGame();
+
+            // 4. Reassign each game station to its player
+            foreach (var playerToken in gameStations.GetKeys().ToArray())
+            {
+                var player = playerToken.As<VRCPlayerApi>();
+                var gameStation = gameStations[playerToken].As<GameObject>();
+                var station = TetrisGameHelpers.GetStationFromPrefabInstance(gameStation);
+                station.UseStation(player);
+            }
         }
 
         private void ResetGameArea()
@@ -104,10 +113,10 @@ namespace Arcade
                 {
                     var nextFloor = Instantiate(Floor);
                     nextFloor.transform.Translate(new Vector3(0, 0, -layer * spacing));
-                    floors.Add(new DataToken(nextFloor));
+                    floors.Add(nextFloor);
                 }
 
-                gameStations.Add(prefabInstance);
+                gameStations.Add(players[i], prefabInstance);
                 games[i] = TetrisGameHelpers.GetBehaviorFromPrefabInstance(prefabInstance);
             }
 
@@ -116,7 +125,7 @@ namespace Arcade
 
         private void ClearGameInstances()
         {
-            foreach (var game in gameStations.ToArray())
+            foreach (var game in gameStations.GetValues().ToArray())
             {
                 ObjectHelpers.Destroy(game.As<GameObject>());
             }
